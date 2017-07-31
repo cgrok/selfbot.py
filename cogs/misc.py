@@ -121,7 +121,7 @@ class Misc():
 
         
     @commands.command(pass_context=True, aliases=['8ball'])
-    async def ball8(self, ctx, *, msg: str):
+    async def ball8(self, ctx, *, msg : str):
         """Let the 8ball decide your fate."""
         answer = random.randint(0, 19)
         
@@ -136,11 +136,6 @@ class Misc():
         em.add_field(name='\ud83c\udfb1 8ball', value=self.ball[answer], inline=False)
         await self.bot.send_message(ctx.message.channel, content=None, embed=em)
         await self.bot.delete_message(ctx.message)
-
-    @commands.command(pass_context=True)
-    async def invite(self, ctx):
-        '''Returns the OAUTH invite linke'''
-        await self.bot.say('This bot is private for now. Dont attempt to invite it to your server.\n<https://discordapp.com/oauth2/authorize?client_id={}&scope=bot&permissions=470147287>'.format(self.bot.user.id))
 
 
 

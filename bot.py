@@ -15,14 +15,14 @@ _extensions = [
 
 @bot.event
 async def on_ready():
-	print('--------------\n'
-		  'Self-Bot Ready\n'
-		  'Made by verix.\n'
-		  '--------------\n'
-		  'Logged in as: {}'
-		  .format(bot.user))
-    
     bot.uptime = datetime.datetime.now()
+    print('--------------\n'
+    	  'Self-Bot Ready\n'
+    	  'Made by verix.\n'
+    	  '--------------\n'
+    	  'Logged in as: {}'
+    	  .format(bot.user))
+
 
 
 @bot.command(pass_context=True,description='Response time is in ms.')
