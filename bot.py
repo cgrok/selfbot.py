@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import datetime
 
+
 bot = commands.Bot(command_prefix='..', self_bot=True)
 
 _extensions = [
@@ -12,6 +13,7 @@ _extensions = [
     'cogs.info'
 
     ]
+
 
 @bot.event
 async def on_ready():
