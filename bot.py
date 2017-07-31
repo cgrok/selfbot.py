@@ -3,7 +3,7 @@ from discord.ext import commands
 import datetime
 
 
-bot = commands.Bot(command_prefix='..', self_bot=True)
+bot = commands.Bot(command_prefix='s.', self_bot=True)
 
 _extensions = [
 
@@ -56,6 +56,19 @@ async def purge(ctx, msgs: int, *, txt=None):
     else:
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
+
+@bot.command(aliases=['c'], pass_context=True)
+async def clean(ctx, msgs: int = 100)
+    await bot.delete_message(ctx.message)
+    if msgs < 10000:
+        async for message in bot.logs_from(ctx.message.channel, limit=msgs):
+            try:
+                if message.author == bot.user:
+                    await bot.delete_message(message)
+            except:
+                pass
+    else:
+        await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
 if __name__ == "__main__":
     for extension in _extensions:
