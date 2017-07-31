@@ -8,7 +8,8 @@ _extensions = [
 
     'cogs.eval',
     'cogs.misc',
-    'cogs.embed'
+    'cogs.embed',
+    'cogs.info'
 
     ]
 
@@ -20,6 +21,8 @@ async def on_ready():
 		  '--------------\n'
 		  'Logged in as: {}'
 		  .format(bot.user))
+    
+    bot.uptime = datetime.datetime.now()
 
 
 @bot.command(pass_context=True,description='Response time is in ms.')
