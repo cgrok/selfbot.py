@@ -126,12 +126,11 @@ class Info():
         version = '0.1.0'
         library = 'discord.py'
         creator = 'verix#7220'
-        invite = '[bot.discord.io/knightbot](https://bot.discord.io/knightbot)'
-        discord_ = '[discord.io/brawlstars](https://discord.gg/c9NUu2W)'
-        github = '[verixx/knightbot](https://github.com/verixx/knightbot)'
+        discord_ = '[Support Server](https://discord.gg/c9NUu2W)'
+        github = 'Soon to come.'
         time = ctx.message.timestamp
         emb = discord.Embed(colour=0x00FFFF)
-        emb.set_author(name='verix - selfbot', icon_url=self.bot.user.avatar_url)
+        emb.set_author(name='selfbot-verix', icon_url=self.bot.user.avatar_url)
         emb.add_field(name='Version',value=version)
         emb.add_field(name='Library',value=library)
         emb.add_field(name='Creator',value=creator)
@@ -140,7 +139,7 @@ class Info():
         emb.add_field(name='Discord',value=discord_)
         emb.add_field(name='Uptime',value=time_)
         emb.set_footer(text="ID: {}".format(self.bot.user.id))
-        emb.set_thumbnail(url=self.bot.user.avatar_url)
+        emb.set_thumbnail(url='https://images-ext-2.discordapp.net/external/SnW7k3KOpINvsuuldgrRMys5vKlViT6wZbXlM-80m1w/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/319395783847837696/349677f658e864c0a5247a658df61eb1.webp?width=80&height=80')
         await self.bot.say(embed=emb)
 
 
