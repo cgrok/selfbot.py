@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 import datetime
 
-bot = commands.Bot(command_prefix='self.', self_bot=True)
+bot = commands.Bot(command_prefix='..', self_bot=True)
 
 _extensions = [
 
