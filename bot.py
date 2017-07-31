@@ -58,7 +58,7 @@ async def purge(ctx, msgs: int, *, txt=None):
 
 
 @bot.command(aliases=['c'], pass_context=True)
-async def clean(ctx, msgs: int = 100)
+async def clean(ctx, msgs: int = 100):
     await bot.delete_message(ctx.message)
     if msgs < 10000:
         async for message in bot.logs_from(ctx.message.channel, limit=msgs):
