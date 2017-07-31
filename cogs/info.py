@@ -125,7 +125,7 @@ class Info():
         servers = len(self.bot.servers)
         version = '0.1.0'
         library = 'discord.py'
-        creator = await self.bot.get_user_info(owner)
+        creator = 'verix#7220'
         invite = '[bot.discord.io/knightbot](https://bot.discord.io/knightbot)'
         discord_ = '[discord.io/brawlstars](https://discord.gg/c9NUu2W)'
         github = '[verixx/knightbot](https://github.com/verixx/knightbot)'
