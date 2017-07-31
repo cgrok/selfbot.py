@@ -139,7 +139,7 @@ class Info():
         emb.add_field(name='Discord',value=discord_)
         emb.add_field(name='Uptime',value=time_)
         emb.set_footer(text="ID: {}".format(self.bot.user.id))
-        emb.set_thumbnail(url='https://images-ext-2.discordapp.net/external/SnW7k3KOpINvsuuldgrRMys5vKlViT6wZbXlM-80m1w/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/319395783847837696/349677f658e864c0a5247a658df61eb1.webp?width=80&height=80')
+        emb.set_thumbnail(url='https://cdn.discordapp.com/avatars/319395783847837696/349677f658e864c0a5247a658df61eb1.webp?width=80&height=80')
         await self.bot.say(embed=emb)
 
 
