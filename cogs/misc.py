@@ -184,26 +184,27 @@ class Misc():
 
                 img.write(block)
 
-        if attach_perms(ctx.message) and url:
-            if get_server:
-                await self.bot.send_message(ctx.message.channel,
-                                            '**ID:** {}\n**Server:** {}'.format(emoji.id, server.name))
-            with open(name, 'rb') as fp:
+        if url:
+            try:
+                if get_server:
+                    await self.bot.send_message(ctx.message.channel,
+                                                '**ID:** {}\n**Server:** {}'.format(emoji.id, server.name))
+                with open(name, 'rb') as fp:
+                    if copy_emote_bool:
+                        e = fp.read()
+                    else:
+                        await self.bot.send_file(ctx.message.channel, fp)
                 if copy_emote_bool:
-                    e = fp.read()
-                else:
-                    await self.bot.send_file(ctx.message.channel, fp)
-            if copy_emote_bool:
-                try:
-                    await self.bot.create_custom_emoji(ctx.message.server, name=emote_name, image=e)
-                    embed = discord.Embed(title="Added new emote", color=discord.Color.blue())
-                    embed.description = "New emote added: " + emote_name
-                    await self.bot.say("", embed=embed)
-                except:
-                    await self.bot.say("Not enough permissions to do this")
-            os.remove(name)
-        elif not embed_perms(ctx.message) and url:
-            await self.bot.send_message(ctx.message.channel, url)
+                    try:
+                        await self.bot.create_custom_emoji(ctx.message.server, name=emote_name, image=e)
+                        embed = discord.Embed(title="Added new emote", color=discord.Color.blue())
+                        embed.description = "New emote added: " + emote_name
+                        await self.bot.say("", embed=embed)
+                    except:
+                        await self.bot.say("Not enough permissions to do this")
+                os.remove(name)
+            except:
+                await self.bot.send_message(ctx.message.channel, url)
         else:
             await self.bot.send_message(ctx.message.channel, 'Could not find emoji.')
 
