@@ -48,6 +48,8 @@ async def ping(ctx):
     await bot.say(embed=pong)
 
 
+
+
 @bot.command(aliases=['p'], pass_context=True)
 async def purge(ctx, msgs: int, *, txt=None):
     await bot.delete_message(ctx.message)
