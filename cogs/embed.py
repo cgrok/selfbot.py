@@ -107,7 +107,7 @@ class Embed():
             except:
                 pass
         except:
-            await self.bot.send_message(ctx.message.channel, 'looks like something fucked up.')
+            await self.bot.send_message(ctx.message.channel, 'looks like something fucked up. or i dont have embed perms')
                
             
 

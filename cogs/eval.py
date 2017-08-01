@@ -31,11 +31,7 @@ class EVAL:
             return '```py\n{0.__class__.__name__}: {0}\n```'.format(e)
         return '```py\n{0.text}{1:>{0.offset}}\n{2}: {0}```'.format(e, '^', type(e).__name__)
 
-    def is_owner():
-        return commands.check(lambda ctx: ctx.message.author.id == '319395783847837696')
-
     @commands.command(pass_context=True, name='eval')
-    @is_owner()
     async def _eval(self, ctx, *, body: str):
         env = {
             'bot': self.bot,

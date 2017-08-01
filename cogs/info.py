@@ -123,11 +123,11 @@ class Info():
         else:
             time_ = '%s hours, %s minutes, and %s seconds' % (hours, minutes, seconds)
         servers = len(self.bot.servers)
-        version = '0.1.0'
+        version = '0.1.1'
         library = 'discord.py'
         creator = 'verix#7220'
         discord_ = '[Support Server](https://discord.gg/c9NUu2W)'
-        github = 'Soon to come.'
+        github = '[/verixx/discord-self-bot](https://github.com/verixx/discord-self-bot)'
         time = ctx.message.timestamp
         emb = discord.Embed(colour=0x00FFFF)
         emb.set_author(name='selfbot-verix', icon_url=self.bot.user.avatar_url)

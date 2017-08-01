@@ -1,6 +1,11 @@
 import discord
 from discord.ext import commands
 import datetime
+import json
+
+
+with open('config.json') as f:
+    TOKEN = json.load(f)['token']
 
 
 bot = commands.Bot(command_prefix='s.', self_bot=True)
@@ -10,7 +15,8 @@ _extensions = [
     'cogs.eval',
     'cogs.misc',
     'cogs.embed',
-    'cogs.info'
+    'cogs.info',
+    'cogs.utils'
 
     ]
 
@@ -20,10 +26,12 @@ async def on_ready():
     bot.uptime = datetime.datetime.now()
     print('--------------\n'
     	  'Self-Bot Ready\n'
-    	  'Made by verix.\n'
+    	  'Author: verix#7220\n'
     	  '--------------\n'
-    	  'Logged in as: {}'
-    	  .format(bot.user))
+    	  'Username: {}\n'
+          'User ID: {}\n'
+          '--------------'
+    	  .format(bot.user, bot.user.id))
 
 
 
@@ -71,6 +79,7 @@ async def clean(ctx, msgs: int = 100):
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
 if __name__ == "__main__":
+    print('--------------')
     for extension in _extensions:
         try:
             bot.load_extension(extension)
@@ -78,5 +87,8 @@ if __name__ == "__main__":
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
-
-bot.run("MzE5Mzk1NzgzODQ3ODM3Njk2.DF2Klg.zEgTAzHvjaXYaRgY5puSWTsTbDk", bot=False)
+try:
+    bot.run(TOKEN, bot=False)
+except:
+    print('\nIMPROPER TOKEN PASSED\nCHECK YOUR `config.json`\n')
+    
