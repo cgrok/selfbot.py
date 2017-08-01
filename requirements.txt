@@ -2,3 +2,4 @@ discord.py
 requests
 PythonGists
 bs4
+lxml
