@@ -2,4 +2,3 @@ discord.py
 requests
 PythonGists
 bs4
-urllib
