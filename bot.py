@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 import datetime
 import json
-from cogs.formatter import EmbedHelp
+from ext.formatter import EmbedHelp
 
-with open('config.json') as f:
+with open('data/config.json') as f:
     TOKEN = json.load(f)['token']
 
 
