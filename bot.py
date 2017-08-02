@@ -154,13 +154,6 @@ async def purge(ctx, msgs: int, *, txt=None):
     else:
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
-@bot.group()
-async def test1(bo):
-    await bot.say('test1')
-
-@test1.command()
-async def nested(a):
-    await bot.say('nested')
 
 @bot.command(aliases=['c'], pass_context=True)
 async def clean(ctx, msgs: int = 100):
