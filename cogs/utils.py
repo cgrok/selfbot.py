@@ -30,6 +30,7 @@ class Utility:
 
     @commands.command(pass_context=True)
     async def quote(self, ctx, id : str, chan : discord.Channel=None):
+    	"""Quote someone's message by ID"""
     	channel = chan or ctx.message.channel
     	await self.bot.delete_message(ctx.message)
     	msg = None
@@ -75,6 +76,7 @@ class Utility:
 
     @commands.command(pass_context=True, name='eval')
     async def _eval(self, ctx, *, body: str):
+    	'''Run python scripts on discord!'''
         env = {
             'bot': self.bot,
             'ctx': ctx,
