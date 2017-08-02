@@ -323,7 +323,19 @@ class EmbedHelp(HelpFormatter):
             # end it here if it's just a regular command
             if not self.has_subcommands():
                 self._paginator.close_page()
-                return self._paginator.pages
+                for page in self._paginator.pages:
+                    msg = page.strip('```cs')
+                    msg = msg.strip().splitlines()
+                    for i, line in enumerate(msg): 
+                        if i == 0:
+                            x = line.strip().strip('.')
+                            x = ctx.prefix + x
+                            msg[i] = '`' + x + '`'
+                    print(msg)
+                    em = discord.Embed(color=discord.Colour.orange(), description='\n'.join(msg))
+                    print('OVER HERE',em)
+                    return [em]
+
 
         max_width = self.max_name_size
 
@@ -378,8 +390,8 @@ class EmbedHelp(HelpFormatter):
         em.set_author(name='Help - Bot Commands',
                       icon_url=author.avatar_url or author.default_avatar_url)
 
-        if not categs:
-            em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp, description=''.join(msg))
+        if  len(categs) == 0:
+            em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp, description='\n'.join(msg))
             print('OVER HERE',em)
             return [em]
 
