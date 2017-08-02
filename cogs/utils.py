@@ -30,6 +30,7 @@ class Utility:
 
     @commands.command(pass_context=True)
     async def raw(self, ctx, ID):
+    	"""Get the raw content of someones message!"""
     	channel = ctx.message.channel
     	await self.bot.delete_message(ctx.message)
     	msg = None
