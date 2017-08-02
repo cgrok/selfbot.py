@@ -5,6 +5,12 @@ import requests
 from bs4 import BeautifulSoup
 from urllib import parse
 from urllib.request import Request, urlopen
+import traceback
+import discord
+import inspect
+import textwrap
+from contextlib import redirect_stdout
+import io
 
 class Utility:
     def __init__(self, bot):
