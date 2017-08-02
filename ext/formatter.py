@@ -325,12 +325,14 @@ class EmbedHelp(HelpFormatter):
                 self._paginator.close_page()
                 for page in self._paginator.pages:
                     msg = page.strip('```cs')
+
                     msg = msg.strip().splitlines()
                     for i, line in enumerate(msg): 
                         if i == 0:
                             x = line.strip().strip('.')
-                            x = ctx.prefix + x
                             msg[i] = '`' + x + '`'
+                        if not line:
+                            del msg[i]
                     print(msg)
                     em = discord.Embed(color=discord.Colour.orange(), description='\n'.join(msg))
                     print('OVER HERE',em)
@@ -390,10 +392,6 @@ class EmbedHelp(HelpFormatter):
         em.set_author(name='Help - Bot Commands',
                       icon_url=author.avatar_url or author.default_avatar_url)
 
-        if  len(categs) == 0:
-            em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp, description='\n'.join(msg))
-            print('OVER HERE',em)
-            return [em]
 
         for i in range(len(categs)):
             base = categs[i]
