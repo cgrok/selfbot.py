@@ -330,13 +330,13 @@ class EmbedHelp(HelpFormatter):
                     for i, line in enumerate(msg): 
                         if i == 0:
                             x = line.strip().strip('.')
-                            msg[i] = '`' + x + '`'
+                            msg[i] = '``' + x + '``'
                         if not line:
                             del msg[i]
                     print(msg)
-                    em = discord.Embed(color=discord.Colour.orange(), description=msg[0])
+                    em = discord.Embed(color=discord.Colour.orange(), title=msg[0])
                     try:
-                        em.set_footer(text=msg[1:])
+                        em.set_footer(text=''.join(msg[1:]))
                     except:
                         pass
                     print('OVER HERE',em)
