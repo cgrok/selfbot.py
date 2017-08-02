@@ -76,7 +76,7 @@ class Utility:
 
     @commands.command(pass_context=True, name='eval')
     async def _eval(self, ctx, *, body: str):
-    	'''Run python scripts on discord!'''
+        '''Run python scripts on discord!'''
         env = {
             'bot': self.bot,
             'ctx': ctx,
