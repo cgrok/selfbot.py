@@ -373,8 +373,8 @@ class EmbedHelp(HelpFormatter):
                 categs.append(i)
 
 
-        em = discord.Embed(color=0x00ffff)
-        em.set_author(name='Help - self.bot Commands',
+        em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp)
+        em.set_author(name='Help - Bot Commands',
                       icon_url=author.avatar_url or author.default_avatar_url)
 
         if not categs:
@@ -391,7 +391,7 @@ class EmbedHelp(HelpFormatter):
 
             em.add_field(name=p[0], value='\n'.join(p[1:]))
 
-        em.set_footer(text='self.bot made by verix | Powered by discord.py')
+        em.set_footer(text='verix-selfbot')
 
         return [em] 
 
