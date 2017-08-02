@@ -367,6 +367,7 @@ class EmbedHelp(HelpFormatter):
                 msg[i] = '`' + x + '`'
 
         categs = []
+        print(categs)
 
         for i, e in enumerate(msg):
             if e.endswith(':'):
@@ -378,7 +379,8 @@ class EmbedHelp(HelpFormatter):
                       icon_url=author.avatar_url or author.default_avatar_url)
 
         if not categs:
-            em.description = ''.join(msg)
+            em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp, description=''.join(msg))
+            print('OVER HERE',em)
             return [em]
 
         for i in range(len(categs)):

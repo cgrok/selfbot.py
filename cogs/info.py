@@ -147,7 +147,6 @@ class Info():
     async def help(self, ctx, *, cmd = None):
         """Shows this message."""
         author = ctx.message.author
-        await self.bot.delete_message(ctx.message)
         pages = self.bot.formatter.format_help_for(ctx, self.bot)
         for page in pages:
             try:
