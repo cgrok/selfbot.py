@@ -97,6 +97,42 @@ async def _set(Type=None,*,thing=None):
         else:
             await bot.say('Usage: `.presence [game/stream] [message]`')
 
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        for page in pages:
+            await bot.send_message(ctx.message.channel, embed=page)
+        print('Sent command help')
+    else:
+        pages = bot.formatter.format_help_for(ctx, ctx.command)
+        for page in pages:
+            await bot.send_message(ctx.message.channel, embed=page)
+        print('Sent command help')
+
+@bot.event
+async def on_command_error(error, ctx):
+   print(error)
+   channel = ctx.message.channel
+   if isinstance(error, commands.MissingRequiredArgument):
+       await send_cmd_help(ctx)
+       print('Sent command help')
+   elif isinstance(error, commands.BadArgument):
+       await send_cmd_help(ctx)
+       print('Sent command help')
+   elif isinstance(error, commands.DisabledCommand):
+       await bot.send_message(channel, "That command is disabled.")
+       print('Command disabled.')
+   elif isinstance(error, commands.CommandInvokeError):
+       # A bit hacky, couldn't find a better way
+       no_dms = "Cannot send messages to this user"
+       is_help_cmd = ctx.command.qualified_name == "help"
+       is_forbidden = isinstance(error.original, discord.Forbidden)
+       if is_help_cmd and is_forbidden and error.original.text == no_dms:
+           msg = ("I couldn't send the help message to you in DM. Either"
+                  " you blocked me or you disabled DMs in this server.")
+           await bot.send_message(channel, msg)
+           return
+
 
 
 @bot.command(aliases=['p'], pass_context=True)
