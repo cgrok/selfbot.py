@@ -6,17 +6,21 @@ from ext.formatter import EmbedHelp
 
 
 def run_wizard():
+    print('------------------------------------------')
     print('WELCOME TO THE VERIX-SELFBOT SETUP WIZARD!')
     print('------------------------------------------')
+    token = input('Enter your token:\n> ')
+    print('------------------------------------------')
+    prefix = input('Enter a prefix for your selfbot:\n> ')
     data = {
         "BOT": {
-            "TOKEN" : input('Enter your token:\n> '),
-            "PREFIX" : input('Enter a prefix for your selfbot:\n> ')
+            "TOKEN" : token,
+            "PREFIX" : prefix
             },
         "FIRST" : False
         }
     with open('data/config.json','w') as f:
-        f.write(json.dumps(data))
+        f.write(json.dumps(data, indent=4))
     print('------------------------------------------')
     print('Successfully saved your data!')
     print('------------------------------------------')
@@ -25,13 +29,15 @@ def run_wizard():
 with open('data/config.json') as f:
     if json.load(f)['FIRST']:
         run_wizard()
-    TOKEN = json.load(f)["BOT"]['token']
+
+with open('data/config.json') as f:  
+    TOKEN = json.load(f)["BOT"]['TOKEN']
 
 async def get_pre(bot, message):
     with open('data/config.json') as f:
         config = json.load(f)
     try:
-        return config["BOT"]['prefix']
+        return config["BOT"]['PREFIX']
     except:
         return 's.'
 
@@ -49,13 +55,13 @@ _extensions = [
 @bot.event
 async def on_ready():
     bot.uptime = datetime.datetime.now()
-    print('--------------\n'
+    print('------------------------------------------\n'
     	  'Self-Bot Ready\n'
     	  'Author: verix#7220\n'
-    	  '--------------\n'
+    	  '------------------------------------------\n'
     	  'Username: {}\n'
           'User ID: {}\n'
-          '--------------'
+          '------------------------------------------'
     	  .format(bot.user, bot.user.id))
 
 
@@ -106,7 +112,6 @@ async def clean(ctx, msgs: int = 100):
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
 if __name__ == "__main__":
-    print('--------------')
     for extension in _extensions:
         try:
             bot.load_extension(extension)
