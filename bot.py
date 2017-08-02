@@ -79,23 +79,23 @@ async def ping(ctx):
 
     await bot.say(embed=pong)
 
-@bot.command(name='presence',hidden=True)
+@bot.command(name='presence')
 async def _set(Type=None,*,thing=None):
-        if Type is None:
-                await bot.say('Usage: `.presence [game/stream] [message]`')
+    """Change your discord game/stream!"""
+    if Type is None:
+            await bot.say('Usage: `.presence [game/stream] [message]`')
+    else:
+        if Type.lower() == 'stream':
+            await bot.change_presence(game=discord.Game(name=thing,type=1,url='https://www.twitch.tv/a'),status='online')
+            await bot.say('Set presence to. `Streaming {}`'.format(thing))
+        elif Type.lower() == 'game':
+            await bot.change_presence(game=discord.Game(name=thing))
+            await bot.say('Set presence to `Playing {}`'.format(thing))
+        elif Type.lower() == 'clear':
+            await bot.change_presence(game=None)
+            await bot.say('Cleared Presence')
         else:
-                if Type.lower() == 'stream':
-                        await bot.change_presence(game=discord.Game(
-                            name=thing,type=1,url='https://www.twitch.tv/a'),status='online')
-                        await bot.say('Set presence to. `Streaming {}`'.format(thing))
-                elif Type.lower() == 'game':
-                        await bot.change_presence(game=discord.Game(name=thing))
-                        await bot.say('Set presence to `Playing {}`'.format(thing))
-                elif Type.lower() == 'clear':
-                        await bot.change_presence(game=None)
-                        await bot.say('Cleared Presence')
-                else:
-                        await bot.say('Usage: `.presence [game/stream] [message]`')
+            await bot.say('Usage: `.presence [game/stream] [message]`')
 
 
 
