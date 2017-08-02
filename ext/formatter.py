@@ -336,7 +336,7 @@ class EmbedHelp(HelpFormatter):
                     print(msg)
                     em = discord.Embed(color=discord.Colour.orange(), title=msg[0])
                     try:
-                        em.description = ''.join(msg[1:]))
+                        em.description = ''.join(msg[1:])
                     except:
                         pass
                     print('OVER HERE',em)
