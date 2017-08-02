@@ -1,5 +1,15 @@
 {
-	"token": "MzE5Mzk1NzgzODQ3ODM3Njk2.DF2Klg.zEgTAzHvjaXYaRgY5puSWTsTbDk",
-	"username": "username",
-	"password": "password"
+
+	"BOT": {
+		"token": "MzE5Mzk1NzgzODQ3ODM3Njk2.DF2Klg.zEgTAzHvjaXYaRgY5puSWTsTbDk",
+		"prefix": "s."
+	},
+
+	"CRED": {
+		"username": "username",
+		"password": "password"
+	},
+
+	"FIRST" : true
+	
 }

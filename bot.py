@@ -4,11 +4,38 @@ import datetime
 import json
 from ext.formatter import EmbedHelp
 
+
+def run_wizard():
+    print('WELCOME TO THE VERIX-SELFBOT SETUP WIZARD!')
+    print('------------------------------------------')
+    data = {
+        "BOT": {
+            "TOKEN" : input('Enter your token:\n> '),
+            "PREFIX" : input('Enter a prefix for your selfbot:\n> ')
+            },
+        "FIRST" : False
+        }
+    with open('data/config.json','w') as f:
+        f.write(json.dumps(data))
+    print('------------------------------------------')
+    print('Successfully saved your data!')
+    print('------------------------------------------')
+    
+
 with open('data/config.json') as f:
-    TOKEN = json.load(f)['token']
+    if json.load(f)['FIRST']:
+        run_wizard()
+    TOKEN = json.load(f)["BOT"]['token']
 
+async def get_pre(bot, message):
+    with open('data/config.json') as f:
+        config = json.load(f)
+    try:
+        return config["BOT"]['prefix']
+    except:
+        return 's.'
 
-bot = commands.Bot(command_prefix='s.', self_bot=True, formatter=EmbedHelp())
+bot = commands.Bot(command_prefix=get_pre, self_bot=True, formatter=EmbedHelp())
 bot.remove_command('help')
 
 _extensions = [
@@ -18,8 +45,6 @@ _extensions = [
     'cogs.utils'
 
     ]
-
-
 
 @bot.event
 async def on_ready():
