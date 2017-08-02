@@ -334,8 +334,11 @@ class EmbedHelp(HelpFormatter):
                         if not line:
                             del msg[i]
                     print(msg)
-                    em = discord.Embed(color=discord.Colour.orange())
-                    em.set_footer(text='\n'.join(msg))
+                    em = discord.Embed(color=discord.Colour.orange(), description=msg[0])
+                    try:
+                        em.set_footer(text=msg[1:])
+                    except:
+                        pass
                     print('OVER HERE',em)
                     return [em]
 
