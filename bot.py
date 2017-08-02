@@ -66,8 +66,9 @@ async def on_ready():
 
 
 
-@bot.command(pass_context=True,description='Response time is in ms.')
+@bot.command(pass_context=True)
 async def ping(ctx):
+    """Pong! Check your response time."""
     msgtime = ctx.message.timestamp.now()
     await (await bot.ws.ping())
     now = datetime.datetime.now()
@@ -83,6 +84,7 @@ async def ping(ctx):
 
 @bot.command(aliases=['p'], pass_context=True)
 async def purge(ctx, msgs: int, *, txt=None):
+    '''Purge messages if you have the perms.'''
     await bot.delete_message(ctx.message)
     if msgs < 10000:
         async for message in bot.logs_from(ctx.message.channel, limit=msgs):
@@ -100,6 +102,7 @@ async def purge(ctx, msgs: int, *, txt=None):
 
 @bot.command(aliases=['c'], pass_context=True)
 async def clean(ctx, msgs: int = 100):
+    '''Shortcut to clean all your messages.'''
     await bot.delete_message(ctx.message)
     if msgs < 10000:
         async for message in bot.logs_from(ctx.message.channel, limit=msgs):
