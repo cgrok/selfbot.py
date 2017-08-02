@@ -33,7 +33,7 @@ class Utility:
     	await self.bot.delete_message(ctx.message)
     	msg = None
     	async for m in self.bot.logs_from(channel, limit=1000):
-    		if m.id == message:
+    		if m.id == ID:
     			msg = m
     			break
     	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_')
