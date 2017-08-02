@@ -114,6 +114,7 @@ class Info():
 
     @commands.command(pass_context=True)
     async def info(self, ctx):
+        """See bot information, uptime, servers etc."""
         uptime = (datetime.datetime.now() - self.bot.uptime)
         hours, rem = divmod(int(uptime.total_seconds()), 3600)
         minutes, seconds = divmod(rem, 60)
