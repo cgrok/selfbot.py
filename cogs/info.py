@@ -142,6 +142,17 @@ class Info():
         emb.set_thumbnail(url='https://cdn.discordapp.com/avatars/319395783847837696/349677f658e864c0a5247a658df61eb1.webp?width=80&height=80')
         await self.bot.say(embed=emb)
 
+    @commands.command(pass_context=True)
+    async def help(self, ctx, *, cmd = None):
+        """Shows this message."""
+        author = ctx.message.author
+        await self.bot.delete_message(ctx.message)
+        pages = self.bot.formatter.format_help_for(ctx, self.bot)
+        for page in pages:
+            await self.bot.say(embed=page)
+
+
+
 
 def setup(bot):
     bot.add_cog(Info(bot))

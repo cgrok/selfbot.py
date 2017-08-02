@@ -2,23 +2,23 @@ import discord
 from discord.ext import commands
 import datetime
 import json
-
+from cogs.formatter import EmbedHelp
 
 with open('config.json') as f:
     TOKEN = json.load(f)['token']
 
 
-bot = commands.Bot(command_prefix='s.', self_bot=True)
+bot = commands.Bot(command_prefix='s.', self_bot=True, formatter=EmbedHelp())
+bot.remove_command('help')
 
 _extensions = [
 
-    'cogs.eval',
     'cogs.misc',
-    'cogs.embed',
     'cogs.info',
     'cogs.utils'
 
     ]
+
 
 
 @bot.event
