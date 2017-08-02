@@ -38,7 +38,7 @@ class Utility:
     		if m.id == ID:
     			msg = m
     			break
-    	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_')
+    	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_').replace('<','\\<').replace('>','\\>')
     	try:
     		await self.bot.say(out)
     	except:
