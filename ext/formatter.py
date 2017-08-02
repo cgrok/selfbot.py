@@ -393,7 +393,7 @@ class EmbedHelp(HelpFormatter):
 
 
         em = discord.Embed(color=0x00ffff,timestamp=ctx.message.timestamp)
-        em.set_author(name='Help - Bot Commands',
+        em.set_author(name='Help - Commands',
                       icon_url=author.avatar_url or author.default_avatar_url)
 
 
