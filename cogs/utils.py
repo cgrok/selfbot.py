@@ -29,6 +29,18 @@ class Utility:
             await self.bot.say('Unable to change nickname.', delete_after=5)
 
     @commands.command(pass_context=True)
+    async def raw(self, ctx, ID):
+    	await self.bot.delete_message(ctx.message)
+    	msg = None
+    	async for m in self.bot.logs_from(channel, limit=1000):
+    		if m.id == message:
+    			msg = m
+    			break
+    	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_')
+    	await self.bot.say(out)
+
+
+    @commands.command(pass_context=True)
     async def quote(self, ctx, id : str, chan : discord.Channel=None):
     	"""Quote someone's message by ID"""
     	channel = chan or ctx.message.channel
