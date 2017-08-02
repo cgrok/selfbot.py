@@ -39,7 +39,10 @@ class Utility:
     			msg = m
     			break
     	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_')
-    	await self.bot.say(out)
+    	try:
+    		await self.bot.say(out)
+    	except:
+    		await self.bot.say('Message too long.')
 
 
     @commands.command(pass_context=True)
