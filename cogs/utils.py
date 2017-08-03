@@ -29,9 +29,9 @@ class Utility:
             await self.bot.say('Unable to change nickname.', delete_after=5)
 
     @commands.command(pass_context=True)
-    async def raw(self, ctx, ID):
+    async def raw(self, ctx, ID, chan : discord.channel=None):
     	"""Get the raw content of someones message!"""
-    	channel = ctx.message.channel
+    	channel = channel or ctx.message.channel
     	await self.bot.delete_message(ctx.message)
     	msg = None
     	async for m in self.bot.logs_from(channel, limit=1000):
