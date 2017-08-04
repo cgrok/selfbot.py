@@ -49,10 +49,10 @@ class Moderation:
         	await self.bot.delete_message(ctx.message)
 
 
-    def find_user(bans, member): 
+    def find_user(self, bans, member): 
             return [user for user in bans if user.id == member or user.name.lower() == member.lower()]
 
-    async def _unban(self, server, user):
+    async def _unban(self, ctx, server, user):
     	try:
     		await self.bot.unban(server, user)
     		await self.bot.edit_message(ctx.message, 'Unbanned {} from the server.'.format(user))
@@ -74,11 +74,16 @@ class Moderation:
             return
 
         users = self.find_user(bans, member)
+        print(users)
+        print([user.name for user in bans])
 
         if len(users) > 1:
         	return await self.bot.edit_message(ctx.message, 'Multiple users found.')
+        if len(users) < 1:
+        	return await self.bot.edit_message(ctx.message, 'User not found.')
 
-        await self._unban(server, users[0])
+
+        await self._unban(ctx, server, users[0])
 
         
 
