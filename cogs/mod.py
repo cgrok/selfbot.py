@@ -85,6 +85,20 @@ class Moderation:
 
         await self._unban(ctx, server, users[0])
 
+    @commands.command(pass_context=True)
+    async def bans(self, ctx):
+    	'''See a list of banned users.'''
+    	server = ctx.message.server
+    	server = ctx.message.server
+    	try:
+    		bans = await self.bot.get_bans(server)
+    	except:
+    		await self.bot.edit_message(ctx.message, 'You dont have the permission to see the bans.')
+    		asyncio.sleep(5)
+    		await self.bot.delete_message(ctx.message)
+    	else:
+    		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}```'.format(', '.join([str(u) for u in bans])))
+
         
 
 
