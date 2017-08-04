@@ -22,7 +22,7 @@ class Moderation:
                 await self.bot.edit_message(ctx.message, 'Kicked {} from the server.'.format(member))
             except:
                 await self.bot.edit_message(ctx.message, 'You dont have the permission to kick members.')
-                asyncio.sleep(5)
+                await asyncio.sleep(5)
                 await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True)
@@ -33,7 +33,7 @@ class Moderation:
                 await self.bot.edit_message(ctx.message, 'Banned {} from the server.'.format(member))
             except:
                 await self.bot.edit_message(ctx.message, 'You dont have the permission to ban members.')
-                asyncio.sleep(5)
+                await asyncio.sleep(5)
                 await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True)
@@ -45,7 +45,7 @@ class Moderation:
             await self.bot.edit_message(ctx.message, 'Soft-banned {}.'.format(member))
         except:
         	await self.bot.edit_message(ctx.message, 'You dont have the permission to ban members.')
-        	asyncio.sleep(5)
+        	await asyncio.sleep(5)
         	await self.bot.delete_message(ctx.message)
 
 
@@ -58,7 +58,7 @@ class Moderation:
     		await self.bot.edit_message(ctx.message, 'Unbanned {} from the server.'.format(user))
     	except:
     		await self.bot.edit_message(ctx.message, 'You dont have the permission to un-ban members.')
-    		asyncio.sleep(5)
+    		await asyncio.sleep(5)
     		await self.bot.delete_message(ctx.message)
 
     @commands.command(pass_context=True)
@@ -69,7 +69,7 @@ class Moderation:
             bans = await self.bot.get_bans(server)
         except:
             await self.bot.edit_message(ctx.message, 'You dont have the permission to see the bans.')
-            asyncio.sleep(5)
+            await asyncio.sleep(5)
             await self.bot.delete_message(ctx.message)
             return
 
@@ -94,7 +94,7 @@ class Moderation:
     		bans = await self.bot.get_bans(server)
     	except:
     		await self.bot.edit_message(ctx.message, 'You dont have the permission to see the bans.')
-    		asyncio.sleep(5)
+    		await asyncio.sleep(5)
     		await self.bot.delete_message(ctx.message)
     	else:
     		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}\n```'.format(', '.join([str(u) for u in bans])))
