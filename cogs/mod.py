@@ -97,7 +97,8 @@ class Moderation:
     		asyncio.sleep(5)
     		await self.bot.delete_message(ctx.message)
     	else:
-    		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}```'.format(', '.join([str(u) for u in bans])))
+    		if 
+    		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}\n```'.format(', '.join([str(u) for u in bans])))
 
         
 
