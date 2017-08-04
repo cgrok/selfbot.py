@@ -48,7 +48,8 @@ _extensions = [
 
     'cogs.misc',
     'cogs.info',
-    'cogs.utils'
+    'cogs.utils',
+    'cogs.mod'
 
     ]
 
