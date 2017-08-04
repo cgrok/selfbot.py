@@ -63,7 +63,7 @@ class Moderation:
 
     @commands.command(pass_context=True)
     async def unban(self, ctx, member : str):
-        '''Unban someone using their user ID.'''
+        '''Unban someone using their user ID or name.'''
         server = ctx.message.server
         try:
             bans = await self.bot.get_bans(server)
