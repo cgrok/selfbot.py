@@ -127,7 +127,7 @@ class Info():
         version = '0.1.1'
         library = 'discord.py'
         creator = 'verix#7220'
-        discord_ = '[Support Server](https://discord.gg/c9NUu2W)'
+        discord_ = '[Support Server](https://discord.gg/wkPy3sb)'
         github = '[/verixx/selfbot](https://github.com/verixx/selfbot)'
         time = ctx.message.timestamp
         emb = discord.Embed(colour=0x00FFFF)
