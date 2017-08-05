@@ -403,7 +403,7 @@ class Utility:
         # the result of a google card, an embed
         card = None
 
-        async with aiohttp.get('https://www.google.com/search', params=params, headers=headers) as resp:
+        async with aiohttp.get('https://www.google.com.au/search', params=params, headers=headers) as resp:
             if resp.status != 200:
                 raise RuntimeError('Google somehow failed to respond.')
 
