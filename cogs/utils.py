@@ -245,7 +245,7 @@ class Utility:
         if node is None:
             return None
 
-        e = discord.Embed(colour=0x738bd7)
+        e = discord.Embed(colour=0x00FFFF)
 
         # check if it's a calculator card:
         calculator = node.find(".//table/tr/td/span[@class='nobr']/h2[@class='r']")
