@@ -398,11 +398,15 @@ class EmbedHelp(HelpFormatter):
         categs_per_page = 3 # change this value if you want to edit how many categories in one page
 
         for i in range(len(categs)):
-            if i % categs_per_page == 0: 
-                em = discord.Embed(color=0x00ffff)
-                em.set_author(name='Help - Commands',
-                              icon_url=author.avatar_url or author.default_avatar_url)
-                em.set_footer(text='{} commands'.format(len(msg)-len(categs)))
+            if i % categs_per_page == 0:
+                if i == 0:
+                        em = discord.Embed(color=0x00ffff)
+                        em.set_author(name='Help - Commands',
+                                      icon_url=author.avatar_url or author.default_avatar_url)
+                else:
+                    em = discord.Embed(color=0x00ffff)
+                if i == len(categs) - 1:
+                    em.set_footer(text='{} commands'.format(len(msg)-len(categs)))
 
             base = categs[i]
             try:
