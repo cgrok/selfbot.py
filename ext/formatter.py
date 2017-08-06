@@ -370,6 +370,8 @@ class EmbedHelp(HelpFormatter):
         self._paginator.add_line(ending_note)
 
 
+        # Formatting the pages into embeds
+
         author = ctx.message.author
         msg = ''
         for page in self._paginator.pages:
@@ -377,7 +379,7 @@ class EmbedHelp(HelpFormatter):
             msg += page+'\n'
 
         msg = msg.strip().splitlines()
-        # msg = open('help.txt').read().replace('\\u200b','\u200b').splitlines()
+
         for i, line in enumerate(msg): 
             if not line.strip().endswith(':'):
                 x = line.strip().strip('.')
@@ -385,19 +387,23 @@ class EmbedHelp(HelpFormatter):
                 msg[i] = '`' + x + '`'
 
         categs = []
-        print(categs)
 
         for i, e in enumerate(msg):
             if e.endswith(':'):
                 categs.append(i)
 
+        embeds = []
 
-        em = discord.Embed(color=0x00ffff)
-        em.set_author(name='Help - Commands',
-                      icon_url=author.avatar_url or author.default_avatar_url)
 
+        categs_per_page = 3 # change this value if you want to edit how many categories in one page
 
         for i in range(len(categs)):
+            if i % categs_per_page == 0: 
+                em = discord.Embed(color=0x00ffff)
+                em.set_author(name='Help - Commands',
+                              icon_url=author.avatar_url or author.default_avatar_url)
+                em.set_footer(text='{} commands'.format(len(msg)-len(categs)))
+
             base = categs[i]
             try:
                 end = categs[i+1]
@@ -405,9 +411,13 @@ class EmbedHelp(HelpFormatter):
             except:
                 p = msg[base:]
 
-            em.add_field(name=p[0], value='\n'.join(p[1:]))
+            try:
+                em.add_field(name=p[0], value='\n'.join(p[1:]))
+            except:
+                pass
 
-        em.set_footer(text='{} commands'.format(len(msg)-len(categs)))
+            if i % categs_per_page == 0:
+                embeds.append(em)
 
-        return [em] 
+        return embeds
 

@@ -131,7 +131,7 @@ class Info():
         github = '[/verixx/selfbot](https://github.com/verixx/selfbot)'
         time = ctx.message.timestamp
         emb = discord.Embed(colour=0x00FFFF)
-        emb.set_author(name='selfbot-verix', icon_url=self.bot.user.avatar_url)
+        emb.set_author(name='selfbot.py', icon_url=self.bot.user.avatar_url)
         emb.add_field(name='Version',value=version)
         emb.add_field(name='Library',value=library)
         emb.add_field(name='Creator',value=creator)
