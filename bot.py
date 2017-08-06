@@ -173,6 +173,7 @@ async def clean(ctx, msgs: int = 100):
 
 @bot.command(pass_context=True)
 async def source(ctx, *, command):
+    '''See the source code for any command.'''
     await bot.say('```py\n'+str(inspect.getsource(bot.get_command(command).callback)+'```'))
 
 if __name__ == "__main__":
