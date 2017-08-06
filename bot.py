@@ -178,8 +178,11 @@ if __name__ == "__main__":
         except Exception as e:
             exc = '{}: {}'.format(type(e).__name__, e)
             print('Failed to load extension {}\n{}'.format(extension, exc))
-try:
+
+try:   
     bot.run(TOKEN, bot=False)
-except:
-    print('\nIMPROPER TOKEN PASSED\nCHECK YOUR `config.json`\n')
+except Exception as e:
+    print('\nERROR! REFER TO WIKI FOR DETAILS: \n{}\n'.format(e))
+
+    
     

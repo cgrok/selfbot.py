@@ -164,7 +164,7 @@ class Misc():
         exact_match = False
         for server in self.bot.servers:
             for emoji in server.emojis:
-                if msg.strip().lower() in str(emoji):
+                if msg.strip().lower() in str(emoji).lower():
                     url = emoji.url
                     emote_name = emoji.name
                 if msg.strip() == str(emoji).split(':')[1]:
