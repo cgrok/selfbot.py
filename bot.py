@@ -3,7 +3,7 @@ from discord.ext import commands
 import datetime
 import json
 from ext.formatter import EmbedHelp
-
+import inspect
 
 def run_wizard():
     print('------------------------------------------')
@@ -169,6 +169,11 @@ async def clean(ctx, msgs: int = 100):
                 pass
     else:
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
+
+
+@bot.command(pass_context=True)
+async def source(ctx, *, command):
+    await bot.say('```py\n'+str(inspect.getsource(bot.get_command(command).callback)+'```'))
 
 if __name__ == "__main__":
     for extension in _extensions:
