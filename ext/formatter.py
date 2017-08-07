@@ -386,7 +386,7 @@ class EmbedHelp(HelpFormatter):
                 x = ctx.prefix + x
                 msg[i] = '`' + x + '`'
 
-        categs = []
+        categs = [] # index of each category
 
         for i, e in enumerate(msg):
             if e.endswith(':'):
@@ -395,7 +395,7 @@ class EmbedHelp(HelpFormatter):
         embeds = []
 
 
-        categs_per_page = 2 # change this value if you want to edit how many categories in one page
+        categs_per_page = 3 # change this value if you want to edit how many categories in one page
 
         for i in range(len(categs)):
             if i % categs_per_page == 0:
@@ -406,6 +406,9 @@ class EmbedHelp(HelpFormatter):
                 else:
                     em = discord.Embed(color=0x00ffff)
 
+                    
+            # This is to get the correct parts of the list on to the embed
+
             base = categs[i]
             try:
                 end = categs[i+1]
@@ -413,14 +416,13 @@ class EmbedHelp(HelpFormatter):
             except:
                 p = msg[base:]
 
-            try:
-                em.add_field(name=p[0], value='\n'.join(p[1:]))
-            except:
-                pass
+
+            em.add_field(name=p[0], value='\n'.join(p[1:])) # Create the fields
 
             if i % categs_per_page == 0:
-                embeds.append(em)
-                print(i)
+                embeds.append(em) # append the embed to the list
+
+        embeds[len(embeds)-1].set_footer(text='{} commands'.format(len(msg)-len(categs))) #set the footer for the last embed
 
         return embeds
 
