@@ -395,7 +395,7 @@ class EmbedHelp(HelpFormatter):
         embeds = []
 
 
-        categs_per_page = 3 # change this value if you want to edit how many categories in one page
+        categs_per_page = 5 # change this value if you want to edit how many categories in one page
 
         for i in range(len(categs)):
             if i % categs_per_page == 0:
