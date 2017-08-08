@@ -32,45 +32,43 @@ class Utility:
 
     @commands.command(pass_context=True)
     async def raw(self, ctx, ID, chan : discord.channel=None):
-    	"""Get the raw content of someones message!"""
-    	channel = chan or ctx.message.channel
-    	await self.bot.delete_message(ctx.message)
-    	msg = None
-    	async for m in self.bot.logs_from(channel, limit=1000):
-    		if m.id == ID:
-    			msg = m
-    			break
-    	out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_').replace('<','\\<').replace('>','\\>')
-    	try:
-    		await self.bot.say(out)
-    	except:
-    		await self.bot.say('Message too long.')
+        """Get the raw content of someones message!"""
+        channel = chan or ctx.message.channel
+        await self.bot.delete_message(ctx.message)
+        msg = None
+        async for m in self.bot.logs_from(channel, limit=1000):
+            if m.id == ID:
+                msg = m
+                break
+        out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_').replace('<','\\<').replace('>','\\>')
+        try:
+            await self.bot.say(out)
+        except:
+            await self.bot.say('Message too long.')
 
 
     @commands.command(pass_context=True)
     async def quote(self, ctx, id : str, chan : discord.Channel=None):
-    	"""Quote someone's message by ID"""
-    	channel = chan or ctx.message.channel
-    	await self.bot.delete_message(ctx.message)
-    	msg = None
-    	async for message in self.bot.logs_from(channel, limit=1000):
-    		if message.id == id:
-    			msg = message
-    			break
-    	if msg is None:
-    		await self.bot.say('Could not find the message.')
-    		return
-    	auth = msg.author
-    	channel = msg.channel
-    	ts = msg.timestamp
-
-    	em = discord.Embed(color=0x00FFFF,description=msg.clean_content,timestamp=ts)
-    	em.set_author(name=str(auth),icon_url=auth.avatar_url or auth.default_avatar_url)
+        """Quote someone's message by ID"""
+        channel = chan or ctx.message.channel 
+        await self.bot.delete_message(ctx.message)
+        msg = None
+        async for message in self.bot.logs_from(channel, limit=1000):
+            if message.id == id:
+                msg = message
+                break
+        if msg is None:
+            await self.bot.say('Could not find the message.')
+            return
+        auth = msg.author
+        channel = msg.channel
+        ts = msg.timestamp
+        em = discord.Embed(color=0x00FFFF,description=msg.clean_content,timestamp=ts)
+        em.set_author(name=str(auth),icon_url=auth.avatar_url or auth.default_avatar_url)
         try:
-    	   em.set_footer(text='#'+channel.name)
+            em.set_footer(text='#'+channel.name)
         except: pass
-
-    	await self.bot.say(embed=em)
+        await self.bot.say(embed=em)
 
     @commands.command(pass_context=True, aliases=['yt', 'vid', 'video'])
     async def youtube(self, ctx, *, msg):
@@ -488,5 +486,5 @@ class Utility:
             await self.bot.say(msg)
 
 def setup(bot):
-	bot.add_cog(Utility(bot))
+    bot.add_cog(Utility(bot))
 

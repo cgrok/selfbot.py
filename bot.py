@@ -170,6 +170,41 @@ async def clean(ctx, msgs: int = 100):
     else:
         await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
+@bot.command(pass_context=True,name='reload')
+async def _reload(ctx,*, module : str):
+    """Reloads a module."""
+    channel = ctx.message.channel
+    module = 'cogs.'+module
+    try:
+        bot.unload_extension(module)
+        x = await bot.send_message(channel,'Successfully Unloaded.')
+        bot.load_extension(module)
+        x = await bot.edit_message(x,'Successfully Reloaded.')
+    except Exception as e:
+        x = await bot.edit_message(x,'\N{PISTOL}')
+        await bot.say('{}: {}'.format(type(e).__name__, e))
+    else:
+        x = await bot.edit_message(x,'Done. \N{OK HAND SIGN}')
+
+@bot.command(pass_context=True)
+async def load(ctx, *, module):
+    module = 'cogs.'+module
+    try:
+        bot.load_extension(module)
+        x = await bot.say('Successfully Loaded.')
+    except Exception as e:
+        x = await bot.edit_message(x,'\N{PISTOL}')
+        await bot.say('{}: {}'.format(type(e).__name__, e))
+
+@bot.command(pass_context=True)
+async def unload(ctx, *, module):
+    module = 'cogs.'+module
+    try:
+        bot.unload_extension(module)
+        x = await bot.say('Successfully Unloaded.')
+    except Exception as e:
+        x = await bot.edit_message(x,'\N{PISTOL}')
+        await bot.say('{}: {}'.format(type(e).__name__, e))
 
 @bot.command(pass_context=True)
 async def source(ctx, *, command):
