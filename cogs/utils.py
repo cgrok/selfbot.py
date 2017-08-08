@@ -485,6 +485,11 @@ class Utility:
 
             await self.bot.say(msg)
 
+    @commands.command(pass_context=True)
+    async def source(self, ctx, *, command):
+        '''See the source code for any command.'''
+        await self.bot.say('```py\n'+str(inspect.getsource(bot.get_command(command).callback)+'```'))
+
 def setup(bot):
     bot.add_cog(Utility(bot))
 

@@ -188,6 +188,7 @@ async def _reload(ctx,*, module : str):
 
 @bot.command(pass_context=True)
 async def load(ctx, *, module):
+    '''Load a cog'''
     module = 'cogs.'+module
     try:
         bot.load_extension(module)
@@ -198,6 +199,7 @@ async def load(ctx, *, module):
 
 @bot.command(pass_context=True)
 async def unload(ctx, *, module):
+    '''Unload a cog'''
     module = 'cogs.'+module
     try:
         bot.unload_extension(module)
