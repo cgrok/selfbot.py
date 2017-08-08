@@ -66,7 +66,9 @@ class Utility:
 
     	em = discord.Embed(color=0x00FFFF,description=msg.clean_content,timestamp=ts)
     	em.set_author(name=str(auth),icon_url=auth.avatar_url or auth.default_avatar_url)
-    	em.set_footer(text='#'+channel.name)
+        try:
+    	   em.set_footer(text='#'+channel.name)
+        except: pass
 
     	await self.bot.say(embed=em)
 
