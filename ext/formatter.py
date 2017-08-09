@@ -420,7 +420,7 @@ class EmbedHelp(HelpFormatter):
             if i % categs_per_page == 0:
                 embeds.append(em) # append the embed to the list
 
-        embeds[len(embeds)-1].set_footer(text='{} commands'.format(len(msg)-len(categs))) #set the footer for the last embed
+        embeds[len(embeds)-1].set_footer(text='{} commands | Powered by discord.py'.format(len(msg)-len(categs))) #set the footer for the last embed
 
         return embeds
 
