@@ -178,7 +178,6 @@ async def unload(ctx, *, module):
         await bot.say('{}: {}'.format(type(e).__name__, e))
 
 
-
 if __name__ == "__main__":
     for extension in _extensions:
         try:
