@@ -1,0 +1,2 @@
+# selfbot
+Discord Self Bot
