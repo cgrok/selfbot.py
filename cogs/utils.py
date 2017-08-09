@@ -454,7 +454,7 @@ class Utility:
 
         return card, entries
 
-    @commands.command(aliases=['google', 'g'])
+    @commands.command(aliases=['g'])
     async def google(self, *, query):
         """Searches google and gives you top result."""
         await self.bot.type()
