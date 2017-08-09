@@ -100,7 +100,7 @@ class Moderation:
     		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}\n```'.format(', '.join([str(u) for u in bans])))
 
     @commands.command(aliases=['p'], pass_context=True)
-    async def purge(ctx, msgs: int, *, txt=None):
+    async def purge(self, ctx, msgs: int, *, txt=None):
         '''Purge messages if you have the perms.'''
         await self.bot.delete_message(ctx.message)
         if msgs < 10000:
@@ -118,7 +118,7 @@ class Moderation:
 
 
     @commands.command(aliases=['c'], pass_context=True)
-    async def clean(ctx, msgs: int = 100):
+    async def clean(self, ctx, msgs: int = 100):
         '''Shortcust to clean all your messages.'''
         await self.bot.delete_message(ctx.message)
         if msgs < 10000:

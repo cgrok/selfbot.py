@@ -324,7 +324,7 @@ class EmbedHelp(HelpFormatter):
             if not self.has_subcommands():
                 self._paginator.close_page()
                 for page in self._paginator.pages:
-                    msg = msg.strip().splitlines()
+                    msg = page.strip().splitlines()
                     for i, line in enumerate(msg): 
                         if i == 0:
                             x = line.strip().strip('.')
@@ -402,7 +402,7 @@ class EmbedHelp(HelpFormatter):
                         em.set_author(name='Help - Commands',
                                       icon_url=author.avatar_url or author.default_avatar_url)
                 else:
-                    em = discord.Embed(color=0x00ffff)
+                    em = discord.Embed(color=0x00ffff, timestamp=ctx.message.timestamp)
 
                     
             # This is to get the correct parts of the list on to the embed
@@ -420,7 +420,7 @@ class EmbedHelp(HelpFormatter):
             if i % categs_per_page == 0:
                 embeds.append(em) # append the embed to the list
 
-        embeds[len(embeds)-1].set_footer(text='{} commands | Powered by discord.py'.format(len(msg)-len(categs))) #set the footer for the last embed
+        embeds[len(embeds)-1].set_footer(text='{} commands'.format(len(msg)-len(categs))) #set the footer for the last embed
 
         return embeds
 
