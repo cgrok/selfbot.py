@@ -4,6 +4,7 @@ import datetime
 import json
 from ext.formatter import EmbedHelp
 import inspect
+import os
 
 def run_wizard():
     print('------------------------------------------')
@@ -30,8 +31,12 @@ with open('data/config.json') as f:
     if json.load(f)['FIRST']:
         run_wizard()
 
-with open('data/config.json') as f:  
-    TOKEN = json.load(f)["BOT"]['TOKEN']
+if 'TOKEN' in os.environ:
+    heroku = True
+    TOKEN = os.environ['TOKEN']
+else:
+    with open('data/config.json') as f:  
+        TOKEN = json.load(f)["BOT"]['TOKEN']
 
 async def get_pre(bot, message):
     with open('data/config.json') as f:
