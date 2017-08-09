@@ -64,7 +64,7 @@ class Paginator:
     max_size: int
         The maximum amount of codepoints allowed in a page.
     """
-    def __init__(self, prefix='```css\n', suffix='```', max_size=2000):
+    def __init__(self, prefix='', suffix='', max_size=2000):
         self.prefix = prefix
         self.suffix = suffix
         self.max_size = max_size - len(suffix)
@@ -324,8 +324,6 @@ class EmbedHelp(HelpFormatter):
             if not self.has_subcommands():
                 self._paginator.close_page()
                 for page in self._paginator.pages:
-                    msg = page.strip('```cs')
-
                     msg = msg.strip().splitlines()
                     for i, line in enumerate(msg): 
                         if i == 0:
@@ -349,7 +347,7 @@ class EmbedHelp(HelpFormatter):
             cog = tup[1].cog_name
             # we insert the zero width space there to give it approximate
             # last place sorting position.
-            return cog + ':' if cog is not None else '\u200bNo Category:'
+            return cog + ':' if cog is not None else '\u200bBot Related:'
 
         if self.is_bot():
             data = sorted(self.filter_command_list(), key=category)

@@ -99,6 +99,37 @@ class Moderation:
     	else:
     		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}\n```'.format(', '.join([str(u) for u in bans])))
 
+    @commands.command(aliases=['p'], pass_context=True)
+    async def purge(ctx, msgs: int, *, txt=None):
+        '''Purge messages if you have the perms.'''
+        await self.bot.delete_message(ctx.message)
+        if msgs < 10000:
+            async for message in self.bot.logs_from(ctx.message.channel, limit=msgs):
+                try:
+                    if txt:
+                        if txt.lower() in message.content.lower():
+                            await self.bot.delete_message(message)
+                    else:
+                        await self.bot.delete_message(message)
+                except:
+                    pass
+        else:
+            await self.bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
+
+
+    @commands.command(aliases=['c'], pass_context=True)
+    async def clean(ctx, msgs: int = 100):
+        '''Shortcust to clean all your messages.'''
+        await self.bot.delete_message(ctx.message)
+        if msgs < 10000:
+            async for message in self.bot.logs_from(ctx.message.channel, limit=msgs):
+                try:
+                    if message.author == self.bot.user:
+                        await self.bot.delete_message(message)
+                except:
+                    pass
+        else:
+            await self.bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
         
 
 

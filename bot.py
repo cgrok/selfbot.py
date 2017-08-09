@@ -138,37 +138,6 @@ async def on_command_error(error, ctx):
 
 
 
-@bot.command(aliases=['p'], pass_context=True)
-async def purge(ctx, msgs: int, *, txt=None):
-    '''Purge messages if you have the perms.'''
-    await bot.delete_message(ctx.message)
-    if msgs < 10000:
-        async for message in bot.logs_from(ctx.message.channel, limit=msgs):
-            try:
-                if txt:
-                    if txt.lower() in message.content.lower():
-                        await bot.delete_message(message)
-                else:
-                    await bot.delete_message(message)
-            except:
-                pass
-    else:
-        await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
-
-
-@bot.command(aliases=['c'], pass_context=True)
-async def clean(ctx, msgs: int = 100):
-    '''Shortcust to clean all your messages.'''
-    await bot.delete_message(ctx.message)
-    if msgs < 10000:
-        async for message in bot.logs_from(ctx.message.channel, limit=msgs):
-            try:
-                if message.author == bot.user:
-                    await bot.delete_message(message)
-            except:
-                pass
-    else:
-        await bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
 @bot.command(pass_context=True,name='reload')
 async def _reload(ctx,*, module : str):
