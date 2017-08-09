@@ -208,10 +208,6 @@ async def unload(ctx, *, module):
         x = await bot.edit_message(x,'\N{PISTOL}')
         await bot.say('{}: {}'.format(type(e).__name__, e))
 
-@bot.command(pass_context=True)
-async def source(ctx, *, command):
-    '''See the source code for any command.'''
-    await bot.say('```py\n'+str(inspect.getsource(bot.get_command(command).callback)+'```'))
 
 
 if __name__ == "__main__":
