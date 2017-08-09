@@ -69,6 +69,8 @@ async def on_ready():
           'User ID: {}\n'
           '------------------------------------------'
     	  .format(bot.user, bot.user.id))
+    if heroku:
+        print('Hosting on heroku.')
 
 
 
