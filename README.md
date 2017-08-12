@@ -14,6 +14,7 @@ requests
 PythonGists
 bs4
 lxml
+Pillow
 ```
 ## Setup
 First navigate into the data folder and open `config.json`, edit it to put your token and prefix in. And set `FIRST` to `false`
