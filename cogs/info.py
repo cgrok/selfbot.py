@@ -14,7 +14,7 @@ class Info():
          
 
 
-    @commands.command(pass_context=True,aliases=['s','serverinfo','si'])
+    @commands.command(pass_context=True,aliases=['s','serverinfo','si'], no_pm=True)
     async def server(self, ctx):
         '''See information about the server.'''
         server = ctx.message.server
@@ -53,8 +53,45 @@ class Info():
 
         try:
             await self.bot.say(embed=data)
-            print('test')
             
+        except discord.HTTPException:
+            await self.bot.say("I need the `Embed links` permission "
+                               "to send this")
+    
+    @commands.command(pass_context=True,no_pm=True,aliases=["ri","role"])
+    async def roleinfo(self, ctx, *, role: discord.Role=None):
+        '''Shows information about a role'''
+        server = ctx.message.server
+
+        if not role:
+            role = server.default_role
+
+        since_created = (ctx.message.timestamp - role.created_at).days
+        role_created = role.created_at.strftime("%d %b %Y %H:%M")
+        created_on = "{}\n({} days ago!)".format(role_created, since_created)
+
+        users = len([x for x in server.members if role in x.roles])
+        if str(role.colour) == "#000000":
+            colour = "default"
+            color = ("#%06x" % random.randint(0, 0xFFFFFF))
+            color = int(colour[1:], 16)
+        else:
+            colour = "Hex: {}\nRGB: {}".format(str(role.colour).upper(),str(role.colour.to_tuple()))
+            color = role.colour
+
+        em = discord.Embed(colour=color)
+        em.set_author(name=role.name)
+        em.add_field(name="ID", value=role.id, inline=True)
+        em.add_field(name="Users", value=users, inline=True)
+        em.add_field(name="Mentionable", value=role.mentionable, inline=True)
+        em.add_field(name="Hoist", value=role.hoist, inline=True)
+        em.add_field(name="Position", value=role.position, inline=True)
+        em.add_field(name="Managed", value=role.managed, inline=True)
+        em.add_field(name="Colour", value=colour, inline=False)
+        em.set_footer(text=created_on)
+
+        try:
+            await self.bot.say(embed=em)
         except discord.HTTPException:
             await self.bot.say("I need the `Embed links` permission "
                                "to send this")
@@ -90,31 +127,29 @@ class Info():
         em.set_footer(text='User ID: '+str(user.id))
         em.set_thumbnail(url=avi)
         em.set_author(name=user, icon_url='http://site-449644.mozfiles.com/files/449644/logo-1.png')
-        await self.bot.send_message(ctx.message.channel, embed=em)
+        try:
+            await self.bot.say(embed=em)
+            
+        except discord.HTTPException:
+            await self.bot.say("I need the `Embed links` permission "
+                               "to send this")
 
     @commands.command(pass_context=True,aliases=['av','dp'])
     async def avatar(self,ctx, user: discord.Member = None):
         '''Returns ones avatar URL'''
-        if user:
-            pass
-        else:
+        if not user:
             user = ctx.message.author
-        avi = user.avatar_url
-        if avi:
-            pass
-        else:
-            avi = user.default_avatar_url
-        colour = ("#%06x" % random.randint(0, 0xFFFFFF))
-        colour = int(colour[1:], 16)
-
-        em = discord.Embed(color=colour)
+        avi = user.avatar_url or user.default_avatar_url
+        em = discord.Embed(color=random.randint(0, 0xFFFFFF))
         em.set_image(url=avi)
+        name = str(user)
+        name = " ~ ".join((name, user.nick)) if user.nick else name
+        em.set_author(name=name, url=avi)
         await self.bot.say(embed=em)
-
 
     @commands.command(pass_context=True)
     async def info(self, ctx):
-        """See bot information, uptime, servers etc."""
+        '''See bot information, uptime, servers etc.'''
         uptime = (datetime.datetime.now() - self.bot.uptime)
         hours, rem = divmod(int(uptime.total_seconds()), 3600)
         minutes, seconds = divmod(rem, 60)
