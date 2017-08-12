@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from PIL import Image
 import datetime
 import time
 import random
@@ -68,7 +69,31 @@ class Misc():
         except:
             await self.bot.say('Enter numbers only.')
             
+    @commands.command(pass_context=True, aliases=['color'])
+    async def colour(self, ctx, color : str):
+        """Show a colour"""
+        if len(color) == 7 and color.startswith("#"):
+            hsh = 0
+            red = color[hsh+1:hsh+3]
+            green = color[hsh+3:hsh+5]
+            blue = color[hsh+5:hsh+7]
+        elif len(color) == 6:
+            hsh = 0
+            red = color[hsh:hsh+2]
+            green = color[hsh+2:hsh+4]
+            blue = color[hsh+4:hsh+6]
 
+        try:
+            col = (int(red,16),int(green,16),int(blue,16),255)
+        except:
+            return
+
+        im = Image.new("RGBA", (200,200), col)
+        im.save("color{}.png".format(ctx.message.author.id))
+        im = open("color{}.png".format(ctx.message.author.id),"rb")
+        await self.bot.send_file(ctx.message.channel,im,filename="colour.png",content="Showing color {}".format(color))
+        im.close()
+        os.remove("color{}.png".format(ctx.message.author.id))
 
 #--------------------------------------------------------------------------------------
 #--------------------------------------------------------------------------------------
