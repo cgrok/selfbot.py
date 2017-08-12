@@ -77,7 +77,7 @@ class Misc():
     @commands.command(pass_context=True)
     async def virus(self,ctx,user: discord.Member=None,*,hack=None):
         """Inject a virus into someones system."""
-        nome = ctx.message.author
+        name = ctx.message.author
         if not hack:
             hack = 'discord'
         else:
