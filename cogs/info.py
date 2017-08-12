@@ -139,21 +139,13 @@ class Info():
         '''Returns ones avatar URL'''
         if not user:
             user = ctx.message.author
-        if not user.avatar_url:
-            avi = user.default_avatar_url
-        else:
-            avi = user.avatar_url.replace("?size=1024","?size=2048").replace(".webp",".png")
-            if ".gif" in avi:
-                avi += "&f=.gif"
-        colour = ("#%06x" % random.randint(0, 0xFFFFFF))
-        colour = int(colour[1:], 16)
-        em = discord.Embed(color=colour)
+        avi = user.avatar_url or user.default_avatar_url
+        em = discord.Embed(color=random.randint(0, 0xFFFFFF))
         em.set_image(url=avi)
         name = str(user)
         name = " ~ ".join((name, user.nick)) if user.nick else name
-        em.set_author(name=name, url=user.avatar_url)
+        em.set_author(name=name, url=avi)
         await self.bot.say(embed=em)
-
 
     @commands.command(pass_context=True)
     async def info(self, ctx):
