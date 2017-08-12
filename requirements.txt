@@ -3,3 +3,4 @@ requests
 PythonGists
 bs4
 lxml
+Pillow
