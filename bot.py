@@ -39,6 +39,9 @@ else:
         TOKEN = json.load(f)["BOT"]['TOKEN']
 
 async def get_pre(bot, message):
+    if 'PREFIX' in os.environ:
+        return os.environ['PREFIX']
+        
     with open('data/config.json') as f:
         config = json.load(f)
     try:
