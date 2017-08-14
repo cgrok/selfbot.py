@@ -99,7 +99,7 @@ async def shutdown(ctx):
     channel = ctx.message.channel
     await bot.say("Are you sure you want to shut down the bot? Type \"YES\" if you want to, or anything else to cancel.")
     response = await bot.wait_for_message(timeout=30, channel=channel)
-    if response == "YES":
+    if response.content == "YES":
         await bot.say("Shutting down...")
         await bot.logout()
     else:
