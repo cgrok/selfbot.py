@@ -1,4 +1,4 @@
-# selfbot.py
+# verixx selfbot
 #### *Moderation, fun, utility and much more!*
 <img src='https://img.shields.io/badge/build-passing-brightgreen.svg'> [<img src="https://img.shields.io/badge/discord-py-orange.svg">](https://github.com/Rapptz/discord.py) [<img src='https://img.shields.io/badge/python-3.5-brightgreen.svg'>](https://python.org)
 
@@ -44,7 +44,8 @@ The default set of modules includes:
 * Easy to make your own commands
 * Stateless selfbot (Saves no data) *This means that you can host it on heroku 24/7 for free*
 
-## Support Me
+## Contributors
 
-It would be greatly appreciated if you can support me by joining my discord server and socialising with me! Join it to stay up to date on updates and announcements. Stay for a good time! Join here: https://discord.io/spikebot
+@kwugfighter 
+@
 
