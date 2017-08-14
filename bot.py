@@ -32,10 +32,6 @@ def run_wizard():
     print('------------------------------------------')
 
 
-with open('data/config.json') as f:
-    if json.load(f)['FIRST']:
-        run_wizard()
-
 if 'TOKEN' in os.environ:
     heroku = True
     TOKEN = os.environ['TOKEN']
