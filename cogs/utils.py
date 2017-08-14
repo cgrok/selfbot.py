@@ -75,7 +75,7 @@ class Utility:
     async def translate(self, ctx, lang, *, text):
         """Translate text!"""
         result = translate(text, lang)
-        await bot.say('```{}```'.format(result))
+        await self.bot.say('```{}```'.format(result))
         
     @commands.command(pass_context=True, aliases=['yt', 'vid', 'video'])
     async def youtube(self, ctx, *, msg):
