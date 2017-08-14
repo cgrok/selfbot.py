@@ -4,3 +4,4 @@ PythonGists
 bs4
 lxml
 Pillow
+mtranslate
