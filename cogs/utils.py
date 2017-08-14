@@ -6,19 +6,13 @@ from bs4 import BeautifulSoup
 from urllib import parse
 from urllib.parse import parse_qs
 from urllib.request import Request, urlopen
-import traceback
 import inspect
-import textwrap
-from contextlib import redirect_stdout
-import io
 import aiohttp
 from lxml import etree
-from mtranslate import translate
 
 class Utility:
     def __init__(self, bot):
         self.bot = bot
-        self._last_result = None
         self.sessions = set()
 
     @commands.command(aliases=['nick'], pass_context=True, no_pm=True)
@@ -51,7 +45,7 @@ class Utility:
     @commands.command(pass_context=True)
     async def quote(self, ctx, id : str, chan : discord.Channel=None):
         """Quote someone's message by ID"""
-        channel = chan or ctx.message.channel 
+        channel = chan or ctx.message.channel
         await self.bot.delete_message(ctx.message)
         msg = None
         async for message in self.bot.logs_from(channel, limit=1000):
@@ -70,13 +64,7 @@ class Utility:
             em.set_footer(text='#'+channel.name)
         except: pass
         await self.bot.say(embed=em)
-        
-    @commands.command(pass_context=True, aliases=['t'])
-    async def translate(self, ctx, lang, *, text):
-        """Translate text!"""
-        result = translate(text, lang)
-        await self.bot.say('```{}```'.format(result))
-        
+
     @commands.command(pass_context=True, aliases=['yt', 'vid', 'video'])
     async def youtube(self, ctx, *, msg):
         """Search for videos on YouTube."""
@@ -86,71 +74,12 @@ class Utility:
         url="**Result:**\nhttps://www.youtube.com{}".format(result.find_all(attrs={'class': 'yt-uix-tile-link'})[0].get('href'))
 
         await self.bot.send_message(ctx.message.channel, url)
-    def cleanup_code(self, content):
-        """Automatically removes code blocks from the code."""
-        # remove ```py\n```
-        if content.startswith('```') and content.endswith('```'):
-            return '\n'.join(content.split('\n')[1:-1])
-
-        # remove `foo`
-        return content.strip('` \n')
-
-    def get_syntax_error(self, e):
-        if e.text is None:
-            return '```py\n{0.__class__.__name__}: {0}\n```'.format(e)
-        return '```py\n{0.text}{1:>{0.offset}}\n{2}: {0}```'.format(e, '^', type(e).__name__)
-
-    @commands.command(pass_context=True, name='eval')
-    async def _eval(self, ctx, *, body: str):
-        '''Run python scripts on discord!'''
-        env = {
-            'bot': self.bot,
-            'ctx': ctx,
-            'channel': ctx.message.channel,
-            'author': ctx.message.author,
-            'server': ctx.message.server,
-            'message': ctx.message,
-            '_': self._last_result
-        }
-
-        env.update(globals())
-
-        body = self.cleanup_code(body)
-        stdout = io.StringIO()
-
-        to_compile = 'async def func():\n%s' % textwrap.indent(body, '  ')
-
-        try:
-            exec(to_compile, env)
-        except SyntaxError as e:
-            return await self.bot.say(self.get_syntax_error(e))
-
-        func = env['func']
-        try:
-            with redirect_stdout(stdout):
-                ret = await func()
-        except Exception as e:
-            value = stdout.getvalue()
-            await self.bot.say('```py\n{}{}\n```'.format(value, traceback.format_exc()))
-        else:
-            value = stdout.getvalue()
-            try:
-                await self.bot.add_reaction(ctx.message, '\u2705')
-            except:
-                pass
-
-            if ret is None:
-                if value:
-                    await self.bot.say('```py\n%s\n```' % value)
-            else:
-                self._last_result = ret
-                await self.bot.say('```py\n%s%s\n```' % (value, ret))
 
     @commands.command(pass_context=True,description='Do .embed to see how to use it.')
     async def embed(self, ctx, *, msg: str = None):
         '''Embed complex rich embeds as the bot.'''
         try:
-            
+
             if msg:
                 ptext = title = description = image = thumbnail = color = footer = author = None
                 timestamp = discord.Embed.Empty
@@ -246,7 +175,7 @@ class Utility:
                 pass
         except:
             await self.bot.send_message(ctx.message.channel, 'looks like something fucked up. or i dont have embed perms')
-               
+
 
     def parse_google_card(self, node):
         if node is None:
@@ -499,4 +428,3 @@ class Utility:
 
 def setup(bot):
     bot.add_cog(Utility(bot))
-
