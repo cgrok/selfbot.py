@@ -41,9 +41,15 @@ if 'TOKEN' in os.environ:
     TOKEN = os.environ['TOKEN']
 else:
     with open('data/config.json') as f:
+        if json.load(f)['FIRST']:
+            run_wizard()
+    with open('data/config.json') as f:  
         TOKEN = json.load(f)["BOT"]['TOKEN']
 
 async def get_pre(bot, message):
+    if 'PREFIX' in os.environ:
+        return os.environ['PREFIX']
+        
     with open('data/config.json') as f:
         config = json.load(f)
     try:
@@ -303,6 +309,6 @@ for extension in _extensions:
         print('Error on load: {}\n{}'.format(extension, exc))
 
 try:
-    bot.run(TOKEN, bot=False)
+    bot.run(TOKEN.strip('\"'), bot=False)
 except Exception as e:
     print('\n[ERROR]: \n{}\n'.format(e))
