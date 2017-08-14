@@ -13,6 +13,7 @@ from contextlib import redirect_stdout
 import io
 import aiohttp
 from lxml import etree
+from mtranslate import translate
 
 class Utility:
     def __init__(self, bot):
@@ -69,7 +70,13 @@ class Utility:
             em.set_footer(text='#'+channel.name)
         except: pass
         await self.bot.say(embed=em)
-
+        
+    @commands.command(pass_context=True, aliases=['t'])
+    async def translate(self, ctx, lang, *, text):
+        """Translate text!"""
+        result = translate(text, lang)
+        await bot.say('```{}```'.format(result))
+        
     @commands.command(pass_context=True, aliases=['yt', 'vid', 'video'])
     async def youtube(self, ctx, *, msg):
         """Search for videos on YouTube."""
