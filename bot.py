@@ -195,7 +195,7 @@ if __name__ == "__main__":
             print('Error on load: {}\n{}'.format(extension, exc))
 
 try:   
-    bot.run(TOKEN, bot=False)
+    bot.run(TOKEN.strip("\""), bot=False)
 except Exception as e:
     print('\n[ERROR]: \n{}\n'.format(e))
 
