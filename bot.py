@@ -171,10 +171,9 @@ async def load(ctx, *, module):
     module = 'cogs.'+module
     try:
         bot.load_extension(module)
-        x = await bot.say('Successfully Loaded.')
+        await bot.say('Successfully Loaded.')
     except Exception as e:
-        x = await bot.edit_message(x,'\N{PISTOL}')
-        await bot.say('{}: {}'.format(type(e).__name__, e))
+        await bot.say('\N{PISTOL}\n{}: {}'.format(type(e).__name__, e))
 
 @bot.command(pass_context=True)
 async def unload(ctx, *, module):
@@ -182,10 +181,9 @@ async def unload(ctx, *, module):
     module = 'cogs.'+module
     try:
         bot.unload_extension(module)
-        x = await bot.say('Successfully Unloaded.')
-    except Exception as e:
-        x = await bot.edit_message(x,'\N{PISTOL}')
-        await bot.say('{}: {}'.format(type(e).__name__, e))
+        await bot.say('Successfully Unloaded `{}`'.format(module))
+    except:
+        pass
 
 
 if __name__ == "__main__":
