@@ -246,7 +246,10 @@ async def _eval(ctx, *, body: str):
             await bot.add_reaction(ctx.message, '\u2705')
         except:
             pass
-
+        
+        if TOKEN in value:
+            value = value.replace(TOKEN,"[EXPUNGED]")
+            
         if ret is None:
             if value:
                 await bot.say('```py\n%s\n```' % value)
