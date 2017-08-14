@@ -300,7 +300,6 @@ for extension in _extensions:
         print('Error on load: {}\n{}'.format(extension, exc))
 
 try:
-    print("running!")
     bot.run(TOKEN, bot=False)
 except Exception as e:
     print('\n[ERROR]: \n{}\n'.format(e))
