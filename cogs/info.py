@@ -135,11 +135,14 @@ class Info():
                                "to send this")
 
     @commands.command(pass_context=True,aliases=['av','dp'])
-    async def avatar(self,ctx, user: discord.Member = None):
+    async def avatar(self,ctx, user: discord.User = None):
         '''Returns ones avatar URL'''
         if not user:
             user = ctx.message.author
         avi = user.avatar_url or user.default_avatar_url
+        if ".gif" in avi:
+            avi+="&f=.gif"
+        avi = avi.replace(".webp",".png").replace("?size=1024","?size=2048")
         em = discord.Embed(color=random.randint(0, 0xFFFFFF))
         em.set_image(url=avi)
         name = str(user)
