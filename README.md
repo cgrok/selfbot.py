@@ -46,6 +46,6 @@ The default set of modules includes:
 
 ## Contributors
 
-[@kwugfighter](https://github.com/kwugfighter)
-[@FloatCobra](https://github.com/FloatCobra)
+> [@kwugfighter](https://github.com/kwugfighter)
+> [@FloatCobra](https://github.com/FloatCobra)
 
