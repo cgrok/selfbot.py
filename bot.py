@@ -1,321 +1,102 @@
 import discord
-from ext.formatter import EmbedHelp
 from discord.ext import commands
-from contextlib import redirect_stdout
+from ext.context import CustomContext
 import datetime
+import aiohttp
 import json
-import inspect
 import os
-import glob
-import io
-import textwrap
+import sys
 import traceback
 
-def run_wizard():
-    print('------------------------------------------')
-    print('WELCOME TO THE VERIX-SELFBOT SETUP WIZARD!')
-    print('------------------------------------------')
-    token = input('Enter your token:\n> ')
-    print('------------------------------------------')
-    prefix = input('Enter a prefix for your selfbot:\n> ')
-    data = {
-        "BOT": {
-            "TOKEN" : token,
-            "PREFIX" : prefix
-            },
-        "FIRST" : False
-        }
-    with open('data/config.json','w') as f:
-        f.write(json.dumps(data, indent=4))
-    print('------------------------------------------')
-    print('Successfully saved your data!')
-    print('------------------------------------------')
+class SelfBot(commands.Bot):
+    def __init__(self, **attrs):
+        super().__init__(command_prefix=self.get_pre, self_bot=True)
 
+        self.session = aiohttp.ClientSession(loop=self.loop)
+        self._extensions = [x.rstrip('.py') for x in os.listdir('cogs')]
+        self.add_command(self.ping) 
+        self.add_command(self.test)
 
-if 'TOKEN' in os.environ:
-    heroku = True
-    TOKEN = os.environ['TOKEN']
-else:
-    with open('data/config.json') as f:
-        if json.load(f)['FIRST']:
-            run_wizard()
-    with open('data/config.json') as f:  
-        TOKEN = json.load(f)["BOT"]['TOKEN']
+        for extension in self._extensions:
+            try:
+                self.load_extension('cogs.'+extension)
+                print('Loaded: {}'.format(extension))
+            except Exception as e:
+                exc = '{}: {}'.format(type(e).__name__, e)
+                print('Load error: {}\n{}'.format(extension, exc))
 
-async def get_pre(bot, message):
-    if 'PREFIX' in os.environ:
-        return os.environ['PREFIX']
-        
-    with open('data/config.json') as f:
-        config = json.load(f)
-    try:
-        return config["BOT"]['PREFIX']
-    except:
-        return 's.'
-
-bot = commands.Bot(command_prefix=get_pre, self_bot=True, formatter=EmbedHelp())
-bot.remove_command('help')
-
-_extensions = [
-
-    'cogs.misc',
-    'cogs.info',
-    'cogs.utils',
-    'cogs.mod'
-
-    ]
-
-@bot.event
-async def on_ready():
-    bot.uptime = datetime.datetime.now()
-    print('------------------------------------------\n'
-    	  'Self-Bot Ready\n'
-    	  'Author: verix#7220\n'
-    	  '------------------------------------------\n'
-    	  'Username: {}\n'
-          'User ID: {}\n'
-          '------------------------------------------'
-    	  .format(bot.user, bot.user.id))
-
-
-
-
-@bot.command(pass_context=True)
-async def ping(ctx):
-    """Pong! Check your response time."""
-    msgtime = ctx.message.timestamp.now()
-    await (await bot.ws.ping())
-    now = datetime.datetime.now()
-    ping = now - msgtime
-    pong = discord.Embed(title='Pong! Response Time:',
-    					 description=str(ping.microseconds / 1000.0) + ' ms',
-                         color=0x00ffff)
-
-    await bot.say(embed=pong)
-
-@bot.command(pass_context=True)
-async def shutdown(ctx):
-    """Shuts down the selfbot."""
-    channel = ctx.message.channel
-    await bot.say("Are you sure you want to shut down the bot? Type \"YES\" if you want to, or anything else to cancel.")
-    response = await bot.wait_for_message(timeout=30, channel=channel)
-    if response.content == "YES":
-        await bot.say("Shutting down...")
-        await bot.logout()
-    else:
-        await bot.say("Cancelled.")
-    
-    
-@bot.command(name='presence')
-async def _set(Type,*,message=None):
-    """Change your discord game/stream!"""
-    if Type.lower() == 'stream':
-        await bot.change_presence(game=discord.Game(name=message,type=1,url='https://www.twitch.tv/a'),status='online')
-        await bot.say('Set presence to. `Streaming {}`'.format(message))
-    elif Type.lower() == 'game':
-        await bot.change_presence(game=discord.Game(name=message))
-        await bot.say('Set presence to `Playing {}`'.format(message))
-    elif Type.lower() == 'clear':
-        await bot.change_presence(game=None)
-        await bot.say('Cleared Presence')
-    else:
-        await bot.say('Usage: `.presence [game/stream] [message]`')
-
-async def send_cmd_help(ctx):
-    if ctx.invoked_subcommand:
-        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
-        for page in pages:
-            print(page)
-            await bot.send_message(ctx.message.channel, embed=page)
-        print('Sent command help')
-    else:
-        pages = bot.formatter.format_help_for(ctx, ctx.command)
-        for page in pages:
-            print(page)
-            await bot.send_message(ctx.message.channel, embed=page)
-        print('Sent command help')
-
-@bot.event
-async def on_command_error(error, ctx):
-   print(error)
-   channel = ctx.message.channel
-   if isinstance(error, commands.MissingRequiredArgument):
-       await send_cmd_help(ctx)
-       print('Sent command help')
-   elif isinstance(error, commands.BadArgument):
-       await send_cmd_help(ctx)
-       print('Sent command help')
-   elif isinstance(error, commands.DisabledCommand):
-       await bot.send_message(channel, "That command is disabled.")
-       print('Command disabled.')
-   elif isinstance(error, commands.CommandInvokeError):
-       # A bit hacky, couldn't find a better way
-       no_dms = "Cannot send messages to this user"
-       is_help_cmd = ctx.command.qualified_name == "help"
-       is_forbidden = isinstance(error.original, discord.Forbidden)
-       if is_help_cmd and is_forbidden and error.original.text == no_dms:
-           msg = ("I couldn't send the help message to you in DM. Either"
-                  " you blocked me or you disabled DMs in this server.")
-           await bot.send_message(channel, msg)
-           return
-
-@bot.command(pass_context=True)
-async def coglist(ctx):
-    '''See unloaded and loaded cogs!'''
-    def pagify(text, delims=["\n"], *, escape=True, shorten_by=8,
-               page_length=2000):
-        """DOES NOT RESPECT MARKDOWN BOXES OR INLINE CODE"""
-        in_text = text
-        if escape:
-            num_mentions = text.count("@here") + text.count("@everyone")
-            shorten_by += num_mentions
-        page_length -= shorten_by
-        while len(in_text) > page_length:
-            closest_delim = max([in_text.rfind(d, 0, page_length)
-                                 for d in delims])
-            closest_delim = closest_delim if closest_delim != -1 else page_length
-            if escape:
-                to_send = escape_mass_mentions(in_text[:closest_delim])
+    @property
+    def token(self):
+        with open('data/config.json') as f:
+            config = json.load(f)
+            if config.get('FIRST'):
+                if not os.environ.get('TOKEN'):
+                    self.run_wizard()
             else:
-                to_send = in_text[:closest_delim]
-            yield to_send
-            in_text = in_text[closest_delim:]
+                token = config.get('TOKEN').strip('\"')
+        return os.environ.get('TOKEN') or token
+
+    @staticmethod
+    async def get_pre(bot, message):
+        with open('data/config.json') as f:
+            prefix = json.load(f).get('PREFIX')
+        return os.environ.get('PREFIX') or prefix or 's.'
+
+    @staticmethod
+    def run_wizard():
+        print('------------------------------------------')
+        token = input('Enter your token:\n> ')
+        print('------------------------------------------')
+        prefix = input('Enter a prefix for your selfbot:\n> ')
+        data = {
+                "TOKEN" : token,
+                "PREFIX" : prefix,
+                "FIRST" : False
+            }
+        with open('data/config.json','w') as f:
+            f.write(json.dumps(data, indent=4))
+        print('------------------------------------------')
+        print('Restarting...')
+        print('------------------------------------------')
+        os.execv(sys.executable, ['python'] + sys.argv)
 
 
-        yield in_text
-
-    def box(text, lang=""):
-        ret = "```{}\n{}\n```".format(lang, text)
-        return ret
-    loaded = [c.__module__.split(".")[1] for c in bot.cogs.values()]
-    # What's in the folder but not loaded is unloaded
-    def _list_cogs():
-          cogs = [os.path.basename(f) for f in glob.glob("cogs/*.py")]
-          return ["cogs." + os.path.splitext(f)[0] for f in cogs]
-    unloaded = [c.split(".")[1] for c in _list_cogs()
-                if c.split(".")[1] not in loaded]
-
-    if not unloaded:
-        unloaded = ["None"]
-
-    msg = ("+ Loaded\n"
-           "{}\n\n"
-           "- Unloaded\n"
-           "{}"
-           "".format(", ".join(sorted(loaded)),
-                     ", ".join(sorted(unloaded)))
-           )
-    for page in pagify(msg, [" "], shorten_by=16):
-        await bot.say(box(page.lstrip(" "), lang="diff"))
-
-def cleanup_code( content):
-    """Automatically removes code blocks from the code."""
-    # remove ```py\n```
-    if content.startswith('```') and content.endswith('```'):
-        return '\n'.join(content.split('\n')[1:-1])
-
-    # remove `foo`
-    return content.strip('` \n')
-
-def get_syntax_error(e):
-    if e.text is None:
-        return '```py\n{0.__class__.__name__}: {0}\n```'.format(e)
-    return '```py\n{0.text}{1:>{0.offset}}\n{2}: {0}```'.format(e, '^', type(e).__name__)
-
-@bot.command(pass_context=True, name='eval')
-async def _eval(ctx, *, body: str):
-    '''Run python scripts on discord!'''
-    env = {
-        'bot': bot,
-        'ctx': ctx,
-        'channel': ctx.message.channel,
-        'author': ctx.message.author,
-        'server': ctx.message.server,
-        'message': ctx.message,
-    }
-
-    env.update(globals())
-
-    body = cleanup_code(content=body)
-    stdout = io.StringIO()
-
-    to_compile = 'async def func():\n%s' % textwrap.indent(body, '  ')
-
-    try:
-        exec(to_compile, env)
-    except SyntaxError as e:
-        return await bot.say(get_syntax_error(e))
-
-    func = env['func']
-    try:
-        with redirect_stdout(stdout):
-            ret = await func()
-    except Exception as e:
-        value = stdout.getvalue()
-        await bot.say('```py\n{}{}\n```'.format(value, traceback.format_exc()))
-    else:
-        value = stdout.getvalue()
+    def run(self):
         try:
-            await bot.add_reaction(ctx.message, '\u2705')
-        except:
-            pass
-        
-        if TOKEN in value:
-            value = value.replace(TOKEN,"[EXPUNGED]")
-            
-        if ret is None:
-            if value:
-                await bot.say('```py\n%s\n```' % value)
-        else:
+            super().run(self.token.strip('\"'), bot=False, reconnect=True)
+        except Exception as e:
+            print('[Error] {}: {}'.format(type(e).__name__, e))
 
-            await bot.say('```py\n%s%s\n```' % (value, ret))
+    async def on_ready(self):
+        if not hasattr(self, 'uptime'):
+            self.uptime = datetime.datetime.now()
+        print('SelfBot Online!')
+        print('Author: verixx#7220')
+        print('Name: {}'.format(self.user))
+        print('ID: {}'.format(self.user.id))
 
+    async def process_commands(self, message):
+        ctx = await self.get_context(message, cls=CustomContext)
+        if ctx.command is None:
+            return
+        await self.invoke(ctx)
 
-@bot.command(pass_context=True,name='reload')
-async def _reload(ctx,*, module : str):
-    """Reloads a module."""
-    channel = ctx.message.channel
-    module = 'cogs.'+module
-    try:
-        bot.unload_extension(module)
-        x = await bot.send_message(channel,'Successfully Unloaded.')
-        bot.load_extension(module)
-        x = await bot.edit_message(x,'Successfully Reloaded.')
-    except Exception as e:
-        x = await bot.edit_message(x,'\N{PISTOL}')
-        await bot.say('{}: {}'.format(type(e).__name__, e))
-    else:
-        x = await bot.edit_message(x,'Done. \N{OK HAND SIGN}')
+    async def on_message(self, message):
+        if message.author.id != self.user.id:
+            return
+        await self.process_commands(message)
 
-@bot.command(pass_context=True)
-async def load(ctx, *, module):
-    '''Loads a module.'''
-    module = 'cogs.'+module
-    try:
-        bot.load_extension(module)
-        await bot.say('Successfully Loaded.')
-    except Exception as e:
-        await bot.say('\N{PISTOL}\n{}: {}'.format(type(e).__name__, e))
+    @commands.command()
+    async def ping(self, ctx):
+        """Pong! Check your response time."""
+        msgtime = ctx.message.created_at
+        now = datetime.datetime.now()
+        ping = now - msgtime
+        pong = discord.Embed(title='Pong! Response Time:',
+                             description=str(ping.microseconds / 1000.0) + ' ms',
+                             color=0x00ffff)
 
-@bot.command(pass_context=True)
-async def unload(ctx, *, module):
-    '''Unloads a module.'''
-    module = 'cogs.'+module
-    try:
-        bot.unload_extension(module)
-        await bot.say('Successfully Unloaded `{}`'.format(module))
-    except:
-        pass
+        await ctx.send(embed=pong)
 
-for extension in _extensions:
-    try:
-        bot.load_extension(extension)
-        print('Loaded: {}'.format(extension))
-    except Exception as e:
-        exc = '{}: {}'.format(type(e).__name__, e)
-        print('Error on load: {}\n{}'.format(extension, exc))
-
-try:
-    bot.run(TOKEN.strip('\"'), bot=False)
-except Exception as e:
-    print('\n[ERROR]: \n{}\n'.format(e))
+if __name__ == '__main__':
+    SelfBot().run()
