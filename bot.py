@@ -15,7 +15,6 @@ class SelfBot(commands.Bot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self._extensions = [x.rstrip('.py') for x in os.listdir('cogs')]
         self.add_command(self.ping) 
-        self.add_command(self.test)
 
         for extension in self._extensions:
             try:
