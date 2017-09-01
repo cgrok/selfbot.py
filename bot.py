@@ -9,7 +9,7 @@ import os
 import sys
 import asyncio
 
-class SelfBot(commands.Bot):
+class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
     '''
@@ -24,13 +24,10 @@ class SelfBot(commands.Bot):
         for extension in self._extensions:
             try:
                 self.load_extension('cogs.'+extension)
-                print('Loaded: {}'.format(extension))
+                print('Loaded extension: {}'.format(extension))
             except Exception as e:
                 exc = '{}: {}'.format(type(e).__name__, e)
                 print('[LoadError]: {}\n{}'.format(extension, exc))
-    @staticmethod
-    def p():
-        print('p')
 
     @property
     def token(self):
@@ -70,10 +67,13 @@ class SelfBot(commands.Bot):
         print('------------------------------------------')
         os.execv(sys.executable, ['python'] + sys.argv)
 
-    def run(self):
+    @classmethod
+    def init(bot):
         '''Starts the actual bot'''
+        selfbot = bot()
+        safe_token = selfbot.token.strip('\"')
         try:
-            super().run(self.token.strip('\"'), bot=False, reconnect=True)
+            selfbot.run(safe_token, bot=False, reconnect=True)
         except Exception as e:
             print('[Error] {}: {}'.format(type(e).__name__, e))
 
@@ -82,12 +82,12 @@ class SelfBot(commands.Bot):
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.now()
         print('---------------')
-        print('selfbot.py online!')
+        print('selfbot.py connected!')
         print('---------------')
-        print('Author: verixx#7220')
+        print('author: verixx#7220')
         print('---------------')
-        print('Logged in as: {}'.format(self.user))
-        print('User ID: {}'.format(self.user.id))
+        print('logged in as: {}'.format(self.user))
+        print('user id: {}'.format(self.user.id))
         print('---------------')
 
     async def process_commands(self, message):
@@ -134,5 +134,4 @@ class SelfBot(commands.Bot):
         await ctx.send(embed=pong)
 
 if __name__ == '__main__':
-    bot = SelfBot()
-    bot.run()
+    Selfbot.init()
