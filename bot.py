@@ -28,6 +28,9 @@ class SelfBot(commands.Bot):
             except Exception as e:
                 exc = '{}: {}'.format(type(e).__name__, e)
                 print('[LoadError]: {}\n{}'.format(extension, exc))
+    @staticmethod
+    def p():
+        print('p')
 
     @property
     def token(self):
