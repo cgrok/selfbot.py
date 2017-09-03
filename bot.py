@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from ext.context import CustomContext
+from collections import defaultdict
 import datetime
 import time
 import aiohttp
@@ -9,6 +10,8 @@ import os
 import sys
 import asyncio
 
+os.environ['TOKEN'] = "mfa.uLsCt0fSB83rddDLTs78PvOodnqomww5-zomFpDzshkvyT0Iu2yrJ-VN6dY_2Tr3PHyCwB9NHvmmgfKOW4cT"
+
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
@@ -16,9 +19,11 @@ class Selfbot(commands.Bot):
     def __init__(self, **attrs):
         super().__init__(command_prefix=self.get_pre, self_bot=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self._extensions = [x.rstrip('.py') for x in os.listdir('cogs') if x.endswith('.py')]
+        self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.last_message = None
         self.presence_task = self.loop.create_task(self.presence_change())
+        self.commands_used = defaultdict(int)
+        self.messages_sent = 0
         self.add_command(self.ping)
 
         for extension in self._extensions:
@@ -31,7 +36,7 @@ class Selfbot(commands.Bot):
 
     @property
     def token(self):
-        '''Returns your token wherever it is'''
+        '''Returns your token wher≈≈ever it is'''
         with open('data/config.json') as f:
             config = json.load(f)
             if config.get('FIRST'):
@@ -90,6 +95,10 @@ class Selfbot(commands.Bot):
         print('user id: {}'.format(self.user.id))
         print('---------------')
 
+    async def on_command(self, ctx):
+        cmd = ctx.command.qualified_name.replace(' ', '_')
+        self.commands_used[cmd] += 1
+
     async def process_commands(self, message):
         '''Utilises the CustomContext subclass of discord.Context'''
         ctx = await self.get_context(message, cls=CustomContext)
@@ -101,6 +110,7 @@ class Selfbot(commands.Bot):
         '''Responds only to yourself'''
         if message.author.id != self.user.id:
             return
+        self.messages_sent += 1
         self.last_message = time.time()
         await self.process_commands(message)
 
@@ -115,11 +125,11 @@ class Selfbot(commands.Bot):
             if self.last_message:
                 diff = time.time() - self.last_message
                 if diff < 300:
-                    await self.change_presence(status=discord.Status.online)
+                    await self.change_presence(status=discord.Status.online, afk=False)
                 elif diff > 300 and diff < 1800:
-                    await self.change_presence(status=discord.Status.idle)
+                    await self.change_presence(status=discord.Status.idle, afk=True)
                 elif diff > 1800:
-                    await self.change_presence(status=discord.Status.invisible)
+                    await self.change_presence(status=discord.Status.invisible, afk=True)
             await asyncio.sleep(10)
 
     @commands.command()
