@@ -41,7 +41,7 @@ class Google:
 
             await ctx.send(msg)
 
-   def parse_google_card(self, node):
+    def parse_google_card(self, node):
         if node is None:
             return None
 
