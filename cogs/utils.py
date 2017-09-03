@@ -15,7 +15,7 @@ class Utility:
     @commands.command()
     async def embed(self, ctx, *, params):
         '''Send complex rich embeds with this command!'''
-        em = self.to_embed(params)
+        em = self.to_embed(ctx, params)
         await ctx.message.delete()
         try:
             await ctx.send(embed=em)
@@ -23,13 +23,14 @@ class Utility:
         except:
             await ctx.send('Improperly formatted embed!')
 
-    def to_embed(self, params):
+    def to_embed(self, ctx, params):
         '''Actually formats the parsed parameters into an Embed'''
         em = discord.Embed()
 
         if not params.count('{'):
             if not params.count('}'):
                 em.description = params
+
 
         for field in self.get_parts(params):
             data = self.parse_field(field)
@@ -70,9 +71,13 @@ class Utility:
                 em._image = {'url': data['image']}
 
             if data.get('footer'):
-                self._footer = {'text': data.get('footer')}
+                em._footer = {'text': data.get('footer')}
                 if data.get('icon'):
-                    self._footer['icon_url'] = data.get('icon')
+                    em._footer['icon_url'] = data.get('icon')
+            
+            if 'timestamp' in data.keys() and len(data.keys()) == 1:
+                em.timestamp = ctx.message.created_at
+
         return em
 
 
