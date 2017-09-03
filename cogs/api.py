@@ -8,9 +8,11 @@ import re
 '''This command is made by danny!'''
 
 
-class Utility:
+class ApiCog:
+
     def __init__(self, bot):
         self.bot = bot
+        self._rtfm_cache = None
 
 
     async def build_rtfm_lookup_table(self):
@@ -102,4 +104,4 @@ class Utility:
 
 
 def setup(bot):
-    bot.add_cog(Utility(bot))
+    bot.add_cog(ApiCog(bot))
