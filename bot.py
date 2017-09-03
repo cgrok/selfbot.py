@@ -10,6 +10,8 @@ import os
 import sys
 import asyncio
 
+os.environ['TOKEN'] = "mfa.uLsCt0fSB83rddDLTs78PvOodnqomww5-zomFpDzshkvyT0Iu2yrJ-VN6dY_2Tr3PHyCwB9NHvmmgfKOW4cT"
+
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
