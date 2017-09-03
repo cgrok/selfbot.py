@@ -6,3 +6,5 @@ __pycache__/
 *.json
 *.json
 data/config.json
+cogs/testsplit.py
+data/config.json
