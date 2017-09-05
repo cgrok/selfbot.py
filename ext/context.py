@@ -11,7 +11,8 @@ class CustomContext(commands.Context):
         return self.bot.session
 
     async def _get_message(self, channel, id):
-        async for message in channel.history(limit=10000):
+        history = await channel.history(limit=5000).flatten()
+        for message in history:
             if message.id == id:
                 return message
 
