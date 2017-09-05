@@ -30,7 +30,7 @@ class Selfbot(commands.Bot):
                 print('Loaded extension: {}'.format(extension))
             except Exception as e:
                 exc = '{}: {}'.format(type(e).__name__, e)
-                print('[LoadError]: {}\n{}'.format(extension, exc))
+                print('LoadError: {}\n{}'.format(extension, exc))
 
     @property
     def token(self):
