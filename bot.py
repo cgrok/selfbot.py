@@ -23,6 +23,7 @@ class Selfbot(commands.Bot):
         self.commands_used = defaultdict(int)
         self.messages_sent = 0
         self.add_command(self.ping)
+        self.add_command(self._logout)
 
         for extension in self._extensions:
             try:
@@ -140,6 +141,11 @@ class Selfbot(commands.Bot):
                              description=str(ping.microseconds / 1000.0) + ' ms',
                              color=0x00ffff)
         await ctx.send(embed=pong)
+
+    @commands.command(name='logout')
+    async def _logout(self, ctx):
+        await ctx.send('`Selfbot Logging out...`')
+        await self.logout()
 
 if __name__ == '__main__':
     Selfbot.init()
