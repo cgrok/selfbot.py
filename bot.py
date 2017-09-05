@@ -71,10 +71,10 @@ class Selfbot(commands.Bot):
         os.execv(sys.executable, ['python'] + sys.argv)
 
     @classmethod
-    def init(bot):
+    def init(bot, token=None):
         '''Starts the actual bot'''
         selfbot = bot()
-        safe_token = selfbot.token.strip('\"')
+        safe_token = token or selfbot.token.strip('\"')
         try:
             selfbot.run(safe_token, bot=False, reconnect=True)
         except Exception as e:
