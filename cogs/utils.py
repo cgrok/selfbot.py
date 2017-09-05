@@ -1,11 +1,73 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import TextChannelConverter
+from ext.utility import load_json
+import aiohttp
 
+import unicodedata
+import inspect
+from mtranslate import translate
+import random
 
 class Utility:
+    '''Useful commands to make your life easier'''
     def __init__(self, bot):
         self.bot = bot
+        self.lang_conv = load_json('data/langs.json')
         self.last_embed = None
+    
+    @commands.command()
+    async def quote(self, ctx, id : int, channel : TextChannelConverter = None):
+        """Quote someone's message by ID"""
+        await ctx.message.delete()
+
+        msg = await ctx.get_message(channel or ctx.channel, id)
+        if not msg:
+            return ctx.send('Could not find that message!', delete_after=3)
+
+        em = discord.Embed(color=0x00FFFF, description=msg.clean_content, timestamp=msg.created_at)
+        em.set_author(name=str(msg.author), icon_url=msg.author.avatar_url or msg.author.default_avatar_url)
+
+        if isinstance(msg.channel, discord.TextChannel):
+            em.set_footer(text='#'+str(msg.channel))
+
+        await ctx.send(embed=em)
+
+    @commands.command()
+    async def charinfo(self, ctx, *, characters: str):
+        """Shows you information about a number of characters."""
+
+        if len(characters) > 15:
+            return await ctx.send('Too many characters ({}/15)'.format(len(characters)))
+        
+        fmt = '`\\U{0:>08}`: `{1}` - `{2}` - <http://www.fileformat.info/info/unicode/char/{0}>'
+
+        def to_string(c):
+            digit = format(ord(c), 'x')
+            name = unicodedata.name(c, 'Name not found.')
+            return fmt.format(digit, name, c)
+        
+        await ctx.send('\n'.join(map(to_string, characters)))
+
+    @commands.group()
+    async def translate(self, ctx, lang, *, text):
+        """Translate text!"""
+        conv = self.lang_conv
+        if lang in conv:
+            return await self.bot.say('```{}```'.format(translate(text, lang)))
+        lang = dict(zip(conv.values(), conv.keys())).get(lang.lower().title())
+        if lang:  
+            await ctx.send('```{}```'.format(translate(text, lang)))
+        else:
+            await ctx.send('```That is not an available language.```')
+
+    @translate.command()
+    async def langs(self, ctx):
+        '''Lists all available languages'''
+        em = discord.Embed(color=discord.Color.blue(), 
+                           title='Available Languages', 
+                           description=', '.join(codes.values()))
+        await ctx.send(embed=em)
 
     @commands.command(name='last_embed')
     async def _last_embed(self, ctx):
@@ -80,7 +142,6 @@ class Utility:
 
         return em
 
-
     def get_parts(self, string):
         '''Splits the parts of the embed'''
         for i, char in enumerate(string):
@@ -92,9 +153,8 @@ class Utility:
                     ret += char
                 yield ret.rstrip('}')
                     
-
     def parse_field(self, string):
-        '''Recursive function to get all the key val pairs in each part'''
+        '''Recursive function to get all the key val pairs in each section'''
         ret = {}
 
         parts = string.split(':')
@@ -108,7 +168,6 @@ class Utility:
             for part in string:
                 ret.update(self.parse_field(part))
         return ret
-
 
 def setup(bot):
     bot.add_cog(Utility(bot))
