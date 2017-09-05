@@ -12,7 +12,6 @@ class ApiCog:
 
     def __init__(self, bot):
         self.bot = bot
-        self._rtfm_cache = None
 
 
     async def build_rtfm_lookup_table(self):
