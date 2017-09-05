@@ -22,8 +22,9 @@ class Utility:
         await ctx.message.delete()
 
         msg = await ctx.get_message(channel or ctx.channel, id)
+
         if not msg:
-            return ctx.send('Could not find that message!', delete_after=3)
+            return await ctx.send('Could not find that message!', delete_after=3.0)
 
         em = discord.Embed(color=0x00FFFF, description=msg.clean_content, timestamp=msg.created_at)
         em.set_author(name=str(msg.author), icon_url=msg.author.avatar_url or msg.author.default_avatar_url)
