@@ -18,9 +18,9 @@ class CustomContext(commands.Context):
     async def get_message(self, channel_or_id, id=None):
         '''Helper tool to get a message for selfbots'''
         if isinstance(channel_or_id, int):
-            msg = self._get_message(channel=self.channel, id=channel_or_id)
+            msg = await self._get_message(channel=self.channel, id=channel_or_id)
         else:
-            msg = self._get_message(channel=channel_or_id, id=id)
+            msg = await self._get_message(channel=channel_or_id, id=id)
         return msg
 
 
