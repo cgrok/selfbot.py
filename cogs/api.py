@@ -41,7 +41,6 @@ class ApiCog:
                             sub[as_key] = page + href
 
         self._rtfm_cache = cache
-        print(cache)
 
     async def do_rtfm(self, ctx, key, obj):
         base_url = 'http://discordpy.rtfd.io/en/{}/'.format(key)
