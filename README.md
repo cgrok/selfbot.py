@@ -1,54 +1,58 @@
-# verixx selfbot
-#### *Moderation, fun, utility and much more!*
-<img src='https://img.shields.io/badge/build-passing-brightgreen.svg'> [<img src="https://img.shields.io/badge/discord-py-orange.svg">](https://github.com/Rapptz/discord.py) [<img src='https://img.shields.io/badge/python-3.5-brightgreen.svg'>](https://python.org)
+<div align="center">
+        <p> <img src="https://i.imgur.com/lBSqWgt.png"/> </p>
+        <p><i><b>Moderation, fun, utility and much more! (Rewrite)</b></i></p>
+	<p> 
+		<a href="https://discord.gg/pmQSbAd"><img src="https://discordapp.com/api/guilds/345787308282478592/widget.png?style=banner2" alt="" /></a>
+	</p>
+	<p>	<img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="passing" /></a>
+		<img src="https://img.shields.io/badge/python-3.5-brightgreen.svg" alt="python 3.5" /></a>
+		<a href="https://github.com/Rapptz/discord.py"><img src="https://img.shields.io/badge/discord-py-orange.svg" alt="discord.py" /></a>
+	</p>
+</div> 
 
+## Rewrite
+This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is still in development, so expect bugs. Only install it if you will contribute to its development, constantly update it and give feedback. Once the branch is complete, and discord.py rewrite becomes the master branch of the library, this branch will become the master branch.
 
-[<img src="https://discordapp.com/api/guilds/345787308282478592/widget.png?style=banner2">](https://discord.gg/pmQSbAd) 
+## [Installation via Heroku](https://github.com/verixx/selfbot/wiki/heroku)
+There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
 
-
-## [Installation](https://github.com/verixx/selfbot/wiki)
-You need the following to run the bot: This can be done by `pip install -r /path/to/requirements.txt`
+## [Normal Installation](https://github.com/verixx/selfbot/wiki)
+You need the following to run the bot: (currently)
 ```py
-discord.py
-requests
-PythonGists
-bs4
+discord.py (rewrite)
 lxml
-Pillow
 mtranslate
 ```
 ## Setup
-First navigate into the data folder and open `config.json`, edit it to put your token and prefix in. And set `FIRST` to `false`
-```json
-{
-    "FIRST": false,
-    "BOT": {
-        "PREFIX": "s.",
-        "TOKEN": "token_here"
-    }
-}
+
+Open a terminal in the directory of the bots location and type
 ```
-Alternatively, you could open a terminal in the directory of the bots location and type
-```
-$ python3 bot.py
+$ python3 selfbot.py
 ```
 On first start the launcher will run and you will need to input data. After that the bot will launch without setup neccessary.
 
+If you need to edit your token or prefix, navigate into the data folder and open `config.json` and change the values.
+```json
+{
+    "token": "your_token_here"
+    "prefix": "r."
+    "first": true
+}
+```
+
 ## Features
 
-The default set of modules includes:
 * Moderation commands
 * Global emoji commands
 * Complex embed commands
-* Custom formatted paginated help
 * Miscellaneous commands
 * Easy to make your own commands
-* Stateless selfbot (Saves no data) *This means that you can host it on heroku 24/7 for free*
 
-## Contributors
+If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
-> [@kwugfighter](https://github.com/kwugfighter)
 
-> [@FloatCobra](https://github.com/FloatCobra)
+This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](https://github.com/verixx/selfbot/wiki/Heroku) 24/7 for free*  
 
-> [@umbresp](https://github.com/umbresp)
+## Acknowledgements
+
+> Eval command by [Rapptz](https://github.com/Rapptz) from R.Danny
