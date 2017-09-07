@@ -26,22 +26,39 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import TextChannelConverter
 from ext.utility import load_json
+from ext import fuzzy
 import aiohttp
 
 import unicodedata
-import inspect
 from mtranslate import translate
-import random
+from urllib.parse import parse_qs
+from lxml import etree
+
+import re
 
 class Utility:
     '''Useful commands to make your life easier'''
     def __init__(self, bot):
         self.bot = bot
         self.lang_conv = load_json('data/langs.json')
-        self.last_embed = None
+        self._last_embed = None
+        self._rtfm_cache = None
+        self._last_google = None
+
+    @commands.command()
+    async def copy(self, ctx, id : int, channel : TextChannelConverter=None):
+        '''Copy someones message by ID'''
+        await ctx.message.delete()
+        msg = await ctx.get_message(channel or ctx.channel, id)
+        if len(msg.embeds) > 1:
+            await ctx.send(msg.content, embed=msg.embeds[0])
+            for embed in msg.embeds[1:]:
+                await ctx.send(embed=embed)
+        else:
+            await ctx.send(msg.content, embed=msg.embeds[0])
     
     @commands.command()
-    async def quote(self, ctx, id : int, channel : TextChannelConverter = None):
+    async def quote(self, ctx, id : int, channel : TextChannelConverter=None):
         """Quote someone's message by ID"""
         await ctx.message.delete()
 
@@ -99,7 +116,7 @@ class Utility:
     @commands.command(name='last_embed')
     async def _last_embed(self, ctx):
         '''Sends the command used to send the last embed'''
-        await ctx.send('`'+self.last_embed+'`')
+        await ctx.send('`'+self._last_embed+'`')
 
     @commands.command()
     async def embed(self, ctx, *, params):
@@ -108,9 +125,52 @@ class Utility:
         await ctx.message.delete()
         try:
             await ctx.send(embed=em)
-            self.last_embed = params
+            self._last_embed = params
         except:
             await ctx.send('Improperly formatted embed!')
+
+    @commands.group(aliases=['rtfd'], invoke_without_command=True)
+    async def rtfm(self, ctx, *, obj: str = None):
+        """
+        Gives you a documentation link for a discord.py entity.
+        Written by Rapptz
+        """
+        await self.do_rtfm(ctx, 'rewrite', obj)
+
+    @commands.command(aliases=['g'])
+    async def google(self ,ctx, *, query):
+        """
+        Searches google and gives you top result.
+        Written By Rapptz
+        """
+        await ctx.trigger_typing()
+        try:
+            card, entries = await self.get_google_entries(ctx, query)
+        except RuntimeError as e:
+            await ctx.send(str(e))
+        else:
+            if card:
+                value = '\n'.join(entries[:3])
+                if value:
+                    card.add_field(name='Search Results', value=value, inline=False)
+                return await ctx.send(embed=card)
+
+            if len(entries) == 0:
+                return await ctx.send('No results found... sorry.')
+
+            next_two = entries[1:3]
+            first_entry = entries[0]
+            if first_entry[-1] == ')':
+                first_entry = first_entry[:-1] + '%29'
+
+            if next_two:
+                formatted = '\n'.join(map(lambda x: '<%s>' % x, next_two))
+                msg = '{}\n\n**See also:**\n{}'.format(first_entry, formatted)
+            else:
+                msg = first_entry
+
+            self._last_google = msg
+            await ctx.send(msg)
 
     def to_embed(self, ctx, params):
         '''Actually formats the parsed parameters into an Embed'''
@@ -195,6 +255,253 @@ class Utility:
             for part in string:
                 ret.update(self.parse_field(part))
         return ret
+
+    async def build_rtfm_lookup_table(self):
+        cache = {}
+
+        page_types = {
+            'rewrite': (
+                'http://discordpy.rtfd.io/en/rewrite/api.html',
+                'http://discordpy.rtfd.io/en/rewrite/ext/commands/api.html'
+            )
+        }
+
+        for key, pages in page_types.items():
+            sub = cache[key] = {}
+            for page in pages:
+                async with self.bot.session.get(page) as resp:
+                    if resp.status != 200:
+                        raise RuntimeError('Cannot build rtfm lookup table, try again later.')
+
+                    text = await resp.text(encoding='utf-8')
+                    root = etree.fromstring(text, etree.HTMLParser())
+                    if root is not None:
+                        nodes = root.findall(".//dt/a[@class='headerlink']")
+                        for node in nodes:
+                            href = node.get('href', '')
+                            as_key = href.replace('#discord.', '').replace('ext.commands.', '')
+                            sub[as_key] = page + href
+
+        self._rtfm_cache = cache
+
+    async def do_rtfm(self, ctx, key, obj):
+        base_url = 'http://discordpy.rtfd.io/en/{}/'.format(key)
+
+        if obj is None:
+            await ctx.send(base_url)
+            return
+
+        if not self._rtfm_cache:
+            await ctx.trigger_typing()
+            await self.build_rtfm_lookup_table()
+
+        # identifiers don't have spaces
+        obj = obj.replace(' ', '_')
+
+        if key == 'rewrite':
+            pit_of_success_helpers = {
+                'vc': 'VoiceClient',
+                'msg': 'Message',
+                'color': 'Colour',
+                'perm': 'Permissions',
+                'channel': 'TextChannel',
+                'chan': 'TextChannel',
+            }
+
+            # point the abc.Messageable types properly:
+            q = obj.lower()
+            for name in dir(discord.abc.Messageable):
+                if name[0] == '_':
+                    continue
+                if q == name:
+                    obj = 'abc.Messageable.{}'.format(name)
+                    break
+
+            def replace(o):
+                return pit_of_success_helpers.get(o.group(0), '')
+
+            pattern = re.compile('|'.join(r'\b{}\b'.format(k) for k in pit_of_success_helpers.keys()))
+            obj = pattern.sub(replace, obj)
+
+        cache = self._rtfm_cache[key]
+        matches = fuzzy.extract_or_exact(obj, cache, scorer=fuzzy.token_sort_ratio, limit=5, score_cutoff=50)
+
+        e = discord.Embed(colour=discord.Colour.blurple())
+        if len(matches) == 0:
+            return await ctx.send('Could not find anything. Sorry.')
+
+        e.description = '\n'.join('[{}]({}) ({}%)'.format(key, url, p) for key, p, url in matches)
+        await ctx.send(embed=e)
+
+    def parse_google_card(self, node):
+        if node is None:
+            return None
+
+        e = discord.Embed(colour=0x00FFFF)
+
+        # check if it's a calculator card:
+        calculator = node.find(".//table/tr/td/span[@class='nobr']/h2[@class='r']")
+        if calculator is not None:
+            e.title = 'Calculator'
+            e.description = ''.join(calculator.itertext())
+            return e
+
+        parent = node.getparent()
+
+        # check for unit conversion card
+        unit = parent.find(".//ol//div[@class='_Tsb']")
+        if unit is not None:
+            e.title = 'Unit Conversion'
+            e.description = ''.join(''.join(n.itertext()) for n in unit)
+            return e
+
+        # check for currency conversion card
+        currency = parent.find(".//ol/table[@class='std _tLi']/tr/td/h2")
+        if currency is not None:
+            e.title = 'Currency Conversion'
+            e.description = ''.join(currency.itertext())
+            return e
+
+        # check for release date card
+        release = parent.find(".//div[@id='_vBb']")
+        if release is not None:
+            try:
+                e.description = ''.join(release[0].itertext()).strip()
+                e.title = ''.join(release[1].itertext()).strip()
+                return e
+            except:
+                return None
+
+        # check for definition card
+        words = parent.find(".//ol/div[@class='g']/div/h3[@class='r']/div")
+        if words is not None:
+            try:
+                definition_info = words.getparent().getparent()[1] # yikes
+            except:
+                pass
+            else:
+                try:
+                    e.title = words[0].text
+                    e.description = words[1].text
+                except:
+                    return None
+
+                for row in definition_info:
+                    if len(row.attrib) != 0:
+                        break
+                    try:
+                        data = row[0]
+                        lexical_category = data[0].text
+                        body = []
+                        for index, definition in enumerate(data[1], 1):
+                            body.append('%s. %s' % (index, definition.text))
+
+                        e.add_field(name=lexical_category, value='\n'.join(body), inline=False)
+                    except:
+                        continue
+
+                return e
+
+        # check for "time in" card
+        time_in = parent.find(".//ol//div[@class='_Tsb _HOb _Qeb']")
+        if time_in is not None:
+            try:
+                time_place = ''.join(time_in.find("span[@class='_HOb _Qeb']").itertext()).strip()
+                the_time = ''.join(time_in.find("div[@class='_rkc _Peb']").itertext()).strip()
+                the_date = ''.join(time_in.find("div[@class='_HOb _Qeb']").itertext()).strip()
+            except:
+                return None
+            else:
+                e.title = time_place
+                e.description = '%s\n%s' % (the_time, the_date)
+                return e
+
+        weather = parent.find(".//ol//div[@class='e']")
+        if weather is None:
+            return None
+
+        location = weather.find('h3')
+        if location is None:
+            return None
+
+        e.title = ''.join(location.itertext())
+
+        table = weather.find('table')
+        if table is None:
+            return None
+
+        try:
+            tr = table[0]
+            img = tr[0].find('img')
+            category = img.get('alt')
+            image = 'https:' + img.get('src')
+            temperature = tr[1].xpath("./span[@class='wob_t']//text()")[0]
+        except:
+            return None # RIP
+        else:
+            e.set_thumbnail(url=image)
+            e.description = '*%s*' % category
+            e.add_field(name='Temperature', value=temperature)
+
+        # On the 4th column it tells us our wind speeds
+        try:
+            wind = ''.join(table[3].itertext()).replace('Wind: ', '')
+        except:
+            return None
+        else:
+            e.add_field(name='Wind', value=wind)
+
+        # On the 5th column it tells us our humidity
+        try:
+            humidity = ''.join(table[4][0].itertext()).replace('Humidity: ', '')
+        except:
+            return None
+        else:
+            e.add_field(name='Humidity', value=humidity)
+
+        return e
+
+    async def get_google_entries(self, ctx, query):
+        params = {
+            'q': query,
+            'safe': 'on',
+            'lr': 'lang_en',
+            'hl': 'en'
+        }
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64)'
+        }
+
+        # list of URLs
+        entries = []
+
+        # the result of a google card, an embed
+        card = None
+
+        async with ctx.session.get('https://www.google.com/search', params=params, headers=headers) as resp:
+            if resp.status != 200:
+                raise RuntimeError('Google somehow failed to respond.')
+
+            root = etree.fromstring(await resp.text(), etree.HTMLParser())
+
+            card_node = root.find(".//div[@id='topstuff']")
+            card = self.parse_google_card(card_node)
+
+            search_nodes = root.findall(".//div[@class='g']")
+            for node in search_nodes:
+                url_node = node.find('.//h3/a')
+                if url_node is None:
+                    continue
+
+                url = url_node.attrib['href']
+                if not url.startswith('/url?'):
+                    continue
+
+                url = parse_qs(url[5:])['q'][0] 
+
+                entries.append(url)
+
+        return card, entries
 
 def setup(bot):
     bot.add_cog(Utility(bot))
