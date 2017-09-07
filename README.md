@@ -10,7 +10,7 @@
 	</p>
 </div> 
 
-## Rewrite
+## [Rewrite](https://discordpy.readthedocs.io/en/rewrite/)
 This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is still in development, so expect bugs. Only install it if you will contribute to its development, constantly update it and give feedback. Once the branch is complete, and discord.py rewrite becomes the master branch of the library, this branch will become the master branch.
 
 ## [Installation via Heroku](https://github.com/verixx/selfbot/wiki/heroku)
