@@ -51,7 +51,18 @@ class CustomContext(commands.Context):
                 await self.send_message(self.message.channel, page)
 
 
+    async def get_dominant_color(self, url):
+        '''Returns the dominant color of an image from a url'''
+        if url is None:
+            return 0x000000
 
+        async with self.session.get(url) as resp:
+            image = await resp.read()
+
+        with io.BytesIO(image) as f:
+            color = ColorThief(f).get_color(quality=1)
+
+        return discord.Color.from_rgb(*color)
 
 
 
