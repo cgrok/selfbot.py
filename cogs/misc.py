@@ -26,6 +26,7 @@ import discord
 from discord.ext import commands
 import io
 from PIL import Image
+from ext.colornames import ColorNames
 
 class Misc:
     def __init__(self, bot):
@@ -36,17 +37,19 @@ class Misc:
         '''Say something as yourself! Wow!'''
         await ctx.send(msg)
 
-    @commands.command()
+    @commands.command(aliases=['dc','dcolor'])
     async def dominant_color(self, ctx, *, url):
         '''Fun command that shows the dominant color of an image'''
         await ctx.message.delete()
         color = await ctx.get_dominant_color(url)
-        em = discord.Embed(color=color, title='Original Image', url=url)
+        string_col = ColorNames.color_name(str(color))
+        em = discord.Embed(color=color, title='Dominant Color', description=f'`{str(color)}`\n`{color.to_rgb()}`\n`{str(string_col)}`')
         em.set_thumbnail(url=url)
         file = io.BytesIO()
-        Image.new('RGB', (200, 200), color.to_rgb()).save(file, format='PNG')
+        Image.new('RGB', (200, 90), color.to_rgb()).save(file, format='PNG')
         file.seek(0)
-        await ctx.send(f'Showing color: `{str(color)}`', file=discord.File(file, 'color.png'), embed=em)
+        em.set_image(url="attachment://color.png")
+        await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
 
 def setup(bot):
