@@ -28,7 +28,6 @@ from discord.ext.commands import TextChannelConverter
 from ext.utility import load_json
 from ext import fuzzy
 import aiohttp
-
 import unicodedata
 from mtranslate import translate
 from urllib.parse import parse_qs
