@@ -1,8 +1,11 @@
 import json
 
 def load_json(path):
-    with open(path) as f:
-        return json.load(f)
+	try:
+	    with open(path) as f:
+	        return json.load(f)
+	except:
+		return {}
 
 def save_json(data, path, **kwargs):
     with open(path, 'w') as f:
