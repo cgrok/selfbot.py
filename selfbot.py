@@ -102,8 +102,8 @@ class Selfbot(commands.Bot):
         safe_token = token or selfbot.token.strip('\"')
         try:
             selfbot.run(safe_token, bot=False, reconnect=True)
-        except Exception as e:
-            print('[Error] {}: {}'.format(type(e).__name__, e))
+        except KeyboardInterrupt:
+            selfbot.session.close()
 
     async def on_ready(self):
         '''Bot startup, sets uptime.'''
@@ -175,5 +175,10 @@ class Selfbot(commands.Bot):
         await ctx.send('`Selfbot Logging out...`')
         await self.logout()
 
+
+
 if __name__ == '__main__':
     Selfbot.init()
+
+
+
