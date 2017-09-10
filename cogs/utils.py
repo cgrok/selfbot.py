@@ -33,6 +33,7 @@ import unicodedata
 from mtranslate import translate
 from urllib.parse import parse_qs
 from lxml import etree
+import inspect
 
 import re
 
@@ -44,6 +45,11 @@ class Utility:
         self._last_embed = None
         self._rtfm_cache = None
         self._last_google = None
+
+    @commands.command()
+    async def source(self, ctx, *, command):
+        '''See the source code for any command.'''
+        await ctx.send('```py\n'+str(inspect.getsource(self.bot.get_command(command).callback)+'```'))
 
     @commands.command()
     async def copy(self, ctx, id : int, channel : TextChannelConverter=None):
