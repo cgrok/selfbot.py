@@ -17,12 +17,14 @@ This branch of the selfbot runs on discord.py rewrite, the next major version of
 There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
 
 ## [Normal Installation](https://github.com/verixx/selfbot/wiki)
-You need the following to run the bot: (currently)
+You need the following to run the bot: (currently) 
 ```py
-discord.py (rewrite)
+discord.py[rewrite]
 lxml
 mtranslate
+colorthief
 ```
+Do `pip install -r path/to/requirements.txt` to install the requirements.
 ## Setup
 
 Open a terminal in the directory of the bots location and type
