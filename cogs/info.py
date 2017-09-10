@@ -24,27 +24,30 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
+import asyncio
+from urllib.parse import urlparse
+import random
+import os
+import io
 
 
 class Information:
-	def __init__(self, bot):
-		self.bot = bot
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
     async def serverinfo(self, ctx):
         '''See information about the server.'''
-        server = ctx.server
+        server = ctx.guild
         total_users = len(server.members)
         online = len([m for m in server.members if m.status != discord.Status.offline])
-        text_channels = len([x for x in server.channels if x.type == discord.ChannelType.text])
+        text_channels = len([x for x in server.channels if isinstance(x, discord.TextChannel)])
         voice_channels = len(server.channels) - text_channels
         passed = (ctx.message.created_at - server.created_at).days
-        created_at = "Since {}. That's over {} days ago!"
-                     .format(server.created_at.strftime("%d %b %Y %H:%M"),
-                                passed)
+        created_at = "Since {}. That's over {} days ago!".format(server.created_at.strftime("%d %b %Y %H:%M"), passed)
 
-        colour = random.randint(0, 0xFFFFFF)
+        colour = await ctx.get_dominant_color(server.icon_url)
 
         data = discord.Embed(description=created_at,colour=colour)
         data.add_field(name="Region", value=str(server.region))
@@ -53,7 +56,7 @@ class Information:
         data.add_field(name="Voice Channels", value=voice_channels)
         data.add_field(name="Roles", value=len(server.roles))
         data.add_field(name="Owner", value=str(server.owner))
-        data.set_footer(text="Server ID: " + server.id)
+        data.set_footer(text="Server ID: " + str(server.id))
         data.set_author(name=server.name, icon_url=None or server.icon_url)
         data.set_thumbnail(url=None or server.icon_url)
 
@@ -62,9 +65,9 @@ class Information:
     @commands.command(aliases=['ui'])
     @commands.guild_only()
     async def userinfo(self, ctx, *, member : commands.MemberConverter=None):
-    	'''Get information about a member of a server'''
-        server = ctx.server
-        user = user or ctx.message.author
+        '''Get information about a member of a server'''
+        server = ctx.guild
+        user = member or ctx.message.author
         avi = user.avatar_url
         roles = sorted(user.roles, key=lambda c: c.position)
 
@@ -85,7 +88,7 @@ class Information:
         em.add_field(name='Roles', value=rolenames, inline=True)
         em.set_footer(text='User ID: '+str(user.id))
         em.set_thumbnail(url=avi)
-        em.set_author(name=user, icon_url=ctx.server.icon_url)
+        em.set_author(name=user, icon_url=server.icon_url)
 
         await ctx.send(embed=em)
 
