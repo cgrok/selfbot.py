@@ -42,10 +42,10 @@ class Selfbot(commands.Bot):
         super().__init__(command_prefix=self.get_pre, self_bot=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
-        self.last_message = None
         self.presence_task = self.loop.create_task(self.presence_change())
-        self.commands_used = defaultdict(int)
+        self.last_message = None
         self.messages_sent = 0
+        self.commands_used = defaultdict(int)
         self.add_command(self.ping)
         self.add_command(self._logout)
 
@@ -59,7 +59,7 @@ class Selfbot(commands.Bot):
 
     @property
     def token(self):
-        '''Returns your token wher≈≈ever it is'''
+        '''Returns your token wherever it is'''
         with open('data/config.json') as f:
             config = json.load(f)
             if config.get('FIRST'):
@@ -168,6 +168,10 @@ class Selfbot(commands.Bot):
 
     @commands.command(name='logout')
     async def _logout(self, ctx):
+        '''
+        Shuts down the selfbot, 
+        equivalent to a restart if you are hosting the bot on heroku.
+        '''
         await ctx.send('`Selfbot Logging out...`')
         await self.logout()
 
