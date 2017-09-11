@@ -24,18 +24,15 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
-import io
+from ext.colours import ColorNames
 from PIL import Image
-from ext.colornames import ColorNames
+import io
+
 
 class Misc:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def echo(self, ctx, *, msg):
-        '''Say something as yourself! Wow!'''
-        await ctx.send(msg)
 
     @commands.command(aliases=['dc','dcolor'])
     async def dominant_color(self, ctx, *, url):
@@ -43,7 +40,8 @@ class Misc:
         await ctx.message.delete()
         color = await ctx.get_dominant_color(url)
         string_col = ColorNames.color_name(str(color))
-        em = discord.Embed(color=color, title='Dominant Color', description=f'`{str(color)}`\n`{color.to_rgb()}`\n`{str(string_col)}`')
+        info = f'`{str(color)}`\n`{color.to_rgb()}`\n`{str(string_col)}`'
+        em = discord.Embed(color=color, title='Dominant Color', description=info)
         em.set_thumbnail(url=url)
         file = io.BytesIO()
         Image.new('RGB', (200, 90), color.to_rgb()).save(file, format='PNG')
