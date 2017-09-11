@@ -1,18 +1,15 @@
 import discord
 from discord.ext import commands
 import asyncio
-import io
 from colorthief import ColorThief
+from urllib.parse import urlparse
+import io
+
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-    @property
-    def session(self):
-        '''Returns the bot's aiohttp client session'''
-        return self.bot.session
 
     async def _get_message(self, channel, id):
         '''Goes through channel history to get a message'''
@@ -50,19 +47,34 @@ class CustomContext(commands.Context):
             for page in pages:
                 await self.send_message(self.message.channel, page)
 
+    @staticmethod
+    def is_valid_image_url(url):
+        '''Checks if a url leads to an image.'''
+        types = ['.png', '.jpg', '.gif', '.bmp']
+        path = urlparse(url).path
+        if any(path.endswith(i) for i in types):
+            return True
 
     async def get_dominant_color(self, url):
         '''Returns the dominant color of an image from a url'''
-        if url is None:
-            return 0x000000
+        if not self.is_valid_image_url(url):
+            raise ValueError('Invalid image url passed.')
 
-        async with self.session.get(url) as resp:
-            image = await resp.read()
+        try:
+            async with self.session.get(url) as resp:
+                image = await resp.read()
+        except:
+            return discord.Color.default()
 
         with io.BytesIO(image) as f:
             color = ColorThief(f).get_color(quality=1)
 
         return discord.Color.from_rgb(*color)
+
+    @property
+    def session(self):
+        '''Returns the bot's aiohttp client session'''
+        return self.bot.session
 
 
 
