@@ -27,12 +27,22 @@ from discord.ext import commands
 from ext.colours import ColorNames
 from PIL import Image
 import io
+import copy
 
 
 class Misc:
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(aliases=['color', 'colour', 'sc'])
+    async def show_color(self, ctx, *, color : commands.ColourConverter):
+        '''Enter a color and you will see it!'''
+        file = io.BytesIO()
+        Image.new('RGB', (200, 90), color.to_rgb()).save(file, format='PNG')
+        file.seek(0)
+        em = discord.Embed(color=color, title=f'Showing Color: {str(color)}')
+        em.set_image(url='attachment://color.png')
+        await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
     @commands.command(aliases=['dc','dcolor'])
     async def dominant_color(self, ctx, *, url):
@@ -48,6 +58,38 @@ class Misc:
         file.seek(0)
         em.set_image(url="attachment://color.png")
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
+
+    @commands.command()
+    async def add(self, ctx, *numbers : int):
+        await ctx.send(f'Result: `{sum(numbers)}`')
+
+    @commands.group(invoke_without_command=True)
+    async def emote(self, ctx, *, emoji : commands.EmojiConverter):
+        '''Use emojis without nitro!'''
+        await ctx.message.delete()
+        async with ctx.session.get(emoji.url) as resp:
+            image = await resp.read()
+        with io.BytesIO(image) as file:
+            await ctx.send(file=discord.File(file, 'emoji.png'))
+
+    @emote.command()
+    async def copy(self, ctx, *, emoji : commands.EmojiConverter):
+        '''Copy an emoji from another server to your own'''
+        em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emoji.name}')
+        em.set_image(url='attachment://emoji.png')
+        async with ctx.session.get(emoji.url) as resp:
+            image = await resp.read()
+        with io.BytesIO(image) as file:
+            await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
+            await ctx.guild.create_custom_emoji(name=emoji.name, image=file.read())
+            
+
+
+
+
+
+
+
 
 
 def setup(bot):
