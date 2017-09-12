@@ -50,7 +50,7 @@ class CustomContext(commands.Context):
     @staticmethod
     def is_valid_image_url(url):
         '''Checks if a url leads to an image.'''
-        types = ['.png', '.jpg', '.gif', '.bmp']
+        types = ['.png', '.jpg', '.gif', '.bmp', '.webp']
         path = urlparse(url).path
         if any(path.endswith(i) for i in types):
             return True
@@ -59,7 +59,6 @@ class CustomContext(commands.Context):
         '''Returns the dominant color of an image from a url'''
         if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
-
         try:
             async with self.session.get(url) as resp:
                 image = await resp.read()
@@ -68,13 +67,14 @@ class CustomContext(commands.Context):
 
         with io.BytesIO(image) as f:
             color = ColorThief(f).get_color(quality=1)
-
+            
         return discord.Color.from_rgb(*color)
 
     @property
     def session(self):
         '''Returns the bot's aiohttp client session'''
         return self.bot.session
+
 
 
 
