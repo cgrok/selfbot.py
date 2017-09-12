@@ -155,6 +155,9 @@ class Selfbot(commands.Bot):
                     await self.change_presence(status=discord.Status.invisible, afk=True)
             await asyncio.sleep(10)
 
+    def get_server(self, id):
+        return discord.utils.get(self.guilds, id=id)
+
     @commands.command()
     async def ping(self, ctx):
         """Pong! Check your response time."""

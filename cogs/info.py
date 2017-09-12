@@ -37,9 +37,9 @@ class Information:
 
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
-    async def serverinfo(self, ctx):
+    async def serverinfo(self, ctx, server_id : int=None):
         '''See information about the server.'''
-        server = ctx.guild
+        server = self.bot.get_server(id=server_id) or ctx.guild
         total_users = len(server.members)
         online = len([m for m in server.members if m.status != discord.Status.offline])
         text_channels = len([x for x in server.channels if isinstance(x, discord.TextChannel)])
