@@ -35,8 +35,6 @@ import json
 import sys
 import os
 
-
-
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
