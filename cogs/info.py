@@ -144,7 +144,7 @@ class Information:
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
         embed.add_field(name='Process', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
 
-        embed.set_footer(text='Powered by discord.py[rewrite]')
+        embed.set_footer(text='Powered by discord.py v1.0.0a')
         await ctx.send(embed=embed)
 
 
