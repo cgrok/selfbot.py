@@ -26,13 +26,16 @@ import discord
 from discord.ext import commands
 from ext.context import CustomContext
 from collections import defaultdict
-import datetime
-import time
-import aiohttp
-import json
-import os
-import sys
 import asyncio
+import aiohttp
+import datetime
+import psutil
+import time
+import json
+import sys
+import os
+
+
 
 class Selfbot(commands.Bot):
     '''
@@ -41,6 +44,7 @@ class Selfbot(commands.Bot):
     def __init__(self, **attrs):
         super().__init__(command_prefix=self.get_pre, self_bot=True)
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.process = psutil.Process()
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.presence_task = self.loop.create_task(self.presence_change())
         self.last_message = None
@@ -108,7 +112,7 @@ class Selfbot(commands.Bot):
     async def on_ready(self):
         '''Bot startup, sets uptime.'''
         if not hasattr(self, 'uptime'):
-            self.uptime = datetime.datetime.now()
+            self.uptime = datetime.datetime.utcnow()
         print('---------------')
         print('selfbot.py connected!')
         print('---------------')
