@@ -24,8 +24,10 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
-import asyncio
 from urllib.parse import urlparse
+import datetime
+import asyncio
+import psutil
 import random
 import os
 import io
@@ -91,6 +93,59 @@ class Information:
         em.set_author(name=user, icon_url=server.icon_url)
 
         await ctx.send(embed=em)
+
+    @commands.command(aliases=['bot', 'info'])
+    async def about(self, ctx):
+        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/Rapptz/RoboDanny/commit/%H) %s (%cr)"'
+        if os.name == 'posix':
+            cmd = cmd.format(r'\`%h\`')
+        else:
+            cmd = cmd.format(r'`%h`')
+
+        revision = os.popen(cmd).read().strip()
+        embed = discord.Embed()
+        embed.url = 'https://discord.gg/pmQSbAd'
+        embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
+
+        embed.set_author(name='selfbot.py', icon_url=ctx.author.avatar_url)
+
+        total_members = sum(1 for _ in self.bot.get_all_members())
+        total_online = len({m.id for m in self.bot.get_all_members() if m.status is discord.Status.online})
+        total_unique = len(self.bot.users)
+
+        voice_channels = []
+        text_channels = []
+        for guild in self.bot.guilds:
+            voice_channels.extend(guild.voice_channels)
+            text_channels.extend(guild.text_channels)
+
+        text = len(text_channels)
+        voice = len(voice_channels)
+
+        now = datetime.datetime.utcnow()
+        delta = now - self.bot.uptime
+        hours, remainder = divmod(int(delta.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        days, hours = divmod(hours, 24)
+
+        fmt = '{h}h {m}m {s}s'
+        if days:
+            fmt = '{d}d ' + fmt
+        uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
+
+        embed.add_field(name='Latest Changes', value=revision)
+        embed.add_field(name='Author', value='verixx#7220')
+        embed.add_field(name='Uptime', value=uptime)
+        embed.add_field(name='Guilds', value=len(self.bot.guilds))
+
+        embed.add_field(name='Members', value=f'{total_unique} total\n{total_online} online')
+        embed.add_field(name='Channels', value=f'{text} text\n{voice} voice')
+        memory_usage = self.bot.process.memory_full_info().uss / 1024**2
+        cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
+        embed.add_field(name='Process', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
+
+        embed.set_footer(text='Powered by discord.py[rewrite]', icon_url='http://i.imgur.com/5BFecvA.png')
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
