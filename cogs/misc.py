@@ -24,10 +24,12 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
+from ext.utility import parse_equation
 from ext.colours import ColorNames
+from sympy import solve
 from PIL import Image
-import io
 import copy
+import io
 
 
 class Misc:
@@ -61,7 +63,21 @@ class Misc:
 
     @commands.command()
     async def add(self, ctx, *numbers : int):
+        '''Add multiple numbers together'''
         await ctx.send(f'Result: `{sum(numbers)}`')
+
+    @commands.command()
+    async def algebra(self, ctx, *, equation):
+        '''Solve algabraic equations'''
+        eq = parse_equation(equation)
+        result = solve(eq)
+        em = discord.Embed(
+            color=discord.Color.green(),
+            title='Equation', 
+            description=f'```py\n{equation} = 0```',
+            )
+        em.add_field(name='Result', value=f'```py\n{result}```')
+        await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True)
     async def emote(self, ctx, *, emoji : commands.EmojiConverter):
@@ -83,13 +99,6 @@ class Misc:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
             await ctx.guild.create_custom_emoji(name=emoji.name, image=file.read())
             
-
-
-
-
-
-
-
 
 
 def setup(bot):
