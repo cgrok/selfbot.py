@@ -44,6 +44,7 @@ class Utility:
         self._last_embed = None
         self._rtfm_cache = None
         self._last_google = None
+        self._last_result = None
 
     @commands.command()
     async def source(self, ctx, *, command):
