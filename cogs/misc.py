@@ -28,6 +28,7 @@ from ext.utility import parse_equation
 from ext.colours import ColorNames
 from sympy import solve
 from PIL import Image
+import emoji
 import copy
 import io
 
@@ -35,6 +36,30 @@ import io
 class Misc:
     def __init__(self, bot):
         self.bot = bot
+        self.emoji_converter = commands.EmojiConverter()
+
+    @commands.command()
+    async def react(self, ctx, index : int, *, reactions):
+        '''React to a specified message with reactions'''
+        await ctx.message.delete()
+        history = await ctx.channel.history(limit=10).flatten()
+        message = history[index]
+        async for emoji in self.validate_emojis(ctx, reactions):
+            await message.add_reaction(emoji)
+
+    async def validate_emojis(self, ctx, reactions):
+        '''
+        Checks if an emoji is valid otherwise, 
+        tries to convert it into a custom emoji
+        '''
+        for emote in reactions.split():
+            if emote in emoji.UNICODE_EMOJI:
+                yield emote
+            else:
+                try:
+                    yield await self.emoji_converter.convert(ctx, emote)
+                except commands.BadArgument:
+                    pass
 
     @commands.command(aliases=['color', 'colour', 'sc'])
     async def show_color(self, ctx, *, color : commands.ColourConverter):
@@ -99,7 +124,6 @@ class Misc:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
             await ctx.guild.create_custom_emoji(name=emoji.name, image=file.read())
             
-
 
 def setup(bot):
 	bot.add_cog(Misc(bot))

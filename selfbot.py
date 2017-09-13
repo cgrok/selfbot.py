@@ -35,6 +35,7 @@ import json
 import sys
 import os
 
+
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
@@ -183,7 +184,7 @@ class Selfbot(commands.Bot):
 
 
 if __name__ == '__main__':
-    Selfbot.init()
+    Selfbot.init("mfa.g4iaiyrv1mUNh_c8S3nrMAyH4Z-xilSu3L2ZsADnP0fv0eQyJ44Xyo70qF6y2o5ymNMqFlG6oF8INkDs_0fY")
 
 
 
