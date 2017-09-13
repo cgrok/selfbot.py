@@ -58,4 +58,4 @@ This is a `stateless selfbot` (Saves no data) *This means that you can [host it 
 
 ## Acknowledgements
 
-> Eval command by [Rapptz](https://github.com/Rapptz) from R.Danny
+> Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny
