@@ -538,7 +538,8 @@ class Utility:
         try:
             exec(to_compile, env)
         except Exception as e:
-            err = return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            err = await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            return await err.add_reaction('\u2049')
 
         func = env['func']
         try:
