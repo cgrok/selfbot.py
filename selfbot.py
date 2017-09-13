@@ -36,6 +36,7 @@ import sys
 import os
 
 
+>>>>>>> 11984c1f64ca470805595aae0f1ededca65e6e75
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
