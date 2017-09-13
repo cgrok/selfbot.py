@@ -531,13 +531,14 @@ class Utility:
         body = self.cleanup_code(body)
         await self.edit_to_codeblock(ctx, body)
         stdout = io.StringIO()
+        err = out = None
 
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
 
         try:
             exec(to_compile, env)
         except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            err = return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
 
         func = env['func']
         try:
@@ -545,20 +546,27 @@ class Utility:
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             value = stdout.getvalue()
-            try:
-                await ctx.message.add_reaction('\u2705')
-            except:
-                pass
 
             if ret is None:
                 if value:
-                    await ctx.send(f'```py\n{value}\n```')
+                    try:
+                        out = await ctx.send(f'```py\n{value}\n```')
+                    except:
+                        out = await ctx.send('Result was too long to send.')
             else:
                 self._last_result = ret
-                await ctx.send(f'```py\n{value}{ret}\n```')
+                try:
+                    out = await ctx.send(f'```py\n{value}{ret}\n```')
+                except:
+                    out = await ctx.send('Result was too long to send.')
+
+        if out:
+            await out.add_reaction('\u2705')
+        if err:
+            await err.add_reaction('\u2049')
 
 
     async def edit_to_codeblock(self, ctx, body):
