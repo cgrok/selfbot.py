@@ -25,16 +25,19 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 from discord.ext.commands import TextChannelConverter
+from contextlib import redirect_stdout
 from ext.utility import load_json
-from ext import fuzzy
-import aiohttp
-import unicodedata
-from mtranslate import translate
 from urllib.parse import parse_qs
+from mtranslate import translate
 from lxml import etree
+from ext import fuzzy
+import unicodedata
+import traceback
+import textwrap
+import aiohttp
 import inspect
 import re
-
+import io
 
 class Utility:
     '''Useful commands to make your life easier'''
