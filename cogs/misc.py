@@ -41,7 +41,6 @@ class Misc:
     @commands.command()
     async def react(self, ctx, index : int, *, reactions):
         '''React to a specified message with reactions'''
-        await ctx.message.delete()
         history = await ctx.channel.history(limit=10).flatten()
         message = history[index]
         async for emoji in self.validate_emojis(ctx, reactions):
