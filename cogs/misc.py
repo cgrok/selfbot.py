@@ -51,7 +51,7 @@ class Misc:
         base = await ctx.send(anim[1])
         for line in anim[2:]:
             await base.edit(content=line)
-            await asyncio.sleep(interval)
+            await asyncio.sleep(float(interval))
 
     @commands.command()
     async def virus(self, ctx, virus=None, *, user : commands.MemberConverter=None):
