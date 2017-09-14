@@ -37,7 +37,7 @@ class Paginator:
     max_size: int
         The maximum amount of codepoints allowed in a page.
     """
-    def __init__(self, max_size=1000):
+    def __init__(self, max_size=2000):
         self.max_size = max_size
         self._current_embed = discord.Embed()
         self._current_field = []
@@ -81,27 +81,25 @@ class Paginator:
                 if name: 
                     if value:
                         self._current_embed.add_field(name=name, value=value)
-                        name, value = curr, ''
-                        self.last_cog = name # keeps track of the last cog sent,
-                                             # so the next embed can have a `continued` thing
-                else:  
+                        name, value = curr, '' # keeps track of the last cog sent,
+                        self.last_cog = curr  # so the next embed can have a `continued` thing                      
+                else:                          
                     if value:
                         if self.last_cog:
-                            self._current_embed.add_field(name=f'{self.last_cog} (continued)', 
-                                value=value)
+                            self._current_embed.add_field(name=f'{self.last_cog} (continued)', value=value)
                         value = ''
                     name = curr
-                    self.last_cog = name
             else:
                 value += curr + '\n'
 
         # adds the last parts not done in the while loop
+        print(self.last_cog)
         if name and value:
             self._current_embed.add_field(name=name, value=value)
             value = ''
 
         # this means that there was no `Cog:` title thingys, that means that its a command help
-        if value:
+        if value and not self.last_cog:
             fmt = list(filter(None, value.split('\n')))
             self._current_embed.title = f'``{fmt[0]}``' # command signiture
             self._current_embed.description = fmt[1] # command desc

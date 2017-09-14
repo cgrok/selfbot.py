@@ -242,9 +242,9 @@ class Selfbot(commands.Bot):
             # modify destination based on length of pages.
             if characters > 1000:
                 destination = ctx.message.author
-
+        color = await ctx.get_dominant_color(ctx.author.avatar_url)
         for embed in pages:
-            embed.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+            embed.color = color
             await destination.send(embed=embed)
 
 
