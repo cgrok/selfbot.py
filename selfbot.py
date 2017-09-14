@@ -106,7 +106,7 @@ class Selfbot(commands.Bot):
         try:
             selfbot.run(safe_token, bot=False, reconnect=True)
         except KeyboardInterrupt:
-            selfbot.session.close()
+            pass
 
     async def on_ready(self):
         '''Bot startup, sets uptime.'''
