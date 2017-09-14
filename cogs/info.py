@@ -134,7 +134,6 @@ class Information:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
-
         embed.add_field(name='Latest Changes', value=revision)
         embed.add_field(name='Author', value='verixx#7220')
         embed.add_field(name='Uptime', value=uptime)
