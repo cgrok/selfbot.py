@@ -39,9 +39,9 @@ class Misc:
         self.bot = bot
         self.emoji_converter = commands.EmojiConverter()
 
-
     @commands.command()
     async def animate(self, ctx, *, file):
+        '''Animate a text file on discord!'''
         try:
             with open(f'data/anims/{file}') as a:
                 anim = a.read().splitlines()
@@ -99,8 +99,8 @@ class Misc:
         em.set_image(url='attachment://color.png')
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
-    @commands.command(aliases=['dc','dcolor'])
-    async def dominant_color(self, ctx, *, url):
+    @commands.command(aliases=['dc','dominant_color'])
+    async def dcolor(self, ctx, *, url):
         '''Fun command that shows the dominant color of an image'''
         await ctx.message.delete()
         color = await ctx.get_dominant_color(url)

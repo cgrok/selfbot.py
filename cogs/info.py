@@ -97,6 +97,7 @@ class Information:
 
     @commands.command(aliases=['bot', 'info'])
     async def about(self, ctx):
+        '''See information about the selfbot and latest changes.'''
         cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/verixx/selfbot/commit/%H) %s (%cr)"'
         if os.name == 'posix':
             cmd = cmd.format(r'\`%h\`')
