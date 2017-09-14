@@ -3,3 +3,4 @@ lxml
 mtranslate
 colorthief
 sympy
+psutil
