@@ -247,7 +247,7 @@ class EmbedHelp(commands.HelpFormatter):
                 # skip aliases
                 continue
 
-            entry = '{0:<{width}} {1}'.format(name, command.short_doc, width=max_width)
+            entry = '{2.context.prefix}{0:<{width}} {1}'.format(name, command.short_doc, self, width=max_width)
             shortened = self.shorten(entry)
             self._paginator.add_line(f'`{shortened}`')
 
