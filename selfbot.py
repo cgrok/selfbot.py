@@ -25,6 +25,7 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 from ext.context import CustomContext
+from ext.formatter import EmbedHelp
 from collections import defaultdict
 import asyncio
 import aiohttp
@@ -34,14 +35,23 @@ import time
 import json
 import sys
 import os
+import re
 
 
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220
     '''
+    _mentions_transforms = {
+        '@everyone': '@\u200beveryone',
+        '@here': '@\u200bhere'
+    }
+
+    _mention_pattern = re.compile('|'.join(_mentions_transforms.keys()))
+
     def __init__(self, **attrs):
         super().__init__(command_prefix=self.get_pre, self_bot=True)
+        self.formatter = EmbedHelp()
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.process = psutil.Process()
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
@@ -49,6 +59,8 @@ class Selfbot(commands.Bot):
         self.last_message = None
         self.messages_sent = 0
         self.commands_used = defaultdict(int)
+        self.remove_command('help')
+        self.add_command(self.new_help_command)
         self.add_command(self.ping)
         self.add_command(self._logout)
 
@@ -181,10 +193,64 @@ class Selfbot(commands.Bot):
         await ctx.send('`Selfbot Logging out...`')
         await self.logout()
 
+    @commands.command(name='help')
+    async def new_help_command(self, ctx, *commands : str):
+        """Shows this message."""
+        destination = ctx.message.author if self.pm_help else ctx.message.channel
+
+        def repl(obj):
+            return self._mentions_transforms.get(obj.group(0), '')
+
+        # help by itself just lists our own commands.
+        if len(commands) == 0:
+            pages = await self.formatter.format_help_for(ctx, self)
+        elif len(commands) == 1:
+            # try to see if it is a cog name
+            name = self._mention_pattern.sub(repl, commands[0])
+            command = None
+            if name in self.cogs:
+                command = self.cogs[name]
+            else:
+                command = self.all_commands.get(name)
+                if command is None:
+                    await destination.send(self.command_not_found.format(name))
+                    return
+
+            pages = await self.formatter.format_help_for(ctx, command)
+        else:
+            name = self._mention_pattern.sub(repl, commands[0])
+            command = self.all_commands.get(name)
+            if command is None:
+                await destination.send(self.command_not_found.format(name))
+                return
+
+            for key in commands[1:]:
+                try:
+                    key = self._mention_pattern.sub(repl, key)
+                    command = command.all_commands.get(key)
+                    if command is None:
+                        await destination.send(self.command_not_found.format(key))
+                        return
+                except AttributeError:
+                    await destination.send(self.command_has_no_subcommands.format(command, key))
+                    return
+
+            pages = await self.formatter.format_help_for(ctx, command)
+
+        if self.pm_help is None:
+            characters = sum(map(lambda l: len(l), pages))
+            # modify destination based on length of pages.
+            if characters > 1000:
+                destination = ctx.message.author
+
+        for embed in pages:
+            embed.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+            await destination.send(embed=embed)
+
 
 
 if __name__ == '__main__':
-    Selfbot.init("mfa.g4iaiyrv1mUNh_c8S3nrMAyH4Z-xilSu3L2ZsADnP0fv0eQyJ44Xyo70qF6y2o5ymNMqFlG6oF8INkDs_0fY")
+    Selfbot.init()
 
 
 
