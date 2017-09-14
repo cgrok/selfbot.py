@@ -125,18 +125,19 @@ class Misc:
         outputty = None
         output = None
 
-    @self.command(pass_context=True, aliases=['bf'])
+    @commands.command(pass_context=True, aliases=['bf'])
     async def bf(ctx, slurp:str):
        thruput = ctx.message.content
        preinput = thruput[5:]
        preinput2 = "\"\"\"\n" + preinput
        input = preinput2 + "\n\"\"\""
-        code = read(input)
+       code = read(input)
        output = bfeval(code)
-        await ctx.say("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
+       await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
     async def animate(self, ctx, *, file):
+        '''Animate a text file on discord!'''
         try:
             with open(f'data/anims/{file}') as a:
                 anim = a.read().splitlines()
@@ -194,8 +195,8 @@ class Misc:
         em.set_image(url='attachment://color.png')
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
-    @commands.command(aliases=['dc','dcolor'])
-    async def dominant_color(self, ctx, *, url):
+    @commands.command(aliases=['dc','dominant_color'])
+    async def dcolor(self, ctx, *, url):
         '''Fun command that shows the dominant color of an image'''
         await ctx.message.delete()
         color = await ctx.get_dominant_color(url)
