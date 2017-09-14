@@ -92,7 +92,7 @@ class Utility:
         if len(characters) > 15:
             return await ctx.send('Too many characters ({}/15)'.format(len(characters)))
         
-        fmt = '`\\U{0:>08}`: `{1}` - \N\{`{2}`\} - <http://www.fileformat.info/info/unicode/char/{0}>'
+        fmt = '`\\U{0:>08}`: `{1}` - \\N\{`{2}`\} - <http://www.fileformat.info/info/unicode/char/{0}>'
 
         def to_string(c):
             digit = format(ord(c), 'x')
