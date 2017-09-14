@@ -28,15 +28,44 @@ from ext.utility import parse_equation
 from ext.colours import ColorNames
 from sympy import solve
 from PIL import Image
+import asyncio
+import random
 import emoji
 import copy
 import io
-
 
 class Misc:
     def __init__(self, bot):
         self.bot = bot
         self.emoji_converter = commands.EmojiConverter()
+
+
+    @commands.command()
+    async def animate(self, ctx, *, file):
+        try:
+            with open(f'data/anims/{file}') as a:
+                anim = a.read().splitlines()
+        except:
+            return await ctx.send('File not found.')
+        interval = anim[0]
+        base = await ctx.send(anim[1])
+        for line in anim[2:]:
+            await base.edit(content=line)
+            await asyncio.sleep(interval)
+
+    @commands.command()
+    async def virus(self, ctx, virus=None, *, user : commands.MemberConverter=None):
+        '''
+        Destroy someone's device with this virus command!
+        '''
+        virus = virus or 'discord'
+        user = user or ctx.author
+        with open('data/virus.txt') as f:
+            animation = f.read().splitlines()
+        base = await ctx.send(animation[0])
+        for line in animation[1:]:
+            await base.edit(content=line.format(virus=virus, user=user))
+            await asyncio.sleep(random.randint(1, 4))
 
     @commands.command()
     async def react(self, ctx, index : int, *, reactions):
