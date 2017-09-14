@@ -89,11 +89,10 @@ class Utility:
     @commands.command()
     async def charinfo(self, ctx, *, characters: str):
         """Shows you information about a number of characters."""
-
         if len(characters) > 15:
             return await ctx.send('Too many characters ({}/15)'.format(len(characters)))
         
-        fmt = '`\\U{0:>08}`: `{1}` - `{2}` - <http://www.fileformat.info/info/unicode/char/{0}>'
+        fmt = '`\\U{0:>08}`: `{1}` - \N\{`{2}`\} - <http://www.fileformat.info/info/unicode/char/{0}>'
 
         def to_string(c):
             digit = format(ord(c), 'x')
@@ -189,7 +188,6 @@ class Utility:
             if not params.count('}'):
                 em.description = params
 
-
         for field in self.get_parts(params):
             data = self.parse_field(field)
 
@@ -239,7 +237,9 @@ class Utility:
         return em
 
     def get_parts(self, string):
-        '''Splits the parts of the embed'''
+        '''
+        Splits the sections of the embed command
+        '''
         for i, char in enumerate(string):
             if char == "{":
                 ret = ""
@@ -250,7 +250,10 @@ class Utility:
                 yield ret.rstrip('}')
                     
     def parse_field(self, string):
-        '''Recursive function to get all the key val pairs in each section'''
+        '''
+        Recursive function to get all the key val 
+        pairs in each section of the parsed embed command
+        '''
         ret = {}
 
         parts = string.split(':')
