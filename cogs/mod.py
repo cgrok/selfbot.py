@@ -34,36 +34,70 @@ import io
 
 
 class Mod:
+
     def __init__(self, bot):
         self.bot = bot
 
+    async def format_mod_embed(self, ctx, user, success, method):
+        '''Helper func to format an embed to prevent extra code'''
+        emb = discord.Embed(title=method.title())
+        emb.set_thumbnail(url=user.avatar_url)
+        emb.color = await ctx.get_dominant_color(user.avatar_url)
+
+        if success:
+            if method == 'ban':
+                emb.description = f'{user} was just {method}ned.'
+            else:
+                emb.description = f'{user} was just {method}ed.'
+        else:
+            emb.description = f"You do not have the permissions to {method} users."
+
+        return emb
+
     @commands.command()
-    async def kick(self, ctx, member : commands.MemberConverter):
+    async def kick(self, ctx, member : commands.MemberConverter, *, reason=None):
         '''Kick someone from the server.'''
-        emb = discord.Embed(title='Kick')
-        emb.color = await ctx.get_dominant_color(member.avatar_url)
-        emb.set_thumbnail(url=member.avatar_url)
-        await ctx.message.delete()
         try:
-            emb.description = "{} was just kicked.".format(member)
-            await ctx.guild.kick(member)
+            await ctx.guild.kick(member, reason=reason)
         except:
-            emb.description = "You do not have the permissions to kick users."
+            success = False
+        else:
+            success = True
+
+        emb = await self.format_mod_embed(ctx, member, success, 'kick')
+
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def ban(self, ctx, member : commands.MemberConverter):
+    async def ban(self, ctx, member : commands.MemberConverter, *, reason=None):
         '''Ban someone from the server.'''
-        emb = discord.Embed(title='Ban')
-        emb.color = await ctx.get_dominant_color(member.avatar_url)
-        emb.set_thumbnail(url=member.avatar_url)
-        await ctx.message.delete()
         try:
-            emb.description = "{} was just banned.".format(member)
-            await ctx.guild.ban(member)
+            await ctx.guild.ban(member, reason=reason)
         except:
-            emb.description = "You do not have the permissions to ban users."
+            success = False
+        else:
+            success = True
+
+        emb = await self.format_mod_embed(ctx, member, success, 'ban')
+
         await ctx.send(embed=emb)
+
+    @commands.command()
+    async def unban(self, ctx, name_or_id, *, reason=None):
+        '''Unban someone from the server.'''
+        user = await ctx.get_banned_user(name_or_id)
+
+        try:
+            await ctx.guild.unban(user, reason=reason)
+        except:
+            success = False
+        else:
+            success = True
+        
+        emb = await self.format_mod_embed(ctx, member, success, 'unban')
+
+        await ctx.send(embed=emb)
+
 
     @commands.command()
     async def purge(self, ctx, limit : int):
