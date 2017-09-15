@@ -159,7 +159,7 @@ class Information:
         else:
             cmd = cmd.format(r'`%h`')
 
-        revision = '\n'.join(os.popen(cmd).read().strip().splitlines()[:3])
+        revision = '\n'.join(os.popen(cmd).read().strip()  .splitlines()[:3])
         embed = discord.Embed()
         embed.url = 'https://discord.gg/pmQSbAd'
         embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
@@ -189,8 +189,8 @@ class Information:
         if days:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-
-        embed.add_field(name='Latest Changes', value=revision)
+        if revision:
+            embed.add_field(name='Latest Changes', value=revision)
         embed.add_field(name='Author', value='verixx#7220')
         embed.add_field(name='Uptime', value=uptime)
         embed.add_field(name='Guilds', value=len(self.bot.guilds))
