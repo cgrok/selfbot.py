@@ -17,6 +17,14 @@ class CustomContext(commands.Context):
         '''Returns the bot's aiohttp client session'''
         return self.bot.session
 
+    async def get_banned_member(member_or_id):
+        '''Helper function to retrieve a banned member'''
+        async for member in ctx.channel.bans():
+            if member.id == int(member_or_id):
+                return member
+            if member_or_id.lower() in str(member).lower():
+                return member
+
     async def purge(self, limit=10, check=None):
         '''Helper function to purge messages '''
         async for message in self.channel.history(limit=limit+1):
@@ -86,11 +94,3 @@ class CustomContext(commands.Context):
             color = ColorThief(f).get_color(quality=1)
             
         return discord.Color.from_rgb(*color)
-
-    
-
-
-
-
-
-		
