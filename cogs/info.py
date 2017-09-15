@@ -38,6 +38,19 @@ class Information:
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(aliases=['av'])
+    async def avatar(self, ctx, *, member : commands.MemberConverter = None):
+        '''Returns someone's avatar url'''
+        member = member or ctx.author
+        av = member.avatar_url
+        if ".gif" in av:
+            av += "&f=.gif"
+        color = await ctx.get_dominant_color(av)
+        em = discord.Embed(url=av, color=color)
+        em.set_author(name=str(member), icon_url=av)
+        em.set_image(url=av)
+        await ctx.send(embed=em)
+
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
     async def serverinfo(self, ctx, server_id : int=None):
