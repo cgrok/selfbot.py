@@ -20,14 +20,14 @@ class CustomContext(commands.Context):
         '''shortcut'''
         return await self.message.delete()
 
-    async def get_banned_user(self, name_or_id):
+    async def get_ban(self, name_or_id):
         '''Helper function to retrieve a banned user'''
         for ban in await self.guild.bans():
             if name_or_id.isdigit():
                 if ban.user.id == int(name_or_id):
-                    return ban.user
+                    return ban
             if name_or_id.lower() in str(ban.user).lower():
-                return ban.user
+                return ban
 
     async def purge(self, *args, **kwargs):
         '''Shortcut to channel.purge, preset for selfbots.'''
