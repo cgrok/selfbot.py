@@ -11,31 +11,26 @@ class CustomContext(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-
     @property
     def session(self):
         '''Returns the bot's aiohttp client session'''
         return self.bot.session
 
-    async def get_banned_member(member_or_id):
+    async def delete(self):
+        '''shortcut'''
+        return await self.message.delete()
+
+    async def get_banned_member(name_or_id):
         '''Helper function to retrieve a banned member'''
-        async for member in ctx.channel.bans():
-            if member.id == int(member_or_id):
+        async for member in self.channel.bans():
+            if member.id == int(name_or_id):
                 return member
-            if member_or_id.lower() in str(member).lower():
+            if name_or_id.lower() in str(member).lower():
                 return member
 
-    async def purge(self, limit=10, check=None):
-        '''Helper function to purge messages '''
-        async for message in self.channel.history(limit=limit+1):
-            try:
-                if check is not None:
-                    if check(message):
-                        await message.delete()
-                else:
-                    await message.delete()
-            except:
-                pass
+    async def purge(self, *args, **kwargs):
+        kwargs.setdefault('bulk', False)
+        await self.channel.purge(*args, **kwargs)
 
     async def _get_message(self, channel, id):
         '''Goes through channel history to get a message'''
