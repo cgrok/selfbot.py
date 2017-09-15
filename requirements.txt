@@ -4,3 +4,4 @@ mtranslate
 colorthief
 sympy
 psutil
+emoji
