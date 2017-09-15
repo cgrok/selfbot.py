@@ -24,6 +24,8 @@ lxml
 mtranslate
 colorthief
 sympy
+psutil
+emoji
 ```
 Do `pip install -r path/to/requirements.txt` to install the requirements.
 ## Setup
