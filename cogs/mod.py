@@ -40,10 +40,9 @@ class Mod:
 
     async def format_mod_embed(self, ctx, user, success, method):
         '''Helper func to format an embed to prevent extra code'''
-        emb = discord.Embed(title=method.title())
-        emb.set_thumbnail(url=user.avatar_url)
+        emb = discord.Embed()
+        emb.set_author(name=method.title(), icon_url=user.avatar_url)
         emb.color = await ctx.get_dominant_color(user.avatar_url)
-
         if success:
             if method == 'ban':
                 emb.description = f'{user} was just {method}ned.'
@@ -94,7 +93,7 @@ class Mod:
         else:
             success = True
         
-        emb = await self.format_mod_embed(ctx, member, success, 'unban')
+        emb = await self.format_mod_embed(ctx, user, success, 'unban')
 
         await ctx.send(embed=emb)
 
