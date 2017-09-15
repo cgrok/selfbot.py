@@ -36,6 +36,7 @@ import json
 import sys
 import os
 import re
+import textwrap
 
 
 class Selfbot(commands.Bot):
@@ -124,14 +125,16 @@ class Selfbot(commands.Bot):
         '''Bot startup, sets uptime.'''
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
-        print('---------------')
-        print('selfbot.py connected!')
-        print('---------------')
-        print('author: verixx#7220')
-        print('---------------')
-        print('logged in as: {}'.format(self.user))
-        print('user id: {}'.format(self.user.id))
-        print('---------------')
+        print(textwrap.dedent('''
+        ---------------
+        selfbot.py connected!
+        ---------------
+        Author: verixx#7220
+        ---------------
+        Logged in as: {}
+        User ID: {}
+        ---------------
+        '''.format(self.user,self.user.id)))
 
     async def on_command(self, ctx):
         cmd = ctx.command.qualified_name.replace(' ', '_')
@@ -154,7 +157,7 @@ class Selfbot(commands.Bot):
 
     async def presence_change(self):
         '''
-        Background task that changes your presence. 
+        Background task that changes your presence.
         Useful if you are hosting the bot 24/7
         Your client must be on invisible mode for this to work
         '''
@@ -178,14 +181,14 @@ class Selfbot(commands.Bot):
         """Pong! Returns your websocket latency."""
         em = discord.Embed()
         em.title ='Pong! Websocket Latency:'
-        em.description = f'{self.ws.latency * 1000:.4f} ms'
+        em.description = f"{self.ws.latency * 1000:.4f} ms"
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         await ctx.send(embed=em)
 
     @commands.command(name='logout')
     async def _logout(self, ctx):
         '''
-        Shuts down the selfbot, 
+        Shuts down the selfbot,
         equivalent to a restart if you are hosting the bot on heroku.
         '''
         await ctx.send('`Selfbot Logging out...`')
@@ -250,6 +253,3 @@ class Selfbot(commands.Bot):
 
 if __name__ == '__main__':
     Selfbot.init()
-
-
-
