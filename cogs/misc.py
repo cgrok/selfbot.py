@@ -133,8 +133,8 @@ class Misc:
         em.add_field(name='Result', value=f'```py\n{result}```')
         await ctx.send(embed=em)
 
-    @commands.group(invoke_without_command=True)
-    async def emote(self, ctx, *, emoji : commands.EmojiConverter):
+    @commands.group(invoke_without_command=True, aliases=['emote', 'e'])
+    async def emoji(self, ctx, *, emoji : commands.EmojiConverter):
         '''Use emojis without nitro!'''
         await ctx.message.delete()
         async with ctx.session.get(emoji.url) as resp:
@@ -142,7 +142,7 @@ class Misc:
         with io.BytesIO(image) as file:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
-    @emote.command()
+    @emoji.command()
     async def copy(self, ctx, *, emoji : commands.EmojiConverter):
         '''Copy an emoji from another server to your own'''
         em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emoji.name}')
