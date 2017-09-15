@@ -55,7 +55,7 @@ class Mod:
         return emb
 
     @commands.command()
-    async def kick(self, ctx, member : commands.MemberConverter, *, reason=None):
+    async def kick(self, ctx, member : discord.Member, *, reason=None):
         '''Kick someone from the server.'''
         try:
             await ctx.guild.kick(member, reason=reason)
@@ -69,7 +69,7 @@ class Mod:
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def ban(self, ctx, member : commands.MemberConverter, *, reason=None):
+    async def ban(self, ctx, member : discord.Member, *, reason=None):
         '''Ban someone from the server.'''
         try:
             await ctx.guild.ban(member, reason=reason)
@@ -102,12 +102,12 @@ class Mod:
     @commands.command()
     async def purge(self, ctx, limit : int):
         '''Clean a number of messages'''
-        await ctx.purge(limit) # TODO: add more functionality
+        await ctx.purge(limit=limit+1) # TODO: add more functionality
 
     @commands.command()
     async def clean(self, ctx, limit : int=15):
         '''Clean a number of your own messages'''
-        await ctx.purge(limit, lambda m: m.author == ctx.author)
+        await ctx.purge(limit=limit+1, check=lambda m: m.author == ctx.author)
 
 
 

@@ -55,7 +55,7 @@ class Misc:
             await asyncio.sleep(float(interval))
 
     @commands.command()
-    async def virus(self, ctx, virus=None, *, user : commands.MemberConverter=None):
+    async def virus(self, ctx, virus=None, *, user : discord.Member=None):
         '''
         Destroy someone's device with this virus command!
         '''
@@ -91,7 +91,7 @@ class Misc:
                     pass
 
     @commands.command(aliases=['color', 'colour', 'sc'])
-    async def show_color(self, ctx, *, color : commands.ColourConverter):
+    async def show_color(self, ctx, *, color : discord.Colour):
         '''Enter a color and you will see it!'''
         file = io.BytesIO()
         Image.new('RGB', (200, 90), color.to_rgb()).save(file, format='PNG')
@@ -134,7 +134,7 @@ class Misc:
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
-    async def _emoji(self, ctx, *, emoji : commands.EmojiConverter):
+    async def _emoji(self, ctx, *, emoji : discord.Emoji):
         '''Use emojis without nitro!'''
         await ctx.message.delete()
         async with ctx.session.get(emoji.url) as resp:
@@ -143,7 +143,7 @@ class Misc:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
-    async def copy(self, ctx, *, emoji : commands.EmojiConverter):
+    async def copy(self, ctx, *, emoji : discord.Emoji):
         '''Copy an emoji from another server to your own'''
         em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emoji.name}')
         em.set_image(url='attachment://emoji.png')

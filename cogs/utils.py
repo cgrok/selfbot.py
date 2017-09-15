@@ -60,7 +60,7 @@ class Utility:
 
 
     @commands.command()
-    async def copy(self, ctx, id : int, channel : TextChannelConverter=None):
+    async def copy(self, ctx, id : int, channel : discord.TextChannel=None):
         '''Copy someones message by ID'''
         await ctx.message.delete()
         msg = await ctx.get_message(channel or ctx.channel, id)
@@ -75,7 +75,7 @@ class Utility:
                 await ctx.send(msg.content)
     
     @commands.command()
-    async def quote(self, ctx, id : int, channel : TextChannelConverter=None):
+    async def quote(self, ctx, id : int, channel : discord.TextChannel=None):
         """Quote someone's message by ID"""
         await ctx.message.delete()
 

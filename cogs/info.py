@@ -40,7 +40,7 @@ class Information:
 
     @commands.command(aliases=["ri","role"])
     @commands.guild_only()
-    async def roleinfo(self, ctx, *, role: commands.RoleConverter):
+    async def roleinfo(self, ctx, *, role: discord.Role):
         '''Shows information about a role'''
         guild = ctx.guild
 
@@ -71,7 +71,7 @@ class Information:
         await ctx.send(embed=em)
 
     @commands.command(aliases=['av'])
-    async def avatar(self, ctx, *, member : commands.MemberConverter = None):
+    async def avatar(self, ctx, *, member : discord.Member=None):
         '''Returns someone's avatar url'''
         member = member or ctx.author
         av = member.avatar_url
@@ -122,7 +122,7 @@ class Information:
 
     @commands.command(aliases=['ui'])
     @commands.guild_only()
-    async def userinfo(self, ctx, *, member : commands.MemberConverter=None):
+    async def userinfo(self, ctx, *, member : discord.Member=None):
         '''Get information about a member of a server'''
         server = ctx.guild
         user = member or ctx.message.author
@@ -131,7 +131,7 @@ class Information:
 
         for role in roles:
             if str(role.color) != "#000000":
-                color = int(str(role.color)[1:], 16)
+                color = role.color
 
         rolenames = ', '.join([r.name for r in roles]) or 'None'
         time = ctx.message.created_at
