@@ -167,9 +167,8 @@ class Misc:
             pos = 0
         search_terms = "+".join(search_terms)
         url = "http://api.urbandictionary.com/v0/define?term=" + search_terms
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as r:
-                result = await r.json()
+        async with ctx.session.get(url) as r:
+            result = await r.json()
         emb = discord.Embed()
         emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
         if result["list"]:
