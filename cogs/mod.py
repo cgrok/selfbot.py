@@ -43,6 +43,7 @@ class Mod:
         emb = discord.Embed()
         emb.set_author(name=method.title(), icon_url=user.avatar_url)
         emb.color = await ctx.get_dominant_color(user.avatar_url)
+        emb.set_footer(text=f'User ID: {user.id}')
         if success:
             if method == 'ban':
                 emb.description = f'{user} was just {method}ned.'
@@ -84,16 +85,16 @@ class Mod:
     @commands.command()
     async def unban(self, ctx, name_or_id, *, reason=None):
         '''Unban someone from the server.'''
-        user = await ctx.get_banned_user(name_or_id)
+        ban = await ctx.get_ban(name_or_id)
 
         try:
-            await ctx.guild.unban(user, reason=reason)
+            await ctx.guild.unban(ban.user, reason=reason)
         except:
             success = False
         else:
             success = True
         
-        emb = await self.format_mod_embed(ctx, user, success, 'unban')
+        emb = await self.format_mod_embed(ctx, ban.user, success, 'unban')
 
         await ctx.send(embed=emb)
 
@@ -121,6 +122,19 @@ class Mod:
         em.color = await ctx.get_dominant_color(ctx.guild.icon_url)
 
         await ctx.send(embed=em)
+
+    @commands.command()
+    async def baninfo(self, ctx, *, name_or_id):
+        ban = await ctx.get_ban(name_or_id)
+        em = discord.Embed()
+        em.color = await ctx.get_dominant_color(ban.user.avatar_url)
+        em.set_author(name=str(ban.user), icon_url=ban.user.avatar_url)
+        em.add_field(name='Reason', value=ban.reason or 'None')
+        em.set_thumbnail(url=ban.user.avatar_url)
+        em.set_footer(text=f'User ID: {ban.user.id}')
+
+        await ctx.send(embed=em)
+
 
 
 
