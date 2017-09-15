@@ -156,8 +156,8 @@ class Misc:
     @commands.command()
     async def urban(self, ctx, *, search_terms : str):
         '''Searches Up a Term in Urban Dictionary'''
-        search_terms = search_terms.split(" ")
-        definition_number=terms=None
+        search_terms = search_terms.split()
+        definition_number = terms = None
         try:
             definition_number = int(search_terms[-1]) - 1
             search_terms.remove(search_terms[-1])
@@ -171,13 +171,14 @@ class Misc:
             result = await r.json()
         emb = discord.Embed()
         emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
-        if result["list"]:
+        if result.get('list'):
             definition = result['list'][definition_number]['definition']
             example = result['list'][definition_number]['example']
             defs = len(result['list'])
             search_terms = search_terms.split("+")
-            emb.description = "{}\n\n**Example:\n**{}".format(definition, example)
             emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number+1, defs)
+            emb.description = definition
+            emb.add_field(name='Example', value=example)
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)    
