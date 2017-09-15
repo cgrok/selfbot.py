@@ -117,8 +117,8 @@ class Selfbot(commands.Bot):
         safe_token = token or selfbot.token.strip('\"')
         try:
             selfbot.run(safe_token, bot=False, reconnect=True)
-        except KeyboardInterrupt:
-            pass
+        except Exception as e:
+            print(e)
 
     async def on_ready(self):
         '''Bot startup, sets uptime.'''
@@ -246,7 +246,6 @@ class Selfbot(commands.Bot):
         for embed in pages:
             embed.color = color
             await destination.send(embed=embed)
-
 
 
 if __name__ == '__main__':
