@@ -20,7 +20,7 @@ class CustomContext(commands.Context):
         '''shortcut'''
         return await self.message.delete()
 
-    async def get_banned_member(name_or_id):
+    async def get_banned_member(self, name_or_id):
         '''Helper function to retrieve a banned member'''
         async for member in self.channel.bans():
             if member.id == int(name_or_id):
