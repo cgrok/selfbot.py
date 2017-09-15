@@ -65,6 +65,16 @@ class Mod:
             emb.description = "You do not have the permissions to ban users."
         await ctx.send(embed=emb)
 
+    @commands.command()
+    async def purge(self, ctx, limit : int):
+        '''Clean a number of messages'''
+        await ctx.purge(limit) # TODO: add more functionality
+
+    @commands.command()
+    async def clean(self, ctx, limit : int=15):
+        '''Clean a number of your own messages'''
+        await ctx.purge(limit, lambda m: m.author == ctx.author)
+
 
 
 def setup(bot):
