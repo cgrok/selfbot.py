@@ -178,7 +178,7 @@ class Selfbot(commands.Bot):
         """Pong! Returns your websocket latency."""
         em = discord.Embed()
         em.title ='Pong! Websocket Latency:'
-        em.description = f'{self.ws.latency * 100} ms'
+        em.description = f'{self.ws.latency * 1000:.4f} ms'
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         await ctx.send(embed=em)
 
