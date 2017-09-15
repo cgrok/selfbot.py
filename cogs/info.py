@@ -104,7 +104,7 @@ class Information:
         else:
             cmd = cmd.format(r'`%h`')
 
-        revision = os.popen(cmd).read().strip()
+        revision = '\n'.join(os.popen(cmd).read().strip().splitlines()[:3])
         embed = discord.Embed()
         embed.url = 'https://discord.gg/pmQSbAd'
         embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
