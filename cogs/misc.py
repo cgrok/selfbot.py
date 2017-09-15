@@ -40,7 +40,7 @@ class Misc:
         self.emoji_converter = commands.EmojiConverter()
 
 
-    def prepare_code(code):
+    def prepare_code(self, code):
         def map_left_bracket(b, p):
             return (b, find_bracket(code, p + 1, b))
 
@@ -58,12 +58,12 @@ class Misc:
                 for c, i in zip(code, range(len(code)))]
 
 
-    def read(string):
+    def read(self, string):
         valid = ['>', '<', '+', '-', '.', ',', '[', ']']
         return prepare_code([c for c in string if c in valid])
 
 
-    def eval_step(code, data, code_pos, data_pos):
+    def eval_step(self, code, data, code_pos, data_pos):
         c = code[code_pos]
         d = data[data_pos]
         step = 1
@@ -126,7 +126,7 @@ class Misc:
         output = None
 
     @commands.command(pass_context=True, aliases=['bf'])
-    async def bf(ctx, slurp:str):
+    async def bf(self, ctx, slurp:str):
        thruput = ctx.message.content
        preinput = thruput[5:]
        preinput2 = "\"\"\"\n" + preinput
