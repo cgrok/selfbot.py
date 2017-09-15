@@ -11,10 +11,27 @@ class CustomContext(commands.Context):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
+    @property
+    def session(self):
+        '''Returns the bot's aiohttp client session'''
+        return self.bot.session
+
+    async def purge(self, limit=10, check=None):
+        '''Helper function to purge messages '''
+        async for message in self.channel.history(limit=limit+1):
+            try:
+                if check is not None:
+                    if check(message):
+                        await message.delete()
+                else:
+                    await message.delete()
+            except:
+                pass
+
     async def _get_message(self, channel, id):
         '''Goes through channel history to get a message'''
-        history = await channel.history(limit=2000).flatten()
-        for message in history:
+        async for message in channel.history(limit=2000):
             if message.id == id:
                 return message
 
@@ -70,10 +87,7 @@ class CustomContext(commands.Context):
             
         return discord.Color.from_rgb(*color)
 
-    @property
-    def session(self):
-        '''Returns the bot's aiohttp client session'''
-        return self.bot.session
+    
 
 
 
