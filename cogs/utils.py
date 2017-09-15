@@ -52,7 +52,12 @@ class Utility:
     @commands.command()
     async def source(self, ctx, *, command):
         '''See the source code for any command.'''
-        await ctx.send('```py\n'+str(inspect.getsource(self.bot.get_command(command).callback)+'```'))
+        source = str(inspect.getsource(self.bot.get_command(command).callback))
+        try:
+            await ctx.send('```py\n'+source+'```')
+        except:
+            await ctx.send('The command source is too long to send.')
+
 
     @commands.command()
     async def copy(self, ctx, id : int, channel : TextChannelConverter=None):
