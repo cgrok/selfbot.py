@@ -22,9 +22,10 @@ class CustomContext(commands.Context):
 
     async def get_banned_user(self, name_or_id):
         '''Helper function to retrieve a banned user'''
-        async for ban in self.guild.bans():
-            if ban.user.id == int(name_or_id):
-                return ban.user
+        for ban in await self.guild.bans():
+            if name_or_id.isdigit():
+                if ban.user.id == int(name_or_id):
+                    return ban.user
             if name_or_id.lower() in str(ban.user).lower():
                 return ban.user
 
