@@ -175,14 +175,12 @@ class Selfbot(commands.Bot):
 
     @commands.command()
     async def ping(self, ctx):
-        """Pong! Check your response time."""
-        msgtime = ctx.message.created_at
-        now = datetime.datetime.now()
-        ping = now - msgtime
-        pong = discord.Embed(title='Pong! Response Time:',
-                             description=str(ping.microseconds / 1000.0) + ' ms',
-                             color=0x00ffff)
-        await ctx.send(embed=pong)
+        """Pong! Returns your websocket latency."""
+        em = discord.Embed()
+        em.title ='Pong! Websocket Latency:'
+        em.description = f'{self.ws.latency * 100} ms'
+        em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        await ctx.send(embed=em)
 
     @commands.command(name='logout')
     async def _logout(self, ctx):
@@ -242,7 +240,9 @@ class Selfbot(commands.Bot):
             # modify destination based on length of pages.
             if characters > 1000:
                 destination = ctx.message.author
+
         color = await ctx.get_dominant_color(ctx.author.avatar_url)
+
         for embed in pages:
             embed.color = color
             await destination.send(embed=embed)
