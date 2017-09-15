@@ -50,8 +50,8 @@ class CustomContext(commands.Context):
         '''Small helper for confirmation messages.'''
         await self.send(msg or '*Are you sure you want to proceed?* `(Y/N)`')
         resp = self.bot.wait_for('message', check=lambda m: m == ctx.author)
-        truthy = ['n', 'no', 'noo']
-        if resp.content.lower().strip() in truthy:
+        falsy = ['n', 'no', 'false','0','fuck off']
+        if resp.content.lower().strip() in falsy:
             return False
         else:
             return True
