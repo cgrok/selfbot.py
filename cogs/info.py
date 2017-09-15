@@ -83,6 +83,16 @@ class Information:
         em.set_image(url=av)
         await ctx.send(embed=em)
 
+    @commands.command(aliases=['servericon'])
+    async def serverlogo(self, ctx):
+        '''Return the server's icon url.'''
+        icon = ctx.guild.icon_url
+        color = await ctx.get_dominant_color(icon)
+        em = discord.Embed(color=color, url=icon)
+        em.set_author(name=server.name, icon=icon)
+        em.set_image(url=icon)
+        await ctx.send(embed=em)
+
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
     async def serverinfo(self, ctx, server_id : int=None):
