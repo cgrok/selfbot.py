@@ -98,7 +98,6 @@ class Mod:
 
         await ctx.send(embed=emb)
 
-
     @commands.command()
     async def purge(self, ctx, limit : int):
         '''Clean a number of messages'''
@@ -108,6 +107,22 @@ class Mod:
     async def clean(self, ctx, limit : int=15):
         '''Clean a number of your own messages'''
         await ctx.purge(limit=limit+1, check=lambda m: m.author == ctx.author)
+
+
+    @commands.command()
+    async def bans(self, ctx):
+        '''See a list of banned users in the guild'''
+        try:
+            bans = await ctx.guild.bans()
+        except:
+            return await ctx.send('You dont have the perms to see bans.')
+
+        em = discord.Embed(title=f'List of Banned Members ({len(bans)}):')
+        em.description = ', '.join([str(b.user) for b in bans])
+        em.color = await ctx.get_dominant_color(ctx.guild.icon_url)
+
+        await ctx.send(embed=em)
+
 
 
 
