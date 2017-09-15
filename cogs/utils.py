@@ -69,7 +69,10 @@ class Utility:
             for embed in msg.embeds[1:]:
                 await ctx.send(embed=embed)
         else:
-            await ctx.send(msg.content, embed=msg.embeds[0])
+            if msg.embeds:
+                await ctx.send(msg.content, embed=msg.embeds[0])
+            else:
+                await ctx.send(msg.content)
     
     @commands.command()
     async def quote(self, ctx, id : int, channel : TextChannelConverter=None):
