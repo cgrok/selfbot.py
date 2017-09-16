@@ -89,6 +89,17 @@ class Misc:
                     yield await self.emoji_converter.convert(ctx, emote)
                 except commands.BadArgument:
                     pass
+    @commands.command(aliases=['msgid'])
+    async def messageid(self, ctx, index: int):
+        '''Gets message ID of a specified message'''
+        history = await ctx.channel.history(limit=10).flatten()
+        message = history[index]
+        await ctx.send(message.id)
+        
+    @commands.command()
+    async def roleid(self, ctx, role: discord.Role):
+        '''Gets role ID of a specified role'''
+        await ctx.send(role.id)
 
     @commands.command(aliases=['color', 'colour', 'sc'])
     async def show_color(self, ctx, *, color : discord.Colour):
