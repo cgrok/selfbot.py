@@ -197,22 +197,22 @@ class Misc:
     @commands.command()
     async def shrug(self, ctx):
         """Shrugs!"""
-        await message.edit(content='¯\\_(ツ)\_/¯')
+        await ctx.message.edit(content='¯\\_(ツ)\_/¯')
 
     @commands.command()
     async def tableflip(self, ctx):
         """Tableflip!"""
-        await message.edit(content='(╯°□°）╯︵ ┻━┻')
+        await ctx.message.edit(content='(╯°□°）╯︵ ┻━┻')
 
     @commands.command()
     async def unflip(self, ctx):
         """Unfips!"""
-        await message.edit(content='┬─┬﻿ ノ( ゜-゜ノ)')
+        await ctx.message.edit(content='┬─┬﻿ ノ( ゜-゜ノ)')
 
     @commands.command()
     async def lenny(self, ctx):
         """Lenny Face!"""
-        await message.edit(content='( ͡° ͜ʖ ͡°)')
+        await ctx.message.edit(content='( ͡° ͜ʖ ͡°)')
 
 def setup(bot):
 	bot.add_cog(Misc(bot))
