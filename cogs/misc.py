@@ -124,8 +124,8 @@ class Misc:
                 c_pos += step
         return outputty
 
-    @commands.command(pass_context=True, aliases=['bf'])
-    async def eval(self, ctx, slurp:str):
+    @commands.command()
+    async def bf(self, ctx, slurp:str):
        thruput = ctx.message.content
        preinput = thruput[5:]
        preinput2 = "\"\"\"\n" + preinput
