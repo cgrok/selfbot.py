@@ -80,8 +80,8 @@ class Misc:
         elif c == '+':
             if d == 255:
                 data[data_pos] = 0
-        else:
-            data[data_pos] += 1
+            else:
+                data[data_pos] += 1
         elif c == '-':
             if d == 0:
                 data[data_pos] = 255
