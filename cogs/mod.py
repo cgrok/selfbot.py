@@ -125,6 +125,7 @@ class Mod:
 
     @commands.command()
     async def baninfo(self, ctx, *, name_or_id):
+        '''Check the reason of a ban from the audit logs.'''
         ban = await ctx.get_ban(name_or_id)
         em = discord.Embed()
         em.color = await ctx.get_dominant_color(ban.user.avatar_url)
