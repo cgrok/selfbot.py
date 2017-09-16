@@ -195,22 +195,22 @@ class Misc:
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def shrug(self, ctx)
+    async def shrug(self, ctx):
         """Shrugs!"""
         await message.edit(content='¯\\_(ツ)\_/¯')
 
     @commands.command()
-    async def tableflip(self, ctx)
+    async def tableflip(self, ctx):
         """Tableflip!"""
         await message.edit(content='(╯°□°）╯︵ ┻━┻')
 
     @commands.command()
-    async def unflip(self, ctx)
+    async def unflip(self, ctx):
         """Unfips!"""
         await message.edit(content='┬─┬﻿ ノ( ゜-゜ノ)')
 
     @commands.command()
-    async def lenny(self, ctx)
+    async def lenny(self, ctx):
         """Lenny Face!"""
         await message.edit(content='( ͡° ͜ʖ ͡°)')
 
