@@ -58,6 +58,14 @@ If you want to request features, [create an issue](https://github.com/verixx/sel
 
 This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](https://github.com/verixx/selfbot/wiki/Heroku) 24/7 for free*  
 
+## Contributors
+
+> [@kwugfighter](https://github.com/kwugfighter)
+
+> [@FloatCobra](https://github.com/FloatCobra)
+
+> [@fourjr](https://github.com/fourjr)
+
 ## Acknowledgements
 
 > Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny
