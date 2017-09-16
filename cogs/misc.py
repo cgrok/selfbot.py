@@ -123,11 +123,9 @@ class Misc:
             else:
                 c_pos += step
         return outputty
-        outputty = None
-        output = None
 
     @commands.command(pass_context=True, aliases=['bf'])
-    async def bf(self, ctx, slurp:str):
+    async def eval(self, ctx, slurp:str):
        thruput = ctx.message.content
        preinput = thruput[5:]
        preinput2 = "\"\"\"\n" + preinput
