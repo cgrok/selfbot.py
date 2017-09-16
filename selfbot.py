@@ -37,6 +37,8 @@ import sys
 import os
 import re
 import textwrap
+from PIL import Image
+import io
 
 
 class Selfbot(commands.Bot):
@@ -56,7 +58,6 @@ class Selfbot(commands.Bot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.process = psutil.Process()
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
-        self.presence_task = self.loop.create_task(self.presence_change())
         self.last_message = None
         self.messages_sent = 0
         self.commands_used = defaultdict(int)
@@ -64,6 +65,7 @@ class Selfbot(commands.Bot):
         self.add_command(self.new_help_command)
         self.add_command(self.ping)
         self.add_command(self._logout)
+        self.add_command(self._presence)
 
         for extension in self._extensions:
             try:
@@ -154,24 +156,6 @@ class Selfbot(commands.Bot):
         self.last_message = time.time()
         await self.process_commands(message)
 
-    async def presence_change(self):
-        '''
-        Background task that changes your presence.
-        Useful if you are hosting the bot 24/7
-        Your client must be on invisible mode for this to work
-        '''
-        await self.wait_until_ready()
-        while not self.is_closed():
-            if self.last_message:
-                diff = time.time() - self.last_message
-                if diff < 300:
-                    await self.change_presence(status=discord.Status.online, afk=False)
-                elif diff > 300 and diff < 1800:
-                    await self.change_presence(status=discord.Status.idle, afk=True)
-                elif diff > 1800:
-                    await self.change_presence(status=discord.Status.invisible, afk=True)
-            await asyncio.sleep(10)
-
     def get_server(self, id):
         return discord.utils.get(self.guilds, id=id)
 
@@ -248,6 +232,43 @@ class Selfbot(commands.Bot):
         for embed in pages:
             embed.color = color
             await destination.send(embed=embed)
+
+    @commands.command(name='presence')
+    async def _presence(self, ctx, status, *, message=None):
+        '''Change your Discord status! (Stream, Online, Idle, DND, Invisible, or clear it)'''
+        status = status.lower()
+        emb = discord.Embed(title="Presence")
+        emb.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        file = io.BytesIO()
+        if status == "online":
+            await self.change_presence(status=discord.Status.online, game=discord.Game(name=message), afk=True)
+            Image.new('RGB', (500, 500), discord.Color(value=0x43b581).to_rgb()).save(file, format='PNG')
+        elif status == "idle":
+            await self.change_presence(status=discord.Status.idle, game=discord.Game(name=message), afk=True)
+            Image.new('RGB', (500, 500), discord.Color(value=0xfaa61a).to_rgb()).save(file, format='PNG')
+        elif status == "dnd":
+            await self.change_presence(status=discord.Status.dnd, game=discord.Game(name=message), afk=True)
+            Image.new('RGB', (500, 500), discord.Color(value=0xf04747).to_rgb()).save(file, format='PNG')
+        elif status == "invis" or status == "invisible":
+            await self.change_presence(status=discord.Status.invisible, game=discord.Game(name=message), afk=True)
+            Image.new('RGB', (500, 500), discord.Color(value=0x747f8d).to_rgb()).save(file, format='PNG')
+        elif status == "stream":
+            await self.change_presence(status=discord.Status.online, game=discord.Game(name=message,type=1,url='https://www.twitch.tv/a'), afk=True)
+            Image.new('RGB', (500, 500), discord.Color(value=0x593695).to_rgb()).save(file, format='PNG')
+        elif status == "clear":
+            await self.change_presence(game=None, afk=True)
+            emb.description = "Presence cleared."
+            await ctx.send(embed=emb)
+            return
+        else:
+            emb.description = "Please enter either `online`, `idle`, `dnd`, `invisible`, or `clear`."
+            await ctx.send(embed=emb)
+            return
+
+        emb.description = "Your presence has been changed."
+        file.seek(0)
+        emb.set_author(name=status.title(), icon_url="attachment://color.png")
+        await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
 
 
 if __name__ == '__main__':
