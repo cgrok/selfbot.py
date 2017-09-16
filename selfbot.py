@@ -67,12 +67,11 @@ class Selfbot(commands.Bot):
 
         for extension in self._extensions:
             try:
-                self.load_extension('cogs.'+extension)
-                print('Loaded extension: {}'.format(extension))
+                self.load_extension(f'cogs.{extension}')
+                print(f'Loaded extension: {extension}')
             except Exception as e:
-                exc = '{}: {}'.format(type(e).__name__, e)
-                print('LoadError: {}\n{}'.format(extension, exc))
-
+                print(f'LoadError: {extension}\n' 
+                      f'{type(e).__name__}: {e}')
     @property
     def token(self):
         '''Returns your token wherever it is'''
@@ -90,7 +89,7 @@ class Selfbot(commands.Bot):
         '''Returns the prefix.'''
         with open('data/config.json') as f:
             prefix = json.load(f).get('PREFIX')
-        return os.environ.get('PREFIX') or prefix or 's.'
+        return os.environ.get('PREFIX') or prefix or 'r.'
 
     @staticmethod
     def run_wizard():
@@ -125,16 +124,16 @@ class Selfbot(commands.Bot):
         '''Bot startup, sets uptime.'''
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
-        print(textwrap.dedent('''
+        print(textwrap.dedent(f'''
         ---------------
         selfbot.py connected!
         ---------------
         Author: verixx#7220
         ---------------
-        Logged in as: {}
-        User ID: {}
+        Logged in as: {self.user}
+        User ID: {self.user.id}
         ---------------
-        '''.format(self.user,self.user.id)))
+        '''))
 
     async def on_command(self, ctx):
         cmd = ctx.command.qualified_name.replace(' ', '_')
@@ -181,7 +180,7 @@ class Selfbot(commands.Bot):
         """Pong! Returns your websocket latency."""
         em = discord.Embed()
         em.title ='Pong! Websocket Latency:'
-        em.description = f"{self.ws.latency * 1000:.4f} ms"
+        em.description = f'{self.ws.latency * 1000:.4f} ms'
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         await ctx.send(embed=em)
 
