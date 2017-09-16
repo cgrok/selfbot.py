@@ -192,7 +192,27 @@ class Misc:
             emb.add_field(name='Example', value=example)
         else:
             emb.title = "Search term not found."
-        await ctx.send(embed=emb)    
+        await ctx.send(embed=emb)
+
+    @commands.command()
+    async def shrug(self, ctx)
+        """Shrugs!"""
+        await ctx.send('¯\\_(ツ)\_/¯')
+
+    @commands.command()
+    async def tableflip(self, ctx)
+        """Tableflip!"""
+        await ctx.send('(╯°□°）╯︵ ┻━┻')
+
+    @commands.command()
+    async def unflip(self, ctx)
+        """Unfips!"""
+        await ctx.send('┬─┬﻿ ノ( ゜-゜ノ)')
+
+    @commands.command()
+    async def lenny(self, ctx)
+        """Lenny Face!"""
+        await ctx.send('( ͡° ͜ʖ ͡°)')
 
 def setup(bot):
 	bot.add_cog(Misc(bot))
