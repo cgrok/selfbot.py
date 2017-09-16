@@ -184,22 +184,22 @@ class Misc:
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def shrug(self, ctx)
+    async def shrug(self, ctx):
         """Shrugs!"""
         await ctx.send('¯\\_(ツ)\_/¯')
 
     @commands.command()
-    async def tableflip(self, ctx)
+    async def tableflip(self, ctx):
         """Tableflip!"""
         await ctx.send('(╯°□°）╯︵ ┻━┻')
 
     @commands.command()
-    async def unflip(self, ctx)
+    async def unflip(self, ctx):
         """Unfips!"""
         await ctx.send('┬─┬﻿ ノ( ゜-゜ノ)')
 
     @commands.command()
-    async def lenny(self, ctx)
+    async def lenny(self, ctx):
         """Lenny Face!"""
         await ctx.send('( ͡° ͜ʖ ͡°)')
 
