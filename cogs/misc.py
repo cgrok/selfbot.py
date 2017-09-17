@@ -230,9 +230,12 @@ class Misc:
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji : str):
         '''Use emojis without nitro!'''
-        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
+        emoji = emoji.split(":")
+        if emoji[0] == "<" or emoji[0] == "":
+            emo = discord.utils.find(lambda e: emoji[1] in e.name, ctx.bot.emojis)
+        else:
+            emo = discord.utils.find(lambda e: emoji[0] in e.name, ctx.bot.emojis)
         if emo == None:
-            print(emoji)
             em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
             em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
             await ctx.send(embed=em)
@@ -240,9 +243,10 @@ class Misc:
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
-            file = resizeimage.resize_contain(file, [200, 200])
+            img = Image.open(file)
+            img = resizeimage.resize_contain(file, [200, 200])
             await ctx.message.delete()
-            await ctx.send(file=discord.File(file, 'emoji.png'))
+            await ctx.send(file=discord.File(img, 'emoji.png'))
 
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
