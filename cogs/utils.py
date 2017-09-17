@@ -73,7 +73,7 @@ class Utility:
                 await ctx.send(msg.content, embed=msg.embeds[0])
             else:
                 await ctx.send(msg.content)
-    
+
     @commands.command()
     async def quote(self, ctx, id : int, channel : discord.TextChannel=None):
         """Quote someone's message by ID"""
@@ -99,14 +99,14 @@ class Utility:
         """Shows you information about a number of characters."""
         if len(characters) > 15:
             return await ctx.send('Too many characters ({}/15)'.format(len(characters)))
-        
+
         fmt = '`\\U{0:>08}`: `\\N{{{1}}}` - `{2}` - <http://www.fileformat.info/info/unicode/char/{0}>'
 
         def to_string(c):
             digit = format(ord(c), 'x')
             name = unicodedata.name(c, 'Name not found.')
             return fmt.format(digit, name, c)
-        
+
         await ctx.send('\n'.join(map(to_string, characters)))
 
     @commands.group()
@@ -116,7 +116,7 @@ class Utility:
         if lang in conv:
             return await self.bot.say('```{}```'.format(translate(text, lang)))
         lang = dict(zip(conv.values(), conv.keys())).get(lang.lower().title())
-        if lang:  
+        if lang:
             await ctx.send('```{}```'.format(translate(text, lang)))
         else:
             await ctx.send('```That is not an available language.```')
@@ -124,8 +124,8 @@ class Utility:
     @translate.command()
     async def langs(self, ctx):
         '''Lists all available languages'''
-        em = discord.Embed(color=discord.Color.blue(), 
-                           title='Available Languages', 
+        em = discord.Embed(color=discord.Color.blue(),
+                           title='Available Languages',
                            description=', '.join(codes.values()))
         await ctx.send(embed=em)
 
@@ -238,7 +238,7 @@ class Utility:
                 em._footer = {'text': data.get('footer')}
                 if data.get('icon'):
                     em._footer['icon_url'] = data.get('icon')
-            
+
             if 'timestamp' in data.keys() and len(data.keys()) == 1:
                 em.timestamp = ctx.message.created_at
 
@@ -256,10 +256,10 @@ class Utility:
                     char = string[i]
                     ret += char
                 yield ret.rstrip('}')
-                    
+
     def parse_field(self, string):
         '''
-        Recursive function to get all the key val 
+        Recursive function to get all the key val
         pairs in each section of the parsed embed command
         '''
         ret = {}
@@ -269,7 +269,7 @@ class Utility:
         val = ':'.join(parts[1:]).strip()
 
         ret[key] = val
-        
+
         if '|' in string:
             string = string.split('|')
             for part in string:
@@ -517,7 +517,7 @@ class Utility:
                 if not url.startswith('/url?'):
                     continue
 
-                url = parse_qs(url[5:])['q'][0] 
+                url = parse_qs(url[5:])['q'][0]
 
                 entries.append(url)
 
@@ -561,7 +561,10 @@ class Utility:
             err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
         else:
             value = stdout.getvalue()
-
+            with open('data/config.json') as f:
+                config = json.load(f)
+                if config.get('TOKEN') in value:
+                    value.replace(config.get('TOKEN'),"[EXPUNGED]")
             if ret is None:
                 if value:
                     try:
