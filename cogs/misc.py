@@ -230,7 +230,7 @@ class Misc:
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji : str):
         '''Use emojis without nitro!'''
-        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, self.emojis)
+        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
         await ctx.message.delete()
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
@@ -240,7 +240,7 @@ class Misc:
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
         '''Copy an emoji from another server to your own'''
-        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, self.emojis)
+        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
         em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emo.name}')
         em.set_image(url='attachment://emoji.png')
         async with ctx.session.get(emo.url) as resp:
