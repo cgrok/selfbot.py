@@ -72,14 +72,14 @@ class Selfbot(commands.Bot):
                 self.load_extension(f'cogs.{extension}')
                 print(f'Loaded extension: {extension}')
             except Exception as e:
-                print(f'LoadError: {extension}\n' 
+                print(f'LoadError: {extension}\n'
                       f'{type(e).__name__}: {e}')
     @property
     def token(self):
         '''Returns your token wherever it is'''
         with open('data/config.json') as f:
             config = json.load(f)
-            if config.get('FIRST'):
+            if config.get('TOKEN') == "your_token_here":
                 if not os.environ.get('TOKEN'):
                     self.run_wizard()
             else:
@@ -103,7 +103,6 @@ class Selfbot(commands.Bot):
         data = {
                 "TOKEN" : token,
                 "PREFIX" : prefix,
-                "FIRST" : False
             }
         with open('data/config.json','w') as f:
             f.write(json.dumps(data, indent=4))
