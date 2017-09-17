@@ -244,7 +244,7 @@ class Misc:
             image = await resp.read()
         with io.BytesIO(image) as file:
             await ctx.message.delete()
-            await ctx.send(file=discord.File(img, 'emoji.png'))
+            await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
