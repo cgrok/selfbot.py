@@ -245,7 +245,7 @@ class Misc:
             image = await resp.read()
         with io.BytesIO(image) as file:
             with Image.open(file) as emoji_img:
-                img = resizeimage.resize_contain(file, [200, 200])
+                img = resizeimage.resize_contain(emoji_img, [200, 200])
                 img.save(emoji_img, img.format)
                 await ctx.message.delete()
                 await ctx.send(file=discord.File(img, 'emoji.png'))
