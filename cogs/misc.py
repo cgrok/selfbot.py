@@ -34,6 +34,7 @@ import emoji
 import copy
 import io
 import aiohttp
+from resizeimage import resizeimage
 
 class Misc:
     def __init__(self, bot):
