@@ -228,20 +228,22 @@ class Misc:
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
-    async def _emoji(self, ctx, *, emoji : discord.Emoji):
+    async def _emoji(self, ctx, *, emoji : str):
         '''Use emojis without nitro!'''
+        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, self.emojis)
         await ctx.message.delete()
-        async with ctx.session.get(emoji.url) as resp:
+        async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
-    async def copy(self, ctx, *, emoji : discord.Emoji):
+    async def copy(self, ctx, *, emoji : str):
         '''Copy an emoji from another server to your own'''
-        em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emoji.name}')
+        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, self.emojis)
+        em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emo.name}')
         em.set_image(url='attachment://emoji.png')
-        async with ctx.session.get(emoji.url) as resp:
+        async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
