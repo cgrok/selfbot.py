@@ -562,7 +562,7 @@ class Utility:
         else:
             value = stdout.getvalue()
             with open('data/config.json') as f:
-                config = json.load(f)
+                config = load_json(f)
                 if config.get('TOKEN') in value:
                     value.replace(config.get('TOKEN'),"[EXPUNGED]")
             if ret is None:
