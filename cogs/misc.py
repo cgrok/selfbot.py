@@ -244,10 +244,11 @@ class Misc:
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
-            img = Image.open(file)
-            img = resizeimage.resize_contain(file, [200, 200])
-            await ctx.message.delete()
-            await ctx.send(file=discord.File(img, 'emoji.png'))
+            with Image.open(file) as emoji_img:
+                img = resizeimage.resize_contain(file, [200, 200])
+                img.save(emoji_img, img.format)
+                await ctx.message.delete()
+                await ctx.send(file=discord.File(img, 'emoji.png'))
 
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
