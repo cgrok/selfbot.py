@@ -231,23 +231,35 @@ class Misc:
     async def _emoji(self, ctx, *, emoji : str):
         '''Use emojis without nitro!'''
         emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
-        await ctx.message.delete()
+        if emo == None:
+            em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
+            em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+            await ctx.send(embed=em)
+            return
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
+            await ctx.message.delete()
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
         '''Copy an emoji from another server to your own'''
         emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
-        em = discord.Embed(color=discord.Color.green(), title=f'Added Emote: {emo.name}')
+        em = discord.Embed()
+        em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        if emo == None:
+            em.title = 'Add Emoji'
+            em.description = 'Could not find emoji.'
+            await ctx.send(embed=em)
+            return
+        em.title = f'Added Emoji: {emo.name}'
         em.set_image(url='attachment://emoji.png')
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
-            await ctx.guild.create_custom_emoji(name=emoji.name, image=file.read())
+            await ctx.guild.create_custom_emoji(name=emo.name, image=file.read())
     
     @commands.command()
     async def urban(self, ctx, *, search_terms : str):
