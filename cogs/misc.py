@@ -232,6 +232,7 @@ class Misc:
         '''Use emojis without nitro!'''
         emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
         if emo == None:
+            print(emoji)
             em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
             em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
             await ctx.send(embed=em)
