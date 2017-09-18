@@ -34,6 +34,7 @@ from ext import fuzzy
 import unicodedata
 import traceback
 import textwrap
+import wikipedia
 import aiohttp
 import inspect
 import re
@@ -152,6 +153,37 @@ class Utility:
         Written by Rapptz
         """
         await self.do_rtfm(ctx, 'rewrite', obj)
+
+    @commands.command(pass_context=True)
+    async def wiki(self, ctx, *, search: str = None):
+        '''Addictive Wikipedia results'''
+        if search == None:
+            await ctx.channel.send(f'Usage: `{ctx.prefix}wiki [search terms]`')
+            return
+
+        results = wikipedia.search(search)
+        if not len(results):
+            no_results = await ctx.channel.send("Sorry, didn't find any result.")
+            await asyncio.sleep(5)
+            await ctx.message.delete(no_results)
+            return
+
+        newSearch = results[0]
+        try:
+            wik = wikipedia.page(newSearch)
+        except wikipedia.DisambiguationError:
+            more_details = await ctx.channel.send('Please input more details.')
+            await asyncio.sleep(5)
+            await ctx.message.delete(more_details)
+            return
+
+        emb = discord.Embed()
+        emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        emb.title = wik.title
+        emb.url = wik.url
+        textList = textwrap.wrap(wik.content, 500, break_long_words=True, replace_whitespace=False)
+        emb.add_field(name="Wikipedia Results", value=textList[0] + "...")
+        await ctx.message.edit(embed=emb)
 
     @commands.command(aliases=['g'])
     async def google(self ,ctx, *, query):
