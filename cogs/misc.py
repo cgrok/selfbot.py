@@ -294,7 +294,19 @@ class Misc:
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
-
+        
+    @commands.command(aliases=['msgid'])
+    async def messageid(self, ctx, index: int):
+        '''Gets message ID of a specified message'''
+        history = await ctx.channel.history(limit=10).flatten()
+        message = history[index]
+        await ctx.send(message.id)
+        
+    @commands.command()
+    async def roleid(self, ctx, role: discord.Role):
+        '''Gets role ID of a specified role'''
+        await ctx.send(role.id)
+        
     @commands.command()
     async def shrug(self, ctx):
         """Shrugs!"""
