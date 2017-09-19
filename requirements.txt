@@ -5,3 +5,4 @@ colorthief
 sympy
 psutil
 emoji
+wikipedia
