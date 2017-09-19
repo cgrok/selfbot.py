@@ -295,10 +295,11 @@ class Misc:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
        
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def lenny(self, ctx):
         """Lenny and tableflip group commands"""
-        await ctx.send(f'Available: `{ctx.prefix}lenny face`, `{ctx.prefix}lenny shrug`, `{ctx.prefix}lenny tableflip`, `{ctx.prefix}lenny unflip`')
+	msg = f'Available: `{ctx.prefix}lenny face`, `{ctx.prefix}lenny shrug`, `{ctx.prefix}lenny tableflip`, `{ctx.prefix}lenny unflip`'
+        await ctx.send(msg)
         
     @lenny.command()
     async def shrug(self, ctx):
