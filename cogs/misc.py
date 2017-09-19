@@ -295,24 +295,28 @@ class Misc:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
        
+    @commands.group()
+    async def lenny(self, ctx):
+        """Lenny and tableflip group commands"""
+        await ctx.send(f'Available: `{ctx.prefix}lenny face`, `{ctx.prefix}lenny shrug`, `{ctx.prefix}lenny tableflip`, `{ctx.prefix}lenny unflip`')
         
-    @commands.command()
+    @lenny.command()
     async def shrug(self, ctx):
         """Shrugs!"""
         await ctx.message.edit(content='¯\\\_(ツ)\_/¯')
 
-    @commands.command()
+    @lenny.command()
     async def tableflip(self, ctx):
         """Tableflip!"""
         await ctx.message.edit(content='(╯°□°）╯︵ ┻━┻')
 
-    @commands.command()
+    @lenny.command()
     async def unflip(self, ctx):
         """Unfips!"""
         await ctx.message.edit(content='┬─┬﻿ ノ( ゜-゜ノ)')
 
-    @commands.command()
-    async def lenny(self, ctx):
+    @lenny.command()
+    async def face(self, ctx):
         """Lenny Face!"""
         await ctx.message.edit(content='( ͡° ͜ʖ ͡°)')
 
