@@ -269,6 +269,14 @@ class Misc:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
             await ctx.guild.create_custom_emoji(name=emo.name, image=file.read())
     
+    @commands.command(aliases=['emotes'])
+    async def emojis:
+        '''Lists all emojis in a server'''
+        try:
+            await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in guild.emojis]))
+        except:
+            await ctx.send("You have too many emojis in your server. It's getting hard to even look at it!")
+        
     @commands.command()
     async def urban(self, ctx, *, search_terms : str):
         '''Searches Up a Term in Urban Dictionary'''
