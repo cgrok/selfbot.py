@@ -273,7 +273,7 @@ class Misc:
     async def emojis:
         '''Lists all emojis in a server'''
         try:
-            await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in guild.emojis]))
+            await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in ctx.message.guild.emojis]))
         except:
             await ctx.send("You have too many emojis in your server. It's getting hard to even look at it!")
         
