@@ -298,8 +298,8 @@ class Misc:
     @commands.group(invoke_without_command=True)
     async def lenny(self, ctx):
         """Lenny and tableflip group commands"""
-	msg = f'Available: `{ctx.prefix}lenny face`, `{ctx.prefix}lenny shrug`, `{ctx.prefix}lenny tableflip`, `{ctx.prefix}lenny unflip`'
-        await ctx.send(msg)
+        msg = 'Available: `{}lenny face`, `{}lenny shrug`, `{}lenny tableflip`, `{}lenny unflip`'
+        await ctx.send(msg.format(ctx.prefix))
         
     @lenny.command()
     async def shrug(self, ctx):
