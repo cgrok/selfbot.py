@@ -37,7 +37,7 @@ class Paginator:
     max_size: int
         The maximum amount of codepoints allowed in a page.
     """
-    def __init__(self, max_size=2000):
+    def __init__(self, max_size=4000):
         self.max_size = max_size
         self._current_embed = discord.Embed()
         self._current_field = []
@@ -89,6 +89,7 @@ class Paginator:
                             self._current_embed.add_field(name=f'{self.last_cog} (continued)', value=value)
                         value = ''
                     name = curr
+                    self.last_cog = curr
             else:
                 value += curr + '\n'
 
