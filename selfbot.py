@@ -253,7 +253,7 @@ class Selfbot(commands.Bot):
             color = discord.Color(value=0x747f8d).to_rgb()
         elif status == "stream":
             await self.change_presence(status=discord.Status.online, game=discord.Game(name=message,type=1,url=f'https://www.twitch.tv/{message}'), afk=True)
-            color = discord.Color(value=0x747f8d).to_rgb()
+            color = discord.Color(value=0x593695).to_rgb()
         elif status == "clear":
             await self.change_presence(game=None, afk=True)
             emb.description = "Presence cleared."
