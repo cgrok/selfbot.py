@@ -270,7 +270,7 @@ class Misc:
             await ctx.guild.create_custom_emoji(name=emo.name, image=file.read())
     
     @commands.command(aliases=['emotes'])
-    async def emojis:
+    async def emojis(self, ctx):
         '''Lists all emojis in a server'''
         try:
             await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in ctx.message.guild.emojis]))
