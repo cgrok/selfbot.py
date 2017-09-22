@@ -98,7 +98,7 @@ class Mod:
 
         await ctx.send(embed=emb)
 
-    @commands.command()
+    @commands.command(aliases=['del','p','prune'])
     async def purge(self, ctx, limit : int):
         '''Clean a number of messages'''
         await ctx.purge(limit=limit+1) # TODO: add more functionality
