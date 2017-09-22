@@ -27,6 +27,7 @@ from discord.ext import commands
 from ext.context import CustomContext
 from ext.formatter import EmbedHelp
 from collections import defaultdict
+from ext import embedtobox
 import asyncio
 import aiohttp
 import datetime
@@ -165,7 +166,12 @@ class Selfbot(commands.Bot):
         em.title ='Pong! Websocket Latency:'
         em.description = f'{self.ws.latency * 1000:.4f} ms'
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
-        await ctx.send(embed=em)
+        try:
+            await ctx.send(embed=em)
+        except HTTPError:
+            em_str = await embedtobox.etb(emb)
+            await ctx.send(em_str)
+
 
     @commands.command(name='logout')
     async def _logout(self, ctx):
@@ -230,7 +236,11 @@ class Selfbot(commands.Bot):
 
         for embed in pages:
             embed.color = color
-            await destination.send(embed=embed)
+            try:
+                await ctx.send(embed=embed)
+            except HTTPError:
+                em_str = await embedtobox.etb(emb)
+                await ctx.send(em_str)
 
     @commands.command(name='presence')
     async def _presence(self, ctx, status, *, message=None):
@@ -266,7 +276,11 @@ class Selfbot(commands.Bot):
         emb.description = "Your presence has been changed."
         file.seek(0)
         emb.set_author(name=status.title(), icon_url="attachment://color.png")
-        await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
+        try:
+            await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
+        except HTTPError:
+            em_str = await embedtobox.etb(emb)
+            await ctx.send(em_str)
 
 
 if __name__ == '__main__':
