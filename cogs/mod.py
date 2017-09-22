@@ -144,9 +144,9 @@ class Mod:
             return await ctx.send('That role does not exist.')
         try:
             await member.add_roles(role)
-            await ctx.send("Added: `{}`".format(role.name))
+            await ctx.send(f'Added: `{role.name}`')
         except:
-            await ctx.send("I dont have the perms to add that role.")
+            await ctx.send("I don't have the perms to add that role.")
 
 
     @commands.command()
@@ -157,9 +157,9 @@ class Mod:
             return await ctx.send('That role does not exist.')
         try:
             await member.remove_roles(role)
-            await ctx.send("Removed: `{}`".format(role.name))
+            await ctx.send(f'Removed: `{role.name}`')
         except:
-            await ctx.send("I dont have the perms to add that role.")
+            await ctx.send("I don't have the perms to add that role.")
 
 
 
