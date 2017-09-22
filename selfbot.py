@@ -169,7 +169,7 @@ class Selfbot(commands.Bot):
         try:
             await ctx.send(embed=em)
         except discord.HTTPException:
-            em_str = await embedtobox.etb(emb)
+            em_str = await embedtobox.etb(em)
             await ctx.send(em_str)
 
 
@@ -239,7 +239,7 @@ class Selfbot(commands.Bot):
             try:
                 await ctx.send(embed=embed)
             except discord.HTTPException:
-                em_str = await embedtobox.etb(emb)
+                em_str = await embedtobox.etb(embed)
                 await ctx.send(em_str)
 
     @commands.command(name='presence')
