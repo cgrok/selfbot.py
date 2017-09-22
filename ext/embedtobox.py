@@ -21,7 +21,7 @@ DEALINGS IN THE SOFTWARE.
 import discord
 import asyncio
 
-async def etb(self, emb):
+async def etb(emb):
     emb_str = "```md\n"
     if emb.author:
         emb_str += f"<{emb.author.name}>\n\n"
