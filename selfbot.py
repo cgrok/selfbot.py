@@ -168,7 +168,7 @@ class Selfbot(commands.Bot):
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         try:
             await ctx.send(embed=em)
-        except HTTPException:
+        except discord.HTTPException:
             em_str = await embedtobox.etb(emb)
             await ctx.send(em_str)
 
@@ -238,7 +238,7 @@ class Selfbot(commands.Bot):
             embed.color = color
             try:
                 await ctx.send(embed=embed)
-            except HTTPException:
+            except discord.HTTPException:
                 em_str = await embedtobox.etb(emb)
                 await ctx.send(em_str)
 
@@ -278,7 +278,7 @@ class Selfbot(commands.Bot):
         emb.set_author(name=status.title(), icon_url="attachment://color.png")
         try:
             await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
-        except HTTPException:
+        except discord.HTTPException:
             em_str = await embedtobox.etb(emb)
             await ctx.send(em_str)
 
