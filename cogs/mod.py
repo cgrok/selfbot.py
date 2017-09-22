@@ -136,7 +136,30 @@ class Mod:
 
         await ctx.send(embed=em)
 
+    @commands.command()
+    async def addrole(self, ctx, member: discord.Member, *, rolename: str):
+        '''Add a role to someone else.'''
+        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.guild.roles)
+        if not role:
+            return await ctx.send('That role does not exist.')
+        try:
+            await member.add_roles(role)
+            await ctx.send("Added: `{}`".format(role.name))
+        except:
+            await ctx.send("I dont have the perms to add that role.")
 
+
+    @commands.command()
+    async def removerole(self, ctx, member: discord.Member, *, rolename: str):
+        '''Remove a role from someone else.'''
+        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.guild.roles)
+        if not role:
+            return await ctx.send('That role does not exist.')
+        try:
+            await member.remove_roles(role)
+            await ctx.send("Removed: `{}`".format(role.name))
+        except:
+            await ctx.send("I dont have the perms to add that role.")
 
 
 
