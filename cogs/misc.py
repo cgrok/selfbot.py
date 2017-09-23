@@ -339,10 +339,10 @@ class Misc:
         """Ask questions to the 8ball"""
         with open('data/answers.json') as f:
             choices = json.load(f)
-	emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
-	emb.colour = discord.Colour(0x2e1c1a)
-	emb.description = random.choice(choices)
-	await ctx.send(embed=emb)
+        emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
+        emb.colour = discord.Colour(0x2e1c1a)
+        emb.description = random.choice(choices)
+        await ctx.send(embed=emb)
 
 
 def setup(bot):
