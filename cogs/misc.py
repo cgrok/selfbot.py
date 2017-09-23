@@ -337,7 +337,7 @@ class Misc:
     @commands.command(aliases=['8ball'])
     async def eightball(self, ctx, *, question=None):
         """Ask questions to the 8ball"""
-	with open('data/answers.json') as f:
+        with open('data/answers.json') as f:
             choices = json.load(f)
 	emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
 	emb.colour = discord.Colour(0x2e1c1a)
