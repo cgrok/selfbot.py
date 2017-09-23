@@ -162,7 +162,7 @@ class Information:
         for role in roles:
             if str(role.color) != "#000000":
                 color = role.color
-        if not color:
+        if color not in locals():
             color = 0
 
         rolenames = ', '.join([r.name for r in roles]) or 'None'
