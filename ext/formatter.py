@@ -95,7 +95,7 @@ class Paginator:
 
         # adds the last parts not done in the while loop
         print(self.last_cog)
-        if value:
+        if name and value:
             self._current_embed.add_field(name=self.last_cog, value=value)
             value = ''
 
