@@ -169,8 +169,9 @@ class Selfbot(commands.Bot):
         try:
             await ctx.send(embed=em)
         except discord.HTTPException:
-            em_str = await embedtobox.etb(em)
-            await ctx.send(em_str)
+            em_list = await embedtobox.etb(emb)
+            for page in em_list:
+                await ctx.send(page)
 
 
     @commands.command(name='logout')
@@ -239,8 +240,9 @@ class Selfbot(commands.Bot):
             try:
                 await ctx.send(embed=embed)
             except discord.HTTPException:
-                em_str = await embedtobox.etb(embed)
-                await ctx.send(em_str)
+                em_list = await embedtobox.etb(embed)
+                for page in em_list:
+                    await ctx.send(page)
 
     @commands.command(name='presence')
     async def _presence(self, ctx, status, *, message=None):
@@ -279,8 +281,9 @@ class Selfbot(commands.Bot):
         try:
             await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
         except discord.HTTPException:
-            em_str = await embedtobox.etb(emb)
-            await ctx.send(em_str)
+            em_list = await embedtobox.etb(emb)
+            for page in em_list:
+                await ctx.send(page)
 
 
 if __name__ == '__main__':
