@@ -34,6 +34,7 @@ import emoji
 import copy
 import io
 import aiohttp
+import json
 
 class Misc:
     def __init__(self, bot):
@@ -332,6 +333,17 @@ class Misc:
     async def face(self, ctx):
         """Lenny Face!"""
         await ctx.message.edit(content='( ͡° ͜ʖ ͡°)')
+
+    @commands.command(aliases=['8ball'])
+    async def eightball(self, ctx, *, question=None):
+        """Ask questions to the 8ball"""
+	with open('data/answers.json') as f:
+            choices = json.load(f)
+	emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
+	emb.colour = discord.Colour(0x2e1c1a)
+	emb.description = random.choice(choices)
+	await ctx.send(embed=emb)
+
 
 def setup(bot):
 	bot.add_cog(Misc(bot))
