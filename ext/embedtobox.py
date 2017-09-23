@@ -54,5 +54,6 @@ async def etb(emb):
             emb_str = "```md\n"
         emb_str += "\n{}".format(str(emb.timestamp))
     emb_str += "```"
-    emb_list.append(emb_str)
+    if emb_str != "```md\n```":
+        emb_list.append(emb_str)
     return emb_list
