@@ -25,6 +25,7 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 from urllib.parse import urlparse
+from ext import embedtobox
 import datetime
 import asyncio
 import psutil
@@ -81,7 +82,16 @@ class Information:
         em = discord.Embed(url=av, color=color)
         em.set_author(name=str(member), icon_url=av)
         em.set_image(url=av)
-        await ctx.send(embed=em)
+        try:
+            await ctx.send(embed=em)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(em)
+            for page in em_list:
+                await ctx.send(page)
+            async with ctx.session.get(av) as resp:
+                image = await resp.read()
+            with io.BytesIO(image) as file:
+                await ctx.send(file=discord.File(file, 'avatar.png'))
 
     @commands.command(aliases=['servericon'])
     async def serverlogo(self, ctx):
@@ -91,7 +101,16 @@ class Information:
         em = discord.Embed(color=color, url=icon)
         em.set_author(name=server.name, icon=icon)
         em.set_image(url=icon)
-        await ctx.send(embed=em)
+        try:
+            await ctx.send(embed=em)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(em)
+            for page in em_list:
+                await ctx.send(page)
+            async with ctx.session.get(icon) as resp:
+                image = await resp.read()
+            with io.BytesIO(image) as file:
+                await ctx.send(file=discord.File(file, 'serverlogo.png'))
 
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
@@ -117,8 +136,13 @@ class Information:
         data.set_footer(text="Server ID: " + str(server.id))
         data.set_author(name=server.name, icon_url=None or server.icon_url)
         data.set_thumbnail(url=None or server.icon_url)
+        try:
+            await ctx.send(embed=data)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(data)
+            for page in em_list:
+                await ctx.send(page)
 
-        await ctx.send(embed=data)
 
     @commands.command(aliases=['ui'])
     @commands.guild_only()
