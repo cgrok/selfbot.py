@@ -337,22 +337,12 @@ class Misc:
     @commands.command(aliases=['8ball'])
     async def eightball(self, ctx, *, question=None):
         """Ask questions to the 8ball"""
-        if question == None:
-            ask_first = f'You need to ask me a yes/no question.\n' \
-                        f'Usage: `{ctx.prefix}{ctx.commmand.invoked_with} [yes/no question]`'
-            emb = discord.Embed(colour=discord.Colour(0x2e1c1a))
-            emb.title = '\N{BILLIARDS} Write question:'
-            emb.description = f'{ask_first}'
-            await ctx.channel.send(embed=emb)
-            return
-        else:
-            with open('data/answers.json') as f:
-                choices = json.load(f)
-
-            emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
-            emb.colour = discord.Colour(0x2e1c1a)
-            emb.description = random.choice(choices)
-            await ctx.send(embed=emb)
+	with open('data/answers.json') as f:
+            choices = json.load(f)
+	emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
+	emb.colour = discord.Colour(0x2e1c1a)
+	emb.description = random.choice(choices)
+	await ctx.send(embed=emb)
 
 
 def setup(bot):
