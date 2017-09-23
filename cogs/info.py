@@ -88,10 +88,13 @@ class Information:
             em_list = await embedtobox.etb(em)
             for page in em_list:
                 await ctx.send(page)
-            async with ctx.session.get(av) as resp:
-                image = await resp.read()
-            with io.BytesIO(image) as file:
-                await ctx.send(file=discord.File(file, 'avatar.png'))
+            try:
+                async with ctx.session.get(av) as resp:
+                    image = await resp.read()
+                with io.BytesIO(image) as file:
+                    await ctx.send(file=discord.File(file, 'avatar.png'))
+            except discord.HTTPException:
+                await ctx.send(av)
 
     @commands.command(aliases=['servericon'])
     async def serverlogo(self, ctx):
@@ -107,10 +110,13 @@ class Information:
             em_list = await embedtobox.etb(em)
             for page in em_list:
                 await ctx.send(page)
-            async with ctx.session.get(icon) as resp:
-                image = await resp.read()
-            with io.BytesIO(image) as file:
-                await ctx.send(file=discord.File(file, 'serverlogo.png'))
+            try:
+                async with ctx.session.get(icon) as resp:
+                    image = await resp.read()
+                with io.BytesIO(image) as file:
+                    await ctx.send(file=discord.File(file, 'serverlogo.png'))
+            except discord.HTTPException:
+                await ctx.send(icon)
 
     @commands.command(aliases=['server','si'])
     @commands.guild_only()
@@ -156,6 +162,8 @@ class Information:
         for role in roles:
             if str(role.color) != "#000000":
                 color = role.color
+        if not color:
+            color = 0
 
         rolenames = ', '.join([r.name for r in roles]) or 'None'
         time = ctx.message.created_at
@@ -172,7 +180,12 @@ class Information:
         em.set_thumbnail(url=avi)
         em.set_author(name=user, icon_url=server.icon_url)
 
-        await ctx.send(embed=em)
+        try:
+            await ctx.send(embed=em)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(em)
+            for page in em_list:
+                await ctx.send(page)
 
     @commands.command(aliases=['bot', 'info'])
     async def about(self, ctx):
