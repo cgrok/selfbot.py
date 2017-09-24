@@ -64,7 +64,7 @@ This is a `stateless selfbot` (Saves no data) *This means that you can [host it 
 **This is coming soon, so it's not working at the moment.**
 
 To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder.        
-To download a cog, add the Cog Name in `data/communitycogs.txt`. Invalid cog names will return an error in your console.
+To download a cog, add the Cog Name in `data/community_cogs.txt`. Invalid cog names will return an error in your console.
 
 Currently available cogs:-    
 * cog1
