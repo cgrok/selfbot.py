@@ -50,6 +50,119 @@ class Utility:
         self._last_google = None
         self._last_result = None
 
+
+    @commands.command(name='logout')
+    async def _logout(self, ctx):
+        '''
+        Shuts down the selfbot,
+        equivalent to a restart if you are hosting the bot on heroku.
+        '''
+        await ctx.send('`Selfbot Logging out...`')
+        await self.bot.logout()
+
+    @commands.command(name='help')
+    async def new_help_command(self, ctx, *commands : str):
+        """Shows this message."""
+        destination = ctx.message.author if self.bot.pm_help else ctx.message.channel
+
+        def repl(obj):
+            return self.bot._mentions_transforms.get(obj.group(0), '')
+
+        # help by itself just lists our own commands.
+        if len(commands) == 0:
+            pages = await self.bot.formatter.format_help_for(ctx, self)
+        elif len(commands) == 1:
+            # try to see if it is a cog name
+            name = self.bot._mention_pattern.sub(repl, commands[0])
+            command = None
+            if name in self.bot.cogs:
+                command = self.bot.cogs[name]
+            else:
+                command = self.bot.all_commands.get(name)
+                if command is None:
+                    await destination.send(self.bot.command_not_found.format(name))
+                    return
+
+            pages = await self.bot.formatter.format_help_for(ctx, command)
+        else:
+            name = self.bot._mention_pattern.sub(repl, commands[0])
+            command = self.bot.all_commands.get(name)
+            if command is None:
+                await destination.send(self.bot.command_not_found.format(name))
+                return
+
+            for key in commands[1:]:
+                try:
+                    key = self.bot._mention_pattern.sub(repl, key)
+                    command = command.all_commands.get(key)
+                    if command is None:
+                        await destination.send(self.bot.command_not_found.format(key))
+                        return
+                except AttributeError:
+                    await destination.send(self.bot.command_has_no_subcommands.format(command, key))
+                    return
+
+            pages = await self.bot.formatter.format_help_for(ctx, command)
+
+        if self.bot.pm_help is None:
+            characters = sum(map(lambda l: len(l), pages))
+            # modify destination based on length of pages.
+            if characters > 1000:
+                destination = ctx.message.author
+
+        color = await ctx.get_dominant_color(ctx.author.avatar_url)
+
+        for embed in pages:
+            embed.color = color
+            try:
+                await ctx.send(embed=embed)
+            except discord.HTTPException:
+                em_list = await embedtobox.etb(embed)
+                for page in em_list:
+                    await ctx.send(page)
+
+    @commands.command(name='presence')
+    async def _presence(self, ctx, status, *, message=None):
+        '''Change your Discord status! (Stream, Online, Idle, DND, Invisible, or clear it)'''
+        status = status.lower()
+        emb = discord.Embed(title="Presence")
+        emb.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        file = io.BytesIO()
+        if status == "online":
+            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message), afk=True)
+            color = discord.Color(value=0x43b581).to_rgb()
+        elif status == "idle":
+            await self.bot.change_presence(status=discord.Status.idle, game=discord.Game(name=message), afk=True)
+            color = discord.Color(value=0xfaa61a).to_rgb()
+        elif status == "dnd":
+            await self.bot.change_presence(status=discord.Status.dnd, game=discord.Game(name=message), afk=True)
+            color = discord.Color(value=0xf04747).to_rgb()
+        elif status == "invis" or status == "invisible":
+            await self.bot.change_presence(status=discord.Status.invisible, game=discord.Game(name=message), afk=True)
+            color = discord.Color(value=0x747f8d).to_rgb()
+        elif status == "stream":
+            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message,type=1,url=f'https://www.twitch.tv/{message}'), afk=True)
+            color = discord.Color(value=0x593695).to_rgb()
+        elif status == "clear":
+            await self.bot.change_presence(game=None, afk=True)
+            emb.description = "Presence cleared."
+            return await ctx.send(embed=emb)
+        else:
+            emb.description = "Please enter either `online`, `idle`, `dnd`, `invisible`, or `clear`."
+            return await ctx.send(embed=emb)
+
+        Image.new('RGB', (500, 500), color).save(file, format='PNG')
+        emb.description = "Your presence has been changed."
+        file.seek(0)
+        emb.set_author(name=status.title(), icon_url="attachment://color.png")
+        try:
+            await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(emb)
+            for page in em_list:
+                await ctx.send(page)
+
+
     @commands.command()
     async def source(self, ctx, *, command):
         '''See the source code for any command.'''
