@@ -69,13 +69,6 @@ Currently available cogs:-
 * cog1
 * cog2
 
-## Contributors
-
-> [@kwugfighter](https://github.com/kwugfighter)
-
-> [@FloatCobra](https://github.com/FloatCobra)
-
-> [@fourjr](https://github.com/fourjr)
 
 ## Acknowledgements
 
