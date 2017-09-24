@@ -64,7 +64,7 @@ This is a `stateless selfbot` (Saves no data) *This means that you can [host it 
 **This is coming soon, so it's not working at the moment.**
 
 To submit a cog, ______    
-To download a cog, add the Cog Name in `communitycogs.json`. Invalid cog names will return an error in your console.    
+To download a cog, add the Cog Name in `communitycogs.txt`. Invalid cog names will return an error in your console.    
 Currently available cogs:-    
 * cog1
 * cog2
