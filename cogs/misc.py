@@ -231,10 +231,6 @@ class Misc:
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji : str):
         '''Use emojis without nitro!'''
-        if len(ctx.message.guild.emojis) == 50:
-            await ctx.message.delete()
-            await ctx.send('Your Server has already hit the 50 Emoji Limit!')
-            return
         emoji = emoji.split(":")
         if emoji[0] == "<" or emoji[0] == "":
             emo = discord.utils.find(lambda e: emoji[1] in e.name, ctx.bot.emojis)
@@ -254,6 +250,10 @@ class Misc:
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
         '''Copy an emoji from another server to your own'''
+	if len(ctx.message.guild.emojis) == 50:
+            await ctx.message.delete()
+            await ctx.send('Your Server has already hit the 50 Emoji Limit!')
+            return
         emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
         em = discord.Embed()
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
