@@ -52,11 +52,22 @@ If you need to edit your token or prefix, navigate into the data folder and open
 * Complex embed commands
 * Miscellaneous commands
 * Easy to make your own commands
+* Community Cogs
 
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
 
 This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](https://github.com/verixx/selfbot/wiki/Heroku) 24/7 for free*  
+
+## Community Cogs
+
+**This is coming soon, so it's not working at the moment.**
+
+To submit a cog, ______    
+To download a cog, add the Cog Name in `communitycogs.json`. Invalid cog names will return an error in your console.    
+Currently available cogs:-    
+* cog1
+* cog2
 
 ## Contributors
 
