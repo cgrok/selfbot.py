@@ -307,13 +307,6 @@ class Misc:
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
-	
-	@commands.command()
-    async def emojis(self, ctx):
-		try:
-			await ctx.send('\n'.join(['{1} `:{0}:`'.format(i.name, str(i)) for i in guild.emojis]))
-		except:
-			await ctx.send('You have too many emojis in your server!')
 			
     @commands.group(invoke_without_command=True)
     async def lenny(self, ctx):
