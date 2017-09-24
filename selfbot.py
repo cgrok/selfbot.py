@@ -130,13 +130,17 @@ class Selfbot(commands.Bot):
         except Exception as e:
             print(e)
 
+    async def on_connect(self):
+        print('---------------\n'
+              'selfbot.py connected!')
+
     async def on_ready(self):
         '''Bot startup, sets uptime.'''
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
         print(textwrap.dedent(f'''
         ---------------
-        selfbot.py connected!
+        Client is ready!
         ---------------
         Author: verixx#7220
         ---------------
