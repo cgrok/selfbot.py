@@ -307,7 +307,7 @@ class Misc:
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
-       
+			
     @commands.group(invoke_without_command=True)
     async def lenny(self, ctx):
         """Lenny and tableflip group commands"""
