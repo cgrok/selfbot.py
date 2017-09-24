@@ -70,6 +70,7 @@ Currently available cogs:-
 * cog1
 * cog2
 
+Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
 
 ## Acknowledgements
 
