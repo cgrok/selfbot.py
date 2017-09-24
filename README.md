@@ -52,7 +52,7 @@ If you need to edit your token or prefix, navigate into the data folder and open
 * Complex embed commands
 * Miscellaneous commands
 * Easy to make your own commands
-* Community Cogs
+* Community Cogs *(coming soon, join [our discord](https://discord.gg/pmQSbAd) for updates)*
 
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
