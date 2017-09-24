@@ -70,7 +70,7 @@ class Utility:
 
         # help by itself just lists our own commands.
         if len(commands) == 0:
-            pages = await self.bot.formatter.format_help_for(ctx, self)
+            pages = await self.bot.formatter.format_help_for(ctx, self.bot)
         elif len(commands) == 1:
             # try to see if it is a cog name
             name = self.bot._mention_pattern.sub(repl, commands[0])
