@@ -250,7 +250,7 @@ class Misc:
     @_emoji.command()
     async def copy(self, ctx, *, emoji : str):
         '''Copy an emoji from another server to your own'''
-	if len(ctx.message.guild.emojis) == 50:
+        if len(ctx.message.guild.emojis) == 50:
             await ctx.message.delete()
             await ctx.send('Your Server has already hit the 50 Emoji Limit!')
             return
