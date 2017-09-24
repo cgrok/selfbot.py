@@ -101,6 +101,7 @@ class Information:
         '''Return the server's icon url.'''
         icon = ctx.guild.icon_url
         color = await ctx.get_dominant_color(icon)
+        server = ctx.guild
         em = discord.Embed(color=color, url=icon)
         em.set_author(name=server.name, icon=icon)
         em.set_image(url=icon)
