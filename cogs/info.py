@@ -103,7 +103,7 @@ class Information:
         color = await ctx.get_dominant_color(icon)
         server = ctx.guild
         em = discord.Embed(color=color, url=icon)
-        em.set_author(name=server.name, icon=icon)
+        em.set_author(name=server.name, icon_url=icon)
         em.set_image(url=icon)
         try:
             await ctx.send(embed=em)
