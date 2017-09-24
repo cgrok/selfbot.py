@@ -14,7 +14,7 @@
 This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is still in development, so expect bugs. Only install it if you will contribute to its development, constantly update it and give feedback. Once the branch is complete, and discord.py rewrite becomes the master branch of the library, this branch will become the master branch. If you want to install a stable version of the selfbot, go to the `master` branch of this repository.
 
 ## [Installation via Heroku](https://github.com/verixx/selfbot/wiki/heroku)
-There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
+There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku) or watch the video tutorial [here](https://youtu.be/1c0fJ8KcHcM). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
 
 ## [Normal Installation](https://github.com/verixx/selfbot/wiki)
 You need the following to run the bot: (currently) 
