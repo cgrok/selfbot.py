@@ -148,6 +148,8 @@ class Selfbot(commands.Bot):
         User ID: {self.user.id}
         ---------------
         '''))
+        
+        await self.bot.change_presence(status=discord.Status.invisible, afk=True)
 
     async def on_command(self, ctx):
         cmd = ctx.command.qualified_name.replace(' ', '_')
