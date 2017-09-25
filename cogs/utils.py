@@ -32,6 +32,7 @@ from mtranslate import translate
 from lxml import etree
 from ext import fuzzy
 from ext import embedtobox
+from PIL import Image
 import unicodedata
 import traceback
 import textwrap
