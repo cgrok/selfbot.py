@@ -78,7 +78,7 @@ class CustomContext(commands.Context):
             return url.replace(parsed.query, 'size=128')
 
     async def get_dominant_color(self, url):
-        '''Returns the dominant color of an image from a url'''
+        '''Returns the dominant color of an image from a url'''r
         if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
         try:
@@ -88,6 +88,6 @@ class CustomContext(commands.Context):
             return discord.Color.default()
 
         with io.BytesIO(image) as f:
-            color = ColorThief(f).get_color(quality=1)
+            color = ColorThief(f).get_color(quality=5)
             
         return discord.Color.from_rgb(*color)
