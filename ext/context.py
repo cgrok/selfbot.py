@@ -78,7 +78,7 @@ class CustomContext(commands.Context):
             return url.replace(parsed.query, 'size=128')
 
     async def get_dominant_color(self, url):
-        '''Returns the dominant color of an image from a url'''r
+        '''Returns the dominant color of an image from a url'''
         if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
         try:
