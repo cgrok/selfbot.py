@@ -73,9 +73,9 @@ class CustomContext(commands.Context):
     def is_valid_image_url(url):
         '''Checks if a url leads to an image.'''
         types = ['.png', '.jpg', '.gif', '.bmp', '.webp']
-        path = urlparse(url).path
-        if any(path.endswith(i) for i in types):
-            return True
+        parsed = urlparse(url)
+        if any(parsed.path.endswith(i) for i in types):
+            return url.replace(parsed.query, 'size=128')
 
     async def get_dominant_color(self, url):
         '''Returns the dominant color of an image from a url'''
