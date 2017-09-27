@@ -88,6 +88,6 @@ class CustomContext(commands.Context):
             return discord.Color.default()
 
         with io.BytesIO(image) as f:
-            color = ColorThief(f).get_color(quality=5)
+            color = ColorThief(f).get_color(quality=10)
             
         return discord.Color.from_rgb(*color)
