@@ -26,6 +26,7 @@ import discord
 from discord.ext import commands
 from ext.utility import parse_equation
 from ext.colours import ColorNames
+from urllib.request import urlopen
 from sympy import solve
 from PIL import Image
 import asyncio
@@ -36,11 +37,11 @@ import io
 import aiohttp
 import json
 
+
 class Misc:
     def __init__(self, bot):
         self.bot = bot
         self.emoji_converter = commands.EmojiConverter()
-
 
     def prepare_code(self, code):
         def map_left_bracket(b, p):
@@ -59,11 +60,9 @@ class Misc:
         return [map_bracket(c, i) if c in ('[', ']') else c
                 for c, i in zip(code, range(len(code)))]
 
-
     def read(self, string):
         valid = ['>', '<', '+', '-', '.', ',', '[', ']']
         return prepare_code([c for c in string if c in valid])
-
 
     def eval_step(self, code, data, code_pos, data_pos):
         c = code[code_pos]
@@ -126,14 +125,14 @@ class Misc:
         return outputty
 
     @commands.command()
-    async def bf(self, ctx, slurp:str):
-       thruput = ctx.message.content
-       preinput = thruput[5:]
-       preinput2 = "\"\"\"\n" + preinput
-       input = preinput2 + "\n\"\"\""
-       code = read(input)
-       output = bfeval(code)
-       await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
+    async def bf(self, ctx, slurp: str):
+        thruput = ctx.message.content
+        preinput = thruput[5:]
+        preinput2 = "\"\"\"\n" + preinput
+        input = preinput2 + "\n\"\"\""
+        code = read(input)
+        output = bfeval(code)
+        await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
     async def animate(self, ctx, *, file):
@@ -150,7 +149,7 @@ class Misc:
             await asyncio.sleep(float(interval))
 
     @commands.command()
-    async def virus(self, ctx, virus=None, *, user : discord.Member=None):
+    async def virus(self, ctx, virus=None, *, user: discord.Member = None):
         '''
         Destroy someone's device with this virus command!
         '''
@@ -164,7 +163,7 @@ class Misc:
             await asyncio.sleep(random.randint(1, 4))
 
     @commands.command()
-    async def react(self, ctx, index : int, *, reactions):
+    async def react(self, ctx, index: int, *, reactions):
         '''React to a specified message with reactions'''
         history = await ctx.channel.history(limit=10).flatten()
         message = history[index]
@@ -173,7 +172,7 @@ class Misc:
 
     async def validate_emojis(self, ctx, reactions):
         '''
-        Checks if an emoji is valid otherwise, 
+        Checks if an emoji is valid otherwise,
         tries to convert it into a custom emoji
         '''
         for emote in reactions.split():
@@ -186,7 +185,7 @@ class Misc:
                     pass
 
     @commands.command(aliases=['color', 'colour', 'sc'])
-    async def show_color(self, ctx, *, color : discord.Colour):
+    async def show_color(self, ctx, *, color: discord.Colour):
         '''Enter a color and you will see it!'''
         file = io.BytesIO()
         Image.new('RGB', (200, 90), color.to_rgb()).save(file, format='PNG')
@@ -195,7 +194,7 @@ class Misc:
         em.set_image(url='attachment://color.png')
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
-    @commands.command(aliases=['dc','dominant_color'])
+    @commands.command(aliases=['dc', 'dominant_color'])
     async def dcolor(self, ctx, *, url):
         '''Fun command that shows the dominant color of an image'''
         await ctx.message.delete()
@@ -210,26 +209,129 @@ class Misc:
         em.set_image(url="attachment://color.png")
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
+    """
     @commands.command()
     async def add(self, ctx, *numbers : int):
         '''Add multiple numbers together'''
         await ctx.send(f'Result: `{sum(numbers)}`')
+    """
+
+    @commands.command(description='This command might get you banned')
+    async def ultimate_annoying_spam_command(self, ctx, *, member=None, times: int = None):
+        """Want to annoy a member with mentions?"""
+        channel = ctx.message.channel
+        author = ctx.message.author
+        message = ctx.message
+        usage = f'```Usage: {ctx.prefix}ultimate_annoying_spam_command [@member] [times]```'
+
+        if member or times is None:
+            await ctx.channel.send(usage)
+            return
+
+        if times > 100:
+            times = 35
+
+        if times is 0:
+            sorry = f'Someone, not saying who, *cough cough {author}* felt sorry about using this command.'
+            await ctx.channel.send(sorry)
+            return
+
+        if times < 0:
+            chicken = "Well, that's just not enough times to annoy anybody. Don't chicken out now!"
+            await ctx.channel.send(chicken)
+            return
+
+        await message.delete()
+
+        for i in range(0, times):
+            try:
+                await channel.send(f'{member.mention} LOL')
+            except Exception:
+                pass
+
+    @commands.command(name=['tinyurl'])
+    async def tiny_url(self, ctx, str=None):
+        """Shrink URLs"""
+        apiurl = "http://tinyurl.com/api-create.php?url="
+        tinyurl = urlopen(apiurl + str).read().decode("utf-8")
+        usage = f'Usage: {ctx.prefix}tinyurl https://github.com/verixx/grokbot'
+        if str.message.content.startswith('https://'):
+            await ctx.channel.send(f'`{tinyurl}`')
+        if str is None:
+            await ctx.channel.send(usage)
+        if str is int:
+            await ctx.channel.send(usage)
+        else:
+            await ctx.channel.send(usage)
+        # else:
+        #    pass
+
+    @commands.group(invoke_without_command=True, aliases=['calculate', 'calculator'])
+    async def calc(self, ctx):
+        """Basic Calculator [+ , - , / , x]"""
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        e.title = 'Usage:'
+        e.add_field(name='\N{DOWN-POINTING RED TRIANGLE} Add', value=f'```{ctx.prefix}calc + 2 5```', inline=True)
+        e.add_field(name='\N{DOWN-POINTING RED TRIANGLE} Rest', value=f'```{ctx.prefix}calc - 2 5```', inline=True)
+        e.add_field(name='\N{DOWN-POINTING RED TRIANGLE} Divide', value=f'```{ctx.prefix}calc / 2 5```', inline=True)
+        e.add_field(name='\N{DOWN-POINTING RED TRIANGLE} Multiply', value=f'```{ctx.prefix}calc x 2 5```', inline=True)
+        await ctx.channel.send(embed=e, delete_after=25)
+
+    @calc.command(name='+')
+    async def _plus(self, ctx, *numbers: float):
+        """Adds two consecutive numbers separated by space"""
+        result = sum(numbers)
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        e.title = f'{ctx.message.author.display_name}'
+        e.description = f'Your answer is: `{result}`'
+        await ctx.channel.send(embed=e)
+
+    @calc.command(name='-')
+    async def _minus(self, ctx, left: float, right: float):
+        """Substracts two consecutive numbers separated by space"""
+        result = left - right
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        e.title = f'{ctx.message.author.display_name}'
+        e.description = f'Your answer is: `{result}`'
+        await ctx.channel.send(embed=e)
+
+    @calc.command(name='x')
+    async def _multiply(self, ctx, left: float, right: float):
+        """Multiplies two consecutive numbers separated by space"""
+        result = left * right
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        e.title = f'{ctx.message.author.display_name}'
+        e.description = f'Your answer is: `{result}`'
+        await ctx.channel.send(embed=e)
+
+    @calc.command(name='/')
+    async def _divide(self, ctx, left: float, right: float):
+        """Divides two consecutive numbers separated by space"""
+        result = left / right
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        e.title = f'{ctx.message.author.display_name}'
+        e.description = f'Your answer is: `{result}`'
+        await ctx.channel.send(embed=e)
 
     @commands.command()
     async def algebra(self, ctx, *, equation):
         '''Solve algabraic equations'''
         eq = parse_equation(equation)
         result = solve(eq)
-        em = discord.Embed(
-            color=discord.Color.green(),
-            title='Equation', 
-            description=f'```py\n{equation} = 0```',
-            )
+        em = discord.Embed()
+        em.color = discord.Color.green()
+        em.title = 'Equation'
+        em.description = f'```py\n{equation} = 0```'
         em.add_field(name='Result', value=f'```py\n{result}```')
         await ctx.send(embed=em)
 
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
-    async def _emoji(self, ctx, *, emoji : str):
+    async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
         if emoji[0] == "<" or emoji[0] == "":
@@ -248,13 +350,13 @@ class Misc:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
-    async def copy(self, ctx, *, emoji : str):
+    async def copy(self, ctx, *, emoji: str):
         '''Copy an emoji from another server to your own'''
         if len(ctx.message.guild.emojis) == 50:
             await ctx.message.delete()
             await ctx.send('Your Server has already hit the 50 Emoji Limit!')
             return
-        emo = discord.utils.find(lambda e: emoji.replace(":","") in e.name, ctx.bot.emojis)
+        emo = discord.utils.find(lambda e: emoji.replace(":", "") in e.name, ctx.bot.emojis)
         em = discord.Embed()
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         if emo == None:
@@ -269,7 +371,7 @@ class Misc:
         with io.BytesIO(image) as file:
             await ctx.send(embed=em, file=discord.File(copy.deepcopy(file), 'emoji.png'))
             await ctx.guild.create_custom_emoji(name=emo.name, image=file.read())
-    
+
     @commands.command(aliases=['emotes'])
     async def emojis(self, ctx):
         '''Lists all emojis in a server'''
@@ -277,9 +379,9 @@ class Misc:
             await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in ctx.message.guild.emojis]))
         except:
             await ctx.send("You have too many emojis in your server. It's getting hard to even look at it!")
-        
+
     @commands.command()
-    async def urban(self, ctx, *, search_terms : str):
+    async def urban(self, ctx, *, search_terms: str):
         '''Searches Up a Term in Urban Dictionary'''
         search_terms = search_terms.split()
         definition_number = terms = None
@@ -301,19 +403,19 @@ class Misc:
             example = result['list'][definition_number]['example']
             defs = len(result['list'])
             search_terms = search_terms.split("+")
-            emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number+1, defs)
+            emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number + 1, defs)
             emb.description = definition
             emb.add_field(name='Example', value=example)
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
-			
+
     @commands.group(invoke_without_command=True)
     async def lenny(self, ctx):
         """Lenny and tableflip group commands"""
         msg = 'Available: `{}lenny face`, `{}lenny shrug`, `{}lenny tableflip`, `{}lenny unflip`'
         await ctx.send(msg.format(ctx.prefix))
-        
+
     @lenny.command()
     async def shrug(self, ctx):
         """Shrugs!"""
@@ -339,11 +441,14 @@ class Misc:
         """Ask questions to the 8ball"""
         with open('data/answers.json') as f:
             choices = json.load(f)
-        emb = discord.Embed(title='\N{BILLIARDS} Your answer:')
-        emb.colour = discord.Colour(0x2e1c1a)
-        emb.description = random.choice(choices)
+        author = ctx.message.author
+        emb = discord.Embed()
+        emb.color = await ctx.get_dominant_color(url=author.avatar_url)
+        emb.set_author(name='\N{WHITE QUESTION MARK ORNAMENT} Your question:', icon_url=author.avatar_url)
+        emb.description = question
+        emb.add_field(name='\N{BILLIARDS} Your answer:', value=random.choice(choices), inline=True)
         await ctx.send(embed=emb)
 
 
 def setup(bot):
-	bot.add_cog(Misc(bot))
+    bot.add_cog(Misc(bot))
