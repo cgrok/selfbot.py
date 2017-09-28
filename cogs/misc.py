@@ -217,7 +217,7 @@ class Misc:
     """
 
     @commands.command(description='This command might get you banned')
-    async def ultimate_annoying_spam_command(self, ctx, *, member=None, times: int = None):
+    async def annoy(self, ctx, *, member=None, times: int = None):
         """Want to annoy a member with mentions?"""
         channel = ctx.message.channel
         author = ctx.message.author
