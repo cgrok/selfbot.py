@@ -249,7 +249,7 @@ class Misc:
             except Exception:
                 pass
 
-    @commands.command(name=['tinyurl'])
+    @commands.command(name='tinyurl')
     async def tiny_url(self, ctx, str=None):
         """Shrink URLs"""
         apiurl = "http://tinyurl.com/api-create.php?url="
