@@ -55,7 +55,7 @@ class Mod:
         return emb
 
     @commands.command()
-    async def kick(self, ctx, member : discord.Member, *, reason=None):
+    async def kick(self, ctx, member : discord.Member, *, reason='Please write a reason!'):
         '''Kick someone from the server.'''
         try:
             await ctx.guild.kick(member, reason=reason)
@@ -64,12 +64,12 @@ class Mod:
         else:
             success = True
 
-        emb = await self.format_mod_embed(ctx, member, success, 'kick')
+        emb = await self.format_mod_embed(ctx, member, success, 'kick', reason)
 
         await ctx.send(embed=emb)
 
     @commands.command()
-    async def ban(self, ctx, member : discord.Member, *, reason=None):
+    async def ban(self, ctx, member : discord.Member, *, reason='Please write a reason!'):
         '''Ban someone from the server.'''
         try:
             await ctx.guild.ban(member, reason=reason)
@@ -78,7 +78,7 @@ class Mod:
         else:
             success = True
 
-        emb = await self.format_mod_embed(ctx, member, success, 'ban')
+        emb = await self.format_mod_embed(ctx, member, success, 'ban', reason)
 
         await ctx.send(embed=emb)
 
