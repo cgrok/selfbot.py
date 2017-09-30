@@ -169,10 +169,13 @@ class Utility:
     async def source(self, ctx, *, command):
         '''See the source code for any command.'''
         source = str(inspect.getsource(self.bot.get_command(command).callback))
-        try:
-            await ctx.send('```py\n'+source+'```')
-        except:
-            await ctx.send('The command source is too long to send.')
+        fmt = '```py\n'+source.replace('`','\u200b`')+'\n```'
+        if len(fmt) > 2000:
+            async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
+                key = await resp.json().get('key')
+            return await ctx.send(f'Command source: <https://hastebin.com/{key}.py>')
+        else:
+            return await ctx.send(fmt)
 
 
     @commands.command()
