@@ -127,13 +127,14 @@ class Misc:
 
     @commands.command()
     async def bf(self, ctx, slurp:str):
-       thruput = ctx.message.content
-       preinput = thruput[5:]
-       preinput2 = "\"\"\"\n" + preinput
-       input = preinput2 + "\n\"\"\""
-       code = read(input)
-       output = bfeval(code)
-       await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
+        '''Evaluate 'brainfuck' code (a retarded language).'''
+        thruput = ctx.message.content
+        preinput = thruput[5:]
+        preinput2 = "\"\"\"\n" + preinput
+        input = preinput2 + "\n\"\"\""
+        code = read(input)
+        output = bfeval(code)
+        await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
     async def animate(self, ctx, *, file):
