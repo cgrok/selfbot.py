@@ -119,7 +119,7 @@ class Information:
             except discord.HTTPException:
                 await ctx.send(icon)
 
-    @commands.command(aliases=['server','si'])
+    @commands.command(aliases=['server','si','svi'])
     @commands.guild_only()
     async def serverinfo(self, ctx, server_id : int=None):
         '''See information about the server.'''
@@ -127,7 +127,8 @@ class Information:
         total_users = len(server.members)
         online = len([m for m in server.members if m.status != discord.Status.offline])
         text_channels = len([x for x in server.channels if isinstance(x, discord.TextChannel)])
-        voice_channels = len(server.channels) - text_channels
+        voice_channels = len([x for x in server.channels if isinstance(x, discord.VoiceChannel)])
+        categories = len(server.channels) - text_channels - voice_channels
         passed = (ctx.message.created_at - server.created_at).days
         created_at = "Since {}. That's over {} days ago!".format(server.created_at.strftime("%d %b %Y %H:%M"), passed)
 
@@ -138,6 +139,7 @@ class Information:
         data.add_field(name="Users", value="{}/{}".format(online, total_users))
         data.add_field(name="Text Channels", value=text_channels)
         data.add_field(name="Voice Channels", value=voice_channels)
+        data.add_field(name="Categories", value=categories)
         data.add_field(name="Roles", value=len(server.roles))
         data.add_field(name="Owner", value=str(server.owner))
         data.set_footer(text="Server ID: " + str(server.id))
