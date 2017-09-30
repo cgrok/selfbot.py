@@ -125,12 +125,8 @@ class Misc:
         return outputty
 
     @commands.command()
-<<<<<<< HEAD
     async def bf(self, ctx, slurp:str):
         '''Evaluate 'brainfuck' code (a retarded language).'''
-=======
-    async def bf(self, ctx, slurp: str):
->>>>>>> 9765585266c78171bddbe0dfaa40c3aba07f4984
         thruput = ctx.message.content
         preinput = thruput[5:]
         preinput2 = "\"\"\"\n" + preinput
