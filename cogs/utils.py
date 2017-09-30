@@ -173,7 +173,8 @@ class Utility:
         if len(fmt) > 2000:
             async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
                 data = await resp.json()
-            return await ctx.send(f'Command source: <https://hastebin.com/{data['key']}.py>')
+            key = data['key']
+            return await ctx.send(f'Command source: <https://hastebin.com/{key}.py>')
         else:
             return await ctx.send(fmt)
 
