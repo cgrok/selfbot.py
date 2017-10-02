@@ -669,6 +669,16 @@ class Utility:
                 entries.append(url)
 
         return card, entries
+        
+    def paginate(text: str):
+        '''Simple generator that paginates text.'''
+        last = 0
+        for curr in range(0, len(text)+1980, 1980):
+            if last == curr:
+                continue
+            else:
+                yield text[last:curr]
+                last = curr
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
@@ -737,15 +747,6 @@ class Utility:
         msg = f'```py\n{body}\n```'
         await ctx.message.edit(content=msg)
 
-    def paginate(text: str):
-        '''Simple generator that paginates text.'''
-        last = 0
-        for curr in range(0, len(text)+1980, 1980):
-            if last == curr:
-                continue
-            else:
-                yield text[last:curr]
-                last = curr
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
