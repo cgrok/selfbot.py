@@ -91,3 +91,14 @@ class CustomContext(commands.Context):
             color = ColorThief(f).get_color(quality=10)
             
         return discord.Color.from_rgb(*color)
+
+    @staticmethod
+    def paginate(text: str):
+        '''Simple generator that paginates text.'''
+        last = 0
+        pages = []
+        for curr in range(0, len(text)):
+            if curr % 1980 == 0:
+                pages.append(text[last:curr])
+                last = curr
+        return pages

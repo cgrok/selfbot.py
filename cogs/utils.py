@@ -669,16 +669,7 @@ class Utility:
                 entries.append(url)
 
         return card, entries
-        
-    def paginate(text: str):
-        '''Simple generator that paginates text.'''
-        last = 0
-        for curr in range(0, len(text)+1980, 1980):
-            if last == curr:
-                continue
-            else:
-                yield text[last:curr]
-                last = curr
+
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
@@ -725,7 +716,7 @@ class Utility:
                     try:
                         out = await ctx.send(f'```py\n{value}\n```')
                     except:
-                        paginated_text = paginate(f"{value}")
+                        paginated_text = ctx.paginate(f"{value}")
                         for page in paginated_text:
                             out = await ctx.send(f'```py{page}```')
             else:
@@ -733,7 +724,7 @@ class Utility:
                 try:
                     out = await ctx.send(f'```py\n{value}{ret}\n```')
                 except:
-                    paginated_text = paginate(f"{value}{ret}")
+                    paginated_text = ctx.paginate(f"{value}{ret}")
                     for page in paginated_text:
                         out = await ctx.send(f'```py\n{page}\n```')
 
