@@ -718,7 +718,7 @@ class Utility:
                     except:
                         paginated_text = ctx.paginate(f"{value}")
                         for page in paginated_text:
-                            out = await ctx.send(f'```py{page}```')
+                            out = await ctx.send(f'```py\n{page}\n```')
             else:
                 self._last_result = ret
                 try:
