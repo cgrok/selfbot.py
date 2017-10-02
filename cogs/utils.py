@@ -719,13 +719,17 @@ class Utility:
                     try:
                         out = await ctx.send(f'```py\n{value}\n```')
                     except:
-                        out = await ctx.send('Result was too long to send.')
+                        paginated_text = paginate(f"{value}")
+                        for page in paginated_text:
+                            out = await ctx.send(f'```py{page}```')
             else:
                 self._last_result = ret
                 try:
                     out = await ctx.send(f'```py\n{value}{ret}\n```')
                 except:
-                    out = await ctx.send('Result was too long to send.')
+                    paginated_text = paginate(f"{value}{ret}")
+                    for page in paginated_text:
+                        out = await ctx.send(f'```py\n{page}\n```')
 
         if out:
             await out.add_reaction('\u2705')
@@ -736,6 +740,16 @@ class Utility:
     async def edit_to_codeblock(self, ctx, body):
         msg = f'```py\n{body}\n```'
         await ctx.message.edit(content=msg)
+
+    def paginate(text: str):
+    '''Simple generator that paginates text.'''
+    last = 0
+    for curr in range(0, len(text)+1980, 1980):
+        if last == curr:
+            continue
+        else:
+            yield text[last:curr]
+            last = curr
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
