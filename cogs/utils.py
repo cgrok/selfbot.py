@@ -716,9 +716,12 @@ class Utility:
                     try:
                         out = await ctx.send(f'```py\n{value}\n```')
                     except:
-                        paginated_text = ctx.paginate(f"{value}")
+                        paginated_text = ctx.paginate(value)
                         for page in paginated_text:
-                            out = await ctx.send(f'```py\n{page}\n```')
+                            if page == paginated_text[-1]:
+                                out = await ctx.send(f'```py\n{page}\n```')
+                                break
+                            await ctx.send(f'```py\n{page}\n```')
             else:
                 self._last_result = ret
                 try:
@@ -726,7 +729,10 @@ class Utility:
                 except:
                     paginated_text = ctx.paginate(f"{value}{ret}")
                     for page in paginated_text:
-                        out = await ctx.send(f'```py\n{page}\n```')
+                        if page == paginated_text[-1]:
+                            out = await ctx.send(f'```py\n{page}\n```')
+                            break
+                        await ctx.send(f'```py\n{page}\n```')
 
         if out:
             await out.add_reaction('\u2705')
