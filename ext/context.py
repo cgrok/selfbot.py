@@ -101,6 +101,7 @@ class CustomContext(commands.Context):
             if curr % 1980 == 0:
                 pages.append(text[last:curr])
                 last = curr
-        if curr != len(text)-1:
+                appd_index = curr
+        if appd_index != len(text)-1:
             pages.append(text[last:curr])
         return list(filter(lambda a: a != '', pages))
