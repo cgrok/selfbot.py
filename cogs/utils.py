@@ -252,7 +252,19 @@ class Utility:
 
     @commands.command()
     async def embed(self, ctx, *, params):
-        '''Send complex rich embeds with this command!'''
+        '''Send complex rich embeds with this command!
+
+        ```
+        {description: Discord format supported}
+        {title: required | url: optional}
+        {author: required | icon: optional | url: optional}
+        {image: image_url_here}
+        {thumbnail: image_url_here}
+        {field: required | value: required}
+        {footer: footer_text_here | icon: optional}
+        {timestamp} <-this will include a timestamp
+        ```
+        '''
         em = self.to_embed(ctx, params)
         await ctx.message.delete()
         try:
