@@ -103,7 +103,7 @@ class Paginator:
         if value and not self.last_cog:
             fmt = list(filter(None, value.split('\n')))
             self._current_embed.title = f'``{fmt[0]}``' # command signiture
-            self._current_embed.description = fmt[1] # command desc
+            self._current_embed.description = '\n'.join(fmt[1:]) # command desc
 
         self._embeds.append(self._current_embed)
         self._current_embed = discord.Embed()
