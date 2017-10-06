@@ -335,10 +335,11 @@ class Misc:
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
+        emoji = emoji.lower()
         if emoji[0] == "<" or emoji[0] == "":
-            emo = discord.utils.find(lambda e: emoji[1] in e.name, ctx.bot.emojis)
+            emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
         else:
-            emo = discord.utils.find(lambda e: emoji[0] in e.name, ctx.bot.emojis)
+            emo = discord.utils.find(lambda e: emoji[0] in e.name.lower(), ctx.bot.emojis)
         if emo == None:
             em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
             em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
