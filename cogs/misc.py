@@ -144,9 +144,8 @@ class Misc:
         except:
             return await ctx.send('File not found.')
         interval = anim[0]
-        base = await ctx.send(anim[1])
-        for line in anim[2:]:
-            await base.edit(content=line)
+        for line in anim[1:]:
+            await ctx.message.edit(content=line)
             await asyncio.sleep(float(interval))
 
     @commands.command()
