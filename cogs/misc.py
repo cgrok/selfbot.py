@@ -136,6 +136,11 @@ class Misc:
         await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
+    async def py(self, ctx, *, code):
+        '''Quick command to edit into a codeblock.'''
+        await ctx.message.edit(content=f'```py\n{code}\n```')
+
+    @commands.command()
     async def animate(self, ctx, *, file):
         '''Animate a text file on discord!'''
         try:
