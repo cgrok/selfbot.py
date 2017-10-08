@@ -147,6 +147,8 @@ class Selfbot(commands.Bot):
         Logged in as: {self.user}
         User ID: {self.user.id}
         ---------------
+        Current Version: 1.0.0
+        ---------------
         '''))
         
         await self.change_presence(status=discord.Status.invisible, afk=True)
