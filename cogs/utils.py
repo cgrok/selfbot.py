@@ -685,7 +685,7 @@ class Utility:
 
     @commands.command(pass_context=True, hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
-        """Evaluates a code"""
+        """Evaluates python code"""
 
         env = {
             'bot': self.bot,
@@ -694,7 +694,8 @@ class Utility:
             'author': ctx.author,
             'guild': ctx.guild,
             'message': ctx.message,
-            '_': self._last_result
+            '_': self._last_result,
+            'source': inspect.getsource
         }
 
         env.update(globals())
@@ -753,7 +754,7 @@ class Utility:
 
 
     async def edit_to_codeblock(self, ctx, body):
-        msg = f'```py\n{body}\n```'
+        msg = f'{ctx.prefix}eval```py\n{body}\n```'
         await ctx.message.edit(content=msg)
 
 
