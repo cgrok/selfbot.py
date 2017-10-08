@@ -157,7 +157,7 @@ class Misc:
     @animate.command()
     async def list(self, ctx):
         '''Lists all possible animations'''
-        await ctx.send(f"Available animations: `{', '.join([f[:-3] for f in os.listdir('data/anims') if f.endswith('.txt')])}`")
+        await ctx.send(f"Available animations: `{', '.join([f[:-4] for f in os.listdir('data/anims') if f.endswith('.txt')])}`")
 
     @commands.command()
     async def virus(self, ctx, virus=None, *, user: discord.Member = None):
