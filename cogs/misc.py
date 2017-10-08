@@ -140,11 +140,11 @@ class Misc:
         '''Quick command to edit into a codeblock.'''
         await ctx.message.edit(content=f'```py\n{code}\n```')
 
-    @commands.command()
+    @commands.group(invoke_without_command=True, aliases=['anim'])
     async def animate(self, ctx, *, file):
         '''Animate a text file on discord!'''
         try:
-            with open(f'data/anims/{file}') as a:
+            with open(f'data/anims/{file}.txt') as a:
                 anim = a.read().splitlines()
         except:
             return await ctx.send('File not found.')
@@ -152,6 +152,15 @@ class Misc:
         for line in anim[1:]:
             await ctx.message.edit(content=line)
             await asyncio.sleep(float(interval))
+
+    @animate.command()
+    async def list(self, ctx, *, file):
+        '''Lists all possible animations'''
+        files = []
+        for file in os.listdir("/mydir"):
+            if file.endswith(".txt"):
+                files.append(file[:-3])
+        await ctx.send(f"Available animations: `{", ".join(files)}`")
 
     @commands.command()
     async def virus(self, ctx, virus=None, *, user: discord.Member = None):
