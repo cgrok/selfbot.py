@@ -158,7 +158,7 @@ class Misc:
     async def list(self, ctx):
         '''Lists all possible animations'''
         files = []
-        for file in os.listdir("/mydir"):
+        for file in os.listdir("data/anims"):
             if file.endswith(".txt"):
                 files.append(file[:-3])
         await ctx.send(f"Available animations: `{', '.join(files)}`")
