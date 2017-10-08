@@ -154,7 +154,7 @@ class Misc:
             await asyncio.sleep(float(interval))
 
     @animate.command()
-    async def list(self, ctx, *, file):
+    async def list(self, ctx):
         '''Lists all possible animations'''
         files = []
         for file in os.listdir("/mydir"):
