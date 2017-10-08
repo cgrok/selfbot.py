@@ -160,7 +160,7 @@ class Misc:
         for file in os.listdir("/mydir"):
             if file.endswith(".txt"):
                 files.append(file[:-3])
-        await ctx.send(f"Available animations: `{", ".join(files)}`")
+        await ctx.send(f"Available animations: `{', '.join(files)}`")
 
     @commands.command()
     async def virus(self, ctx, virus=None, *, user: discord.Member = None):
