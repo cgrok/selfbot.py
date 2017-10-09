@@ -345,7 +345,7 @@ class Misc:
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
-        emoji = emoji.lower()
+        emoji = [e.lower() for e in emoji]
         if emoji[0] == "<" or emoji[0] == "":
             emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
         else:
