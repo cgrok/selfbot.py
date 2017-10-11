@@ -36,6 +36,7 @@ import copy
 import io
 import aiohttp
 import json
+import os
 
 
 class Misc:
@@ -140,11 +141,11 @@ class Misc:
         '''Quick command to edit into a codeblock.'''
         await ctx.message.edit(content=f'```py\n{code}\n```')
 
-    @commands.command()
+    @commands.group(invoke_without_command=True, aliases=['anim'])
     async def animate(self, ctx, *, file):
         '''Animate a text file on discord!'''
         try:
-            with open(f'data/anims/{file}') as a:
+            with open(f'data/anims/{file}.txt') as a:
                 anim = a.read().splitlines()
         except:
             return await ctx.send('File not found.')
@@ -152,6 +153,11 @@ class Misc:
         for line in anim[1:]:
             await ctx.message.edit(content=line)
             await asyncio.sleep(float(interval))
+
+    @animate.command()
+    async def list(self, ctx):
+        '''Lists all possible animations'''
+        await ctx.send(f"Available animations: `{', '.join([f[:-4] for f in os.listdir('data/anims') if f.endswith('.txt')])}`")
 
     @commands.command()
     async def virus(self, ctx, virus=None, *, user: discord.Member = None):
@@ -339,7 +345,7 @@ class Misc:
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
-        emoji = emoji.lower()
+        emoji = [e.lower() for e in emoji]
         if emoji[0] == "<" or emoji[0] == "":
             emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
         else:
