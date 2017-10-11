@@ -139,6 +139,10 @@ class Selfbot(commands.Bot):
         if not hasattr(self, 'uptime'):
             self.uptime = datetime.datetime.utcnow()
         print(textwrap.dedent(f'''
+        Use this at your own risk,
+        dont do anything stupid, 
+        and when you get banned,
+        dont blame it at me.
         ---------------
         Client is ready!
         ---------------
