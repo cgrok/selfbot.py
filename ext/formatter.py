@@ -79,12 +79,12 @@ class Paginator:
         while self._current_field: 
             curr = self._current_field.pop(0) # goes through each line
             if curr.strip().endswith(':'): # this means its a CogName:
+                self.seen.add(curr)
                 if name: 
                     if value:
                         self._current_embed.add_field(name=name, value=value)
                         name, value = curr, '' # keeps track of the last cog sent,
-                        self.last_cog = curr  # so the next embed can have a `continued` thing
-                        self.seen.add(curr)                      
+                        self.last_cog = curr  # so the next embed can have a `continued` thing                    
                 else:                          
                     if value:
                         if self.last_cog:
