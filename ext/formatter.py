@@ -92,7 +92,6 @@ class Paginator:
                         value = ''
                     name = curr
                     self.last_cog = curr
-                    self.seen.add(curr)
             else:
                 value += curr + '\n'
 
