@@ -44,6 +44,7 @@ class Paginator:
         self._count = 0
         self._embeds = []
         self.last_cog = None
+        self.seen = set()
 
     def add_line(self, line='', *, empty=False):
         """Adds a line to the current embed page.
@@ -82,7 +83,8 @@ class Paginator:
                     if value:
                         self._current_embed.add_field(name=name, value=value)
                         name, value = curr, '' # keeps track of the last cog sent,
-                        self.last_cog = curr  # so the next embed can have a `continued` thing                      
+                        self.last_cog = curr  # so the next embed can have a `continued` thing
+                        self.seen.add(curr)                      
                 else:                          
                     if value:
                         if self.last_cog:
@@ -90,13 +92,17 @@ class Paginator:
                         value = ''
                     name = curr
                     self.last_cog = curr
+                    self.seen.add(curr)
             else:
                 value += curr + '\n'
 
         # adds the last parts not done in the while loop
         print(self.last_cog)
         if self.last_cog and value:
-            self._current_embed.add_field(name=self.last_cog, value=value)
+            if self.last_cog in self.seen:
+                self._current_embed.add_field(name=f'{self.last_cog} (continued)', value=value)
+            else:
+                self._current_embed.add_field(name=self.last_cog, value=value)
             value = ''
 
         # this means that there was no `Cog:` title thingys, that means that its a command help

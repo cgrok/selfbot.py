@@ -64,7 +64,7 @@ class Mod:
         else:
             success = True
 
-        emb = await self.format_mod_embed(ctx, member, success, 'kick', reason)
+        emb = await self.format_mod_embed(ctx, member, success, 'kick')
 
         await ctx.send(embed=emb)
 
@@ -78,7 +78,7 @@ class Mod:
         else:
             success = True
 
-        emb = await self.format_mod_embed(ctx, member, success, 'ban', reason)
+        emb = await self.format_mod_embed(ctx, member, success, 'ban')
 
         await ctx.send(embed=emb)
 
