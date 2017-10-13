@@ -10,7 +10,7 @@
     </p>
 </div> 
 
-Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. Using this bot gives you access to a variety of commands that ranging from code evaluation to fun and misc commands. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it! 
+Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. Using this bot gives you access to a variety of commands that ranging from code evaluation to fun and misc commands. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it! Join [our discord](https://discord.gg/pmQSbAd) for updates, fun and to interact with the developers!
 
 !> Using selfbots is against the discord TOS. 
 
@@ -25,7 +25,7 @@ Although this selfbot is against discord TOS, so are applications such as better
 * Complex embed commands
 * Miscellaneous commands
 * Easy to make your own commands
-* Community Cogs *(coming soon, join [our discord](https://discord.gg/pmQSbAd) for updates)*
+* Community Cogs *(coming soon)*
 
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
