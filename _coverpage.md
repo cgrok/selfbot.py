@@ -5,4 +5,4 @@
 * An easy to use selfbot for discord.
 
 [GitHub](https://github.com/verixx/selfbot.py/)
-[Get Started](#rewrite-branch)
+[Get Started](#introduction)
