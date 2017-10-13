@@ -20,7 +20,7 @@ Although this selfbot is against discord TOS, so are applications such as better
 
 ## Features
 
-This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](heroku.md) 24/7 for free*  
+This is a "stateless selfbot" (Saves no data) *This means that you can [host it on heroku](heroku.md) 24/7 for free*  
 
 * Moderation commands
 * Global emoji commands
