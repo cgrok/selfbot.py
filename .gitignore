@@ -3,4 +3,5 @@ __pycache__/
 *$py.class
 *.DS_Store
 *.json
-cogs/testsplit.py
+/data
+

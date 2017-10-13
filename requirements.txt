@@ -1,8 +1,8 @@
-git+https://github.com/Rapptz/discord.py@rewrite
+discord.py
+requests
+PythonGists
+bs4
 lxml
+Pillow
 mtranslate
-colorthief
-sympy
-psutil
-emoji
-wikipedia
+pyfiglet

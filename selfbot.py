@@ -1,198 +1,345 @@
-'''
-MIT License
-
-Copyright (c) 2017 verixx
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-'''
-
 import discord
-from discord.ext import commands
-from ext.context import CustomContext
 from ext.formatter import EmbedHelp
-from collections import defaultdict
-from ext import embedtobox
-import asyncio
-import aiohttp
+from discord.ext import commands
+from contextlib import redirect_stdout
 import datetime
-import psutil
-import time
 import json
-import sys
+import inspect
 import os
-import re
-import textwrap
-from PIL import Image
+import glob
 import io
+import textwrap
+import traceback
 
-
-class Selfbot(commands.Bot):
-    '''
-    Custom Client for selfbot.py - Made by verix#7220
-    '''
-    _mentions_transforms = {
-        '@everyone': '@\u200beveryone',
-        '@here': '@\u200bhere'
+default_data = {
+    "PREFIX": "r.",
+    "TOKEN": "your_token_here",
     }
 
-    _mention_pattern = re.compile('|'.join(_mentions_transforms.keys()))
+def run_wizard():
+    print('------------------------------------------')
+    print('WELCOME TO THE VERIXX-SELFBOT SETUP WIZARD!')
+    print('------------------------------------------')
+    token = input('Enter your token:\n> ')
+    print('------------------------------------------')
+    prefix = input('Enter a prefix for your selfbot:\n> ')
+    data = {
+        "PREFIX": prefix,
+        "TOKEN": token
+        }
+    with open('data/config.json','w') as f:
+        f.write(json.dumps(data, indent=4))
+    print('------------------------------------------')
+    print('Successfully saved your data!')
+    print('------------------------------------------')
 
-    def __init__(self, **attrs):
-        super().__init__(command_prefix=self.get_pre, self_bot=True)
-        self.formatter = EmbedHelp()
-        self.session = aiohttp.ClientSession(loop=self.loop)
-        self.process = psutil.Process()
-        self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
-        self.last_message = None
-        self.messages_sent = 0
-        self.commands_used = defaultdict(int)
-        self.remove_command('help')
-        self.add_command(self.ping)
-        self.load_extensions()
-        self.load_community_extensions()
+if 'TOKEN' in os.environ:
+    heroku = True
+    TOKEN = os.environ['TOKEN']
+else:
+    heroku = False
+    with open('data/config.json') as f:
+        if json.load(f)["TOKEN"] == default_data["TOKEN"]:
+            run_wizard()
+    with open('data/config.json') as f:
+        TOKEN = json.load(f)['TOKEN']
 
-    def load_extensions(self, cogs=None, path='cogs.'):
-        '''Loads the default set of extensions or a seperate one if given'''
-        for extension in cogs or self._extensions:
-            try:
-                self.load_extension(f'{path}{extension}')
-                print(f'Loaded extension: {extension}')
-            except Exception as e:
-                print(f'LoadError: {extension}\n'
-                      f'{type(e).__name__}: {e}')
+async def get_pre(bot, message):
+    if 'PREFIX' in os.environ:
+        return os.environ['PREFIX']
 
-    def load_community_extensions(self):
-        '''Loads up community extensions.'''
-        with open('data/community_cogs.txt') as fp:
-            to_load = fp.read().splitlines()
-        self.load_extensions(to_load, 'cogs.community')
+    with open('data/config.json') as f:
+        config = json.load(f)
+    try:
+        return config['PREFIX']
+    except:
+        return 's.'
 
-    @property
-    def token(self):
-        '''Returns your token wherever it is'''
-        with open('data/config.json') as f:
-            config = json.load(f)
-            if config.get('TOKEN') == "your_token_here":
-                if not os.environ.get('TOKEN'):
-                    self.run_wizard()
+bot = commands.Bot(command_prefix=get_pre, self_bot=True, formatter=EmbedHelp())
+bot.remove_command('help')
+
+_extensions = [
+
+    'cogs.misc',
+    'cogs.info',
+    'cogs.utils',
+    'cogs.mod'
+
+    ]
+
+@bot.event
+async def on_ready():
+    bot.uptime = datetime.datetime.now()
+    print(textwrap.dedent(f"""
+    ------------------------------------------
+    Self-Bot Ready
+    Author: verix#7220
+    ------------------------------------------
+    Username: {bot.user}
+    User ID: {bot.user.id}
+    ------------------------------------------"""))
+    await bot.change_presence(status=discord.Status.invisible, afk=True)
+
+
+@bot.command(pass_context=True)
+async def ping(ctx):
+    """Pong! Check your response time."""
+    msgtime = ctx.message.timestamp.now()
+    await (await bot.ws.ping())
+    now = datetime.datetime.now()
+    ping = now - msgtime
+    pong = discord.Embed(title='Pong! Response Time:',
+    					 description=str(ping.microseconds / 1000.0) + ' ms',
+                         color=0x00ffff)
+    await bot.say(embed=pong)
+
+@bot.command(pass_context=True)
+async def shutdown(ctx):
+    """Restarts the selfbot."""
+    channel = ctx.message.channel
+    await bot.say("Shutting down...")
+    await bot.logout()
+
+@bot.command(name='presence')
+async def _set(Type,*,message=None):
+    """Change your discord game/stream!"""
+    if Type.lower() == 'stream':
+        await bot.change_presence(game=discord.Game(name=message,type=1,url=f'https://www.twitch.tv/{message}'),status='online')
+        await bot.say(f'Set presence to. `Streaming {message}`')
+    elif Type.lower() == 'game':
+        await bot.change_presence(game=discord.Game(name=message))
+        await bot.say(f'Set presence to `Playing {message}`')
+    elif Type.lower() == 'clear':
+        await bot.change_presence(game=None)
+        await bot.say('Cleared Presence')
+    else:
+        await bot.say('Usage: `.presence [game/stream/clear] [message]`')
+
+async def send_cmd_help(ctx):
+    if ctx.invoked_subcommand:
+        pages = bot.formatter.format_help_for(ctx, ctx.invoked_subcommand)
+        for page in pages:
+            print(page)
+            await bot.send_message(ctx.message.channel, embed=page)
+        print('Sent command help')
+    else:
+        pages = bot.formatter.format_help_for(ctx, ctx.command)
+        for page in pages:
+            print(page)
+            await bot.send_message(ctx.message.channel, embed=page)
+        print('Sent command help')
+
+@bot.event
+async def on_command_error(error, ctx):
+   print(error)
+   channel = ctx.message.channel
+   if isinstance(error, commands.MissingRequiredArgument):
+       await send_cmd_help(ctx)
+       print('Sent command help')
+   elif isinstance(error, commands.BadArgument):
+       await send_cmd_help(ctx)
+       print('Sent command help')
+   elif isinstance(error, commands.DisabledCommand):
+       await bot.send_message(channel, "That command is disabled.")
+       print('Command disabled.')
+   elif isinstance(error, commands.CommandInvokeError):
+       # A bit hacky, couldn't find a better way
+       no_dms = "Cannot send messages to this user"
+       is_help_cmd = ctx.command.qualified_name == "help"
+       is_forbidden = isinstance(error.original, discord.Forbidden)
+       if is_help_cmd and is_forbidden and error.original.text == no_dms:
+           msg = ("I couldn't send the help message to you in DM. Either"
+                  " you blocked me or you disabled DMs in this server.")
+           await bot.send_message(channel, msg)
+           return
+
+@bot.command(pass_context=True)
+async def coglist(ctx):
+    '''See unloaded and loaded cogs!'''
+    def pagify(text, delims=["\n"], *, escape=True, shorten_by=8,
+               page_length=2000):
+        """DOES NOT RESPECT MARKDOWN BOXES OR INLINE CODE"""
+        in_text = text
+        if escape:
+            num_mentions = text.count("@here") + text.count("@everyone")
+            shorten_by += num_mentions
+        page_length -= shorten_by
+        while len(in_text) > page_length:
+            closest_delim = max([in_text.rfind(d, 0, page_length)
+                                 for d in delims])
+            closest_delim = closest_delim if closest_delim != -1 else page_length
+            if escape:
+                to_send = escape_mass_mentions(in_text[:closest_delim])
             else:
-                token = config.get('TOKEN').strip('\"')
-        return os.environ.get('TOKEN') or token
+                to_send = in_text[:closest_delim]
+            yield to_send
+            in_text = in_text[closest_delim:]
+        yield in_text
 
-    @staticmethod
-    async def get_pre(bot, message):
-        '''Returns the prefix.'''
-        with open('data/config.json') as f:
-            prefix = json.load(f).get('PREFIX')
-        return os.environ.get('PREFIX') or prefix or 'r.'
+    def box(text, lang=""):
+        ret = f"```{lang}\n{text}\n```"
+        return ret
+    loaded = [c.__module__.split(".")[1] for c in bot.cogs.values()]
+    # What's in the folder but not loaded is unloaded
+    def _list_cogs():
+          cogs = [os.path.basename(f) for f in glob.glob("cogs/*.py")]
+          return ["cogs." + os.path.splitext(f)[0] for f in cogs]
+    unloaded = [c.split(".")[1] for c in _list_cogs()
+                if c.split(".")[1] not in loaded]
 
-    @staticmethod
-    def run_wizard():
-        '''Wizard for first start'''
-        print('------------------------------------------')
-        token = input('Enter your token:\n> ')
-        print('------------------------------------------')
-        prefix = input('Enter a prefix for your selfbot:\n> ')
-        data = {
-                "TOKEN" : token,
-                "PREFIX" : prefix,
-            }
-        with open('data/config.json','w') as f:
-            f.write(json.dumps(data, indent=4))
-        print('------------------------------------------')
-        print('Restarting...')
-        print('------------------------------------------')
-        os.execv(sys.executable, ['python'] + sys.argv)
+    if not unloaded:
+        unloaded = ["None"]
 
-    @classmethod
-    def init(bot, token=None):
-        '''Starts the actual bot'''
-        selfbot = bot()
-        safe_token = token or selfbot.token.strip('\"')
+    em1 = discord.Embed(color=discord.Color.green(), title="+ Loaded", description=", ".join(sorted(loaded)))
+    em2 = discord.Embed(color=discord.Color.red(), title="- Unloaded", description=", ".join(sorted(unloaded)))
+    await bot.say(embed=em1)
+    await bot.say(embed=em2)
+
+def cleanup_code( content):
+    """Automatically removes code blocks from the code."""
+    # remove ```py\n```
+    if content.startswith('```') and content.endswith('```'):
+        return '\n'.join(content.split('\n')[1:-1])
+
+    # remove `foo`
+    return content.strip('` \n')
+
+def get_syntax_error(e):
+    if e.text is None:
+        return f'```py\n{e.__class__.__name__}: {e}\n```'
+    return f'```py\n{e.text}'^':>{e.offset}\n{type(e).__name__}: {e}```'
+
+async def to_code_block(ctx, body):
+    if body.startswith('```') and body.endswith('```'):
+        content = '\n'.join(body.split('\n')[1:-1])
+    else:
+        content = body.strip('`')
+    await bot.edit_message(ctx.message, '```py\n'+content+'```')
+
+@bot.command(pass_context=True, name='eval')
+async def _eval(ctx, *, body: str):
+    '''Run python scripts on discord!'''
+    await to_code_block(ctx, body)
+    env = {
+        'bot': bot,
+        'ctx': ctx,
+        'channel': ctx.message.channel,
+        'author': ctx.message.author,
+        'server': ctx.message.server,
+        'message': ctx.message,
+    }
+
+    env.update(globals())
+
+    body = cleanup_code(content=body)
+    stdout = io.StringIO()
+
+    to_compile = 'async def func():\n%s' % textwrap.indent(body, '  ')
+
+    try:
+        exec(to_compile, env)
+    except SyntaxError as e:
+        return await bot.say(get_syntax_error(e))
+
+    func = env['func']
+    try:
+        with redirect_stdout(stdout):
+            ret = await func()
+    except Exception as e:
+        value = stdout.getvalue()
+        x = await bot.say(f'```py\n{e}\n{traceback.format_exc()}\n{value}```')
         try:
-            selfbot.run(safe_token, bot=False, reconnect=True)
-        except Exception as e:
-            print(e)
+            await bot.add_reaction(x, '\U0001f534')
+        except:
+            pass
+    else:
+        value = stdout.getvalue()
 
-    async def on_connect(self):
-        print('---------------\n'
-              'selfbot.py connected!')
-
-    async def on_ready(self):
-        '''Bot startup, sets uptime.'''
-        if not hasattr(self, 'uptime'):
-            self.uptime = datetime.datetime.utcnow()
-        print(textwrap.dedent(f'''
-        Use this at your own risk,
-        dont do anything stupid, 
-        and when you get banned,
-        dont blame it at me.
-        ---------------
-        Client is ready!
-        ---------------
-        Author: verixx#7220
-        ---------------
-        Logged in as: {self.user}
-        User ID: {self.user.id}
-        ---------------
-        Current Version: 1.0.0
-        ---------------
-        '''))
-        
-        await self.change_presence(status=discord.Status.invisible, afk=True)
-
-    async def on_command(self, ctx):
-        cmd = ctx.command.qualified_name.replace(' ', '_')
-        self.commands_used[cmd] += 1
-
-    async def process_commands(self, message):
-        '''Utilises the CustomContext subclass of discord.Context'''
-        ctx = await self.get_context(message, cls=CustomContext)
-        if ctx.command is None:
-            return
-        await self.invoke(ctx)
-
-    async def on_message(self, message):
-        '''Responds only to yourself'''
-        if message.author.id != self.user.id:
-            return
-        self.messages_sent += 1
-        self.last_message = time.time()
-        await self.process_commands(message)
-
-    def get_server(self, id):
-        return discord.utils.get(self.guilds, id=id)
-
-    @commands.command()
-    async def ping(self, ctx):
-        """Pong! Returns your websocket latency."""
-        em = discord.Embed()
-        em.title ='Pong! Websocket Latency:'
-        em.description = f'{self.ws.latency * 1000:.4f} ms'
-        em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
-        try:
-            await ctx.send(embed=em)
-        except discord.HTTPException:
-            em_list = await embedtobox.etb(emb)
-            for page in em_list:
-                await ctx.send(page)
+        if TOKEN in value:
+            value = value.replace(TOKEN,"[EXPUNGED]")
 
 
-if __name__ == '__main__':
-    Selfbot.init()
+        if ret is None:
+            if value:
+                try:
+                    x = await bot.say('```py\n%s\n```' % value)
+                except:
+                    x = await bot.say('```py\n\'Result was too long.\'```')
+                try:
+                    await bot.add_reaction(x, '\U0001f535')
+                except:
+                    pass
+            else:
+
+                try:
+                    await bot.add_reaction(ctx.message, '\U0001f535')
+                except:
+                    pass
+        else:
+            if TOKEN in ret:
+                ret = ret.replace(TOKEN,"[EXPUNGED]")
+            try:
+                x = await bot.say('```py\n%s%s\n```' % (value, ret))
+            except:
+                x = await bot.say('```py\n\'Result was too long.\'```')
+            try:
+                await bot.add_reaction(x, '\U0001f535')
+            except:
+                pass
+
+@bot.command(pass_context=True)
+async def say(ctx, *, message: str):
+    '''Say something as the bot.'''
+    if f'{ctx.prefix}say' in message:
+        await bot.say("Don't ya dare spam.")
+    else:
+        await bot.say(message)
+
+@bot.command(pass_context=True,name='reload')
+async def _reload(ctx,*, module : str):
+    """Reloads a module."""
+    channel = ctx.message.channel
+    module = 'cogs.'+module
+    try:
+        bot.unload_extension(module)
+        x = await bot.send_message(channel,'Successfully Unloaded.')
+        bot.load_extension(module)
+        x = await bot.edit_message(x,'Successfully Reloaded.')
+    except Exception as e:
+        x = await bot.edit_message(x,'\N{PISTOL}')
+        await bot.say(f'{type(e).__name__}: {e}')
+    else:
+        x = await bot.edit_message(x,'Done. \N{OK HAND SIGN}')
+
+@bot.command(pass_context=True)
+async def load(ctx, *, module):
+    '''Loads a module.'''
+    module = 'cogs.'+module
+    try:
+        bot.load_extension(module)
+        await bot.say('Successfully Loaded.')
+    except Exception as e:
+        await bot.say(f'\N{PISTOL}\n{type(e).__name__}: {e}')
+
+@bot.command(pass_context=True)
+async def unload(ctx, *, module):
+    '''Unloads a module.'''
+    module = 'cogs.'+module
+    try:
+        bot.unload_extension(module)
+        await bot.say(f'Successfully Unloaded `{module}`')
+    except:
+        pass
+
+for extension in _extensions:
+    try:
+        bot.load_extension(extension)
+        print(f'Loaded: {extension}')
+    except Exception as e:
+        exc = f'{type(e).__name__}: {e}'
+        print(f'Error on load: {extension}\n{exc}')
+
+try:
+    bot.run(TOKEN.strip('\"'), bot=False)
+except Exception as e:
+    print(f'\n[ERROR]: \n{e}\n')

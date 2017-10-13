@@ -1,14 +1,18 @@
 '''
 MIT License
+
 Copyright (c) 2017 verixx
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
+
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -18,500 +22,229 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
 
+
+
 import discord
-from discord.ext import commands
-from discord.ext.commands import TextChannelConverter
-from contextlib import redirect_stdout
-from ext.utility import load_json
-from urllib.parse import parse_qs
-from mtranslate import translate
-from lxml import etree
-from ext import fuzzy
-from ext import embedtobox
-from PIL import Image
+import random
+import asyncio
+import requests
 import unicodedata
-import traceback
-import textwrap
-import wikipedia
-import aiohttp
 import inspect
-import re
-import io
-import os
+import aiohttp
+from discord.ext import commands
+from bs4 import BeautifulSoup
+from urllib import parse
+from urllib.parse import parse_qs
+from urllib.request import Request, urlopen
+from lxml import etree
+from mtranslate import translate
+from ext.utility import load_json
+
+
 
 class Utility:
-    '''Useful commands to make your life easier'''
     def __init__(self, bot):
         self.bot = bot
         self.lang_conv = load_json('data/langs.json')
-        self._last_embed = None
-        self._rtfm_cache = None
-        self._last_google = None
-        self._last_result = None
+        self.sessions = set()
 
-
-    @commands.command(name='logout')
-    async def _logout(self, ctx):
-        '''
-        Shuts down the selfbot,
-        equivalent to a restart if you are hosting the bot on heroku.
-        '''
-        await ctx.send('`Selfbot Logging out...`')
-        await self.bot.logout()
-
-    @commands.command(name='help')
-    async def new_help_command(self, ctx, *commands : str):
-        """Shows this message."""
-        destination = ctx.message.author if self.bot.pm_help else ctx.message.channel
-
-        def repl(obj):
-            return self.bot._mentions_transforms.get(obj.group(0), '')
-
-        # help by itself just lists our own commands.
-        if len(commands) == 0:
-            pages = await self.bot.formatter.format_help_for(ctx, self.bot)
-        elif len(commands) == 1:
-            # try to see if it is a cog name
-            name = self.bot._mention_pattern.sub(repl, commands[0])
-            command = None
-            if name in self.bot.cogs:
-                command = self.bot.cogs[name]
-            else:
-                command = self.bot.all_commands.get(name)
-                if command is None:
-                    await destination.send(self.bot.command_not_found.format(name))
-                    return
-
-            pages = await self.bot.formatter.format_help_for(ctx, command)
-        else:
-            name = self.bot._mention_pattern.sub(repl, commands[0])
-            command = self.bot.all_commands.get(name)
-            if command is None:
-                await destination.send(self.bot.command_not_found.format(name))
-                return
-
-            for key in commands[1:]:
-                try:
-                    key = self.bot._mention_pattern.sub(repl, key)
-                    command = command.all_commands.get(key)
-                    if command is None:
-                        await destination.send(self.bot.command_not_found.format(key))
-                        return
-                except AttributeError:
-                    await destination.send(self.bot.command_has_no_subcommands.format(command, key))
-                    return
-
-            pages = await self.bot.formatter.format_help_for(ctx, command)
-
-        if self.bot.pm_help is None:
-            characters = sum(map(lambda l: len(l), pages))
-            # modify destination based on length of pages.
-            if characters > 1000:
-                destination = ctx.message.author
-
-        color = await ctx.get_dominant_color(ctx.author.avatar_url)
-
-        for embed in pages:
-            embed.color = color
-            try:
-                await ctx.send(embed=embed)
-            except discord.HTTPException:
-                em_list = await embedtobox.etb(embed)
-                for page in em_list:
-                    await ctx.send(page)
-
-    @commands.command(name='presence')
-    async def _presence(self, ctx, status, *, message=None):
-        '''Change your Discord status! (Stream, Online, Idle, DND, Invisible, or clear it)'''
-        status = status.lower()
-        emb = discord.Embed(title="Presence")
-        emb.color = await ctx.get_dominant_color(ctx.author.avatar_url)
-        file = io.BytesIO()
-        if status == "online":
-            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message), afk=True)
-            color = discord.Color(value=0x43b581).to_rgb()
-        elif status == "idle":
-            await self.bot.change_presence(status=discord.Status.idle, game=discord.Game(name=message), afk=True)
-            color = discord.Color(value=0xfaa61a).to_rgb()
-        elif status == "dnd":
-            await self.bot.change_presence(status=discord.Status.dnd, game=discord.Game(name=message), afk=True)
-            color = discord.Color(value=0xf04747).to_rgb()
-        elif status == "invis" or status == "invisible":
-            await self.bot.change_presence(status=discord.Status.invisible, game=discord.Game(name=message), afk=True)
-            color = discord.Color(value=0x747f8d).to_rgb()
-        elif status == "stream":
-            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message,type=1,url=f'https://www.twitch.tv/{message}'), afk=True)
-            color = discord.Color(value=0x593695).to_rgb()
-        elif status == "clear":
-            await self.bot.change_presence(game=None, afk=True)
-            emb.description = "Presence cleared."
-            return await ctx.send(embed=emb)
-        else:
-            emb.description = "Please enter either `online`, `idle`, `dnd`, `invisible`, or `clear`."
-            return await ctx.send(embed=emb)
-
-        Image.new('RGB', (500, 500), color).save(file, format='PNG')
-        emb.description = "Your presence has been changed."
-        file.seek(0)
-        emb.set_author(name=status.title(), icon_url="attachment://color.png")
+    @commands.command(aliases=['nick'], pass_context=True, no_pm=True)
+    async def nickname(self, ctx, *, nick):
+        """Change your nickname on a server."""
+        await self.bot.delete_message(ctx.message)
         try:
-            await ctx.send(file=discord.File(file, 'color.png'), embed=emb)
-        except discord.HTTPException:
-            em_list = await embedtobox.etb(emb)
-            for page in em_list:
-                await ctx.send(page)
+            await self.bot.change_nickname(ctx.message.author, nick)
+            await self.bot.say('Changed nickname to: `{}`'.format(nick), delete_after=5)
+        except:
+            await self.bot.say('Unable to change nickname.', delete_after=5)
 
+    @commands.command(pass_context=True)
+    async def raw(self, ctx, ID, chan : discord.channel=None):
+        """Get the raw content of someones message!"""
+        channel = chan or ctx.message.channel
+        await self.bot.delete_message(ctx.message)
+        msg = None
+        async for m in self.bot.logs_from(channel, limit=1000):
+            if m.id == ID:
+                msg = m
+                break
+        out = msg.content.replace('*','\\*').replace('`','\\`').replace('~~','\\~~').replace('_','\\_').replace('<','\\<').replace('>','\\>')
+        try:
+            await self.bot.say(out)
+        except:
+            await self.bot.say('Message too long.')
 
-    @commands.command()
-    async def source(self, ctx, *, command):
-        '''See the source code for any command.'''
-        source = str(inspect.getsource(self.bot.get_command(command).callback))
-        fmt = '```py\n'+source.replace('`','\u200b`')+'\n```'
-        if len(fmt) > 2000:
-            async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
-                data = await resp.json()
-            key = data['key']
-            return await ctx.send(f'Command source: <https://hastebin.com/{key}.py>')
+    @commands.group(pass_context=True, aliases=['t'], invoke_without_command=True)
+    async def translate(self, ctx, lang, *, text):
+        """Translate text! """
+        conv = self.lang_conv
+        if lang in conv:
+            return await self.bot.say(f'```{translate(text, lang)}```')
+        lang = dict(zip(self.lang_conv.values(),self.lang_conv.keys())).get(lang.lower().title())
+        if lang:
+            await self.bot.say(f'```{translate(text, lang)}```')
         else:
-            return await ctx.send(fmt)
+            await self.bot.say('```That is not an available language.```')
+
+    @translate.command(pass_context=True, name='langs')
+    async def _get(self, ctx):
+        em = discord.Embed(color=discord.Color.blue(),
+                           title='Available Languages',
+                           description=', '.join(self.lang_conv.values()))
+        await self.bot.say(embed=em)
 
 
-    @commands.command()
-    async def copy(self, ctx, id : int, channel : discord.TextChannel=None):
-        '''Copy someones message by ID'''
-        await ctx.message.delete()
-        msg = await ctx.get_message(channel or ctx.channel, id)
-        if len(msg.embeds) > 1:
-            await ctx.send(msg.content, embed=msg.embeds[0])
-            for embed in msg.embeds[1:]:
-                await ctx.send(embed=embed)
-        else:
-            if msg.embeds:
-                await ctx.send(msg.content, embed=msg.embeds[0])
-            else:
-                await ctx.send(msg.content)
-
-    @commands.command()
-    async def quote(self, ctx, id : int, channel : discord.TextChannel=None):
-        """Quote someone's message by ID"""
-        await ctx.message.delete()
-
-        msg = await ctx.get_message(channel or ctx.channel, id)
-
-        if not msg:
-            return await ctx.send('Could not find that message!', delete_after=3.0)
-
-        em = discord.Embed(color=0x00FFFF, description=msg.clean_content, timestamp=msg.created_at)
-        em.set_author(name=str(msg.author), icon_url=msg.author.avatar_url)
-
-        if isinstance(msg.channel, discord.TextChannel):
-            em.set_footer(text='#'+str(msg.channel))
-        else:
-            em.set_footer(text=str(msg.channel))
-
-        await ctx.send(embed=em)
-
-    @commands.command()
+    @commands.command(pass_context=True)
     async def charinfo(self, ctx, *, characters: str):
         """Shows you information about a number of characters."""
-        if len(characters) > 15:
-            return await ctx.send('Too many characters ({}/15)'.format(len(characters)))
 
-        fmt = '`\\U{0:>08}`: `\\N{{{1}}}` - `{2}` - <http://www.fileformat.info/info/unicode/char/{0}>'
+        if len(characters) > 15:
+            await self.bot.say('Too many characters ({}/15)'.format(len(characters)))
+            return
+
+        fmt = '`\\U{0:>08}`: {1} - {2} \N{EM DASH} <http://www.fileformat.info/info/unicode/char/{0}>'
 
         def to_string(c):
             digit = format(ord(c), 'x')
             name = unicodedata.name(c, 'Name not found.')
             return fmt.format(digit, name, c)
 
-        await ctx.send('\n'.join(map(to_string, characters)))
-
-    @commands.group()
-    async def translate(self, ctx, lang, *, text):
-        """Translate text!"""
-        conv = self.lang_conv
-        if lang in conv:
-            return await self.bot.say('```{}```'.format(translate(text, lang)))
-        lang = dict(zip(conv.values(), conv.keys())).get(lang.lower().title())
-        if lang:
-            await ctx.send('```{}```'.format(translate(text, lang)))
-        else:
-            await ctx.send('```That is not an available language.```')
-
-    @translate.command()
-    async def langs(self, ctx):
-        '''Lists all available languages'''
-        em = discord.Embed(color=discord.Color.blue(),
-                           title='Available Languages',
-                           description=', '.join(codes.values()))
-        await ctx.send(embed=em)
-
-    @commands.command(name='last_embed')
-    async def _last_embed(self, ctx):
-        '''Sends the command used to send the last embed'''
-        await ctx.send('`'+self._last_embed+'`')
-
-    @commands.command()
-    async def embed(self, ctx, *, params):
-        '''Send complex rich embeds with this command!
-
-        ```
-        {description: Discord format supported}
-        {title: required | url: optional}
-        {author: required | icon: optional | url: optional}
-        {image: image_url_here}
-        {thumbnail: image_url_here}
-        {field: required | value: required}
-        {footer: footer_text_here | icon: optional}
-        {timestamp} <-this will include a timestamp
-        ```
-        '''
-        em = self.to_embed(ctx, params)
-        await ctx.message.delete()
-        try:
-            await ctx.send(embed=em)
-            self._last_embed = params
-        except:
-            await ctx.send('Improperly formatted embed!')
-
-    @commands.group(aliases=['rtfd'], invoke_without_command=True)
-    async def rtfm(self, ctx, *, obj: str = None):
-        """
-        Gives you a documentation link for a discord.py entity.
-        Written by Rapptz
-        """
-        await self.do_rtfm(ctx, 'rewrite', obj)
+        await self.bot.say('\n'.join(map(to_string, characters)))
 
     @commands.command(pass_context=True)
-    async def wiki(self, ctx, *, search: str = None):
-        '''Addictive Wikipedia results'''
-        if search == None:
-            await ctx.channel.send(f'Usage: `{ctx.prefix}wiki [search terms]`')
+    async def quote(self, ctx, id : str, chan : discord.Channel=None):
+        """Quote someone's message by ID"""
+        channel = chan or ctx.message.channel
+        await self.bot.delete_message(ctx.message)
+        msg = None
+        async for message in self.bot.logs_from(channel, limit=1000):
+            if message.id == id:
+                msg = message
+                break
+        if msg is None:
+            await self.bot.say('Could not find the message.')
             return
-
-        results = wikipedia.search(search)
-        if not len(results):
-            no_results = await ctx.channel.send("Sorry, didn't find any result.")
-            await asyncio.sleep(5)
-            await ctx.message.delete(no_results)
-            return
-
-        newSearch = results[0]
+        auth = msg.author
+        channel = msg.channel
+        ts = msg.timestamp
+        em = discord.Embed(color=0x00FFFF,description=msg.clean_content,timestamp=ts)
+        em.set_author(name=str(auth),icon_url=auth.avatar_url or auth.default_avatar_url)
         try:
-            wik = wikipedia.page(newSearch)
-        except wikipedia.DisambiguationError:
-            more_details = await ctx.channel.send('Please input more details.')
-            await asyncio.sleep(5)
-            await ctx.message.delete(more_details)
-            return
+            em.set_footer(text='#'+channel.name)
+        except: pass
+        await self.bot.say(embed=em)
 
-        emb = discord.Embed()
-        emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
-        emb.title = wik.title
-        emb.url = wik.url
-        textList = textwrap.wrap(wik.content, 500, break_long_words=True, replace_whitespace=False)
-        emb.add_field(name="Wikipedia Results", value=textList[0] + "...")
-        await ctx.message.edit(embed=emb)
+    @commands.command(pass_context=True, aliases=['yt', 'vid', 'video'])
+    async def youtube(self, ctx, *, msg):
+        """Search for videos on YouTube."""
+        search = parse.quote(msg)
+        response = requests.get("https://www.youtube.com/results?search_query={}".format(search)).text
+        result = BeautifulSoup(response, "lxml")
+        url="**Result:**\nhttps://www.youtube.com{}".format(result.find_all(attrs={'class': 'yt-uix-tile-link'})[0].get('href'))
 
-    @commands.command(aliases=['g'])
-    async def google(self ,ctx, *, query):
-        """
-        Searches google and gives you top result.
-        Written By Rapptz
-        """
-        await ctx.trigger_typing()
+        await self.bot.send_message(ctx.message.channel, url)
+
+    @commands.command(pass_context=True,description='Do .embed to see how to use it.')
+    async def embed(self, ctx, *, msg: str = None):
+        '''Embed complex rich embeds as the bot.'''
         try:
-            card, entries = await self.get_google_entries(ctx, query)
-        except RuntimeError as e:
-            await ctx.send(str(e))
-        else:
-            if card:
-                value = '\n'.join(entries[:3])
-                if value:
-                    card.add_field(name='Search Results', value=value, inline=False)
-                return await ctx.send(embed=card)
 
-            if len(entries) == 0:
-                return await ctx.send('No results found... sorry.')
+            if msg:
+                ptext = title = description = image = thumbnail = color = footer = author = None
+                timestamp = discord.Embed.Empty
+                def_color = False
+                embed_values = msg.split('|')
+                for i in embed_values:
+                    if i.strip().lower().startswith('ptext='):
+                        if i.strip()[6:].strip() == 'everyone':
+                            ptext = '@everyone'
+                        elif i.strip()[6:].strip() == 'here':
+                            ptext = '@here'
+                        else:
+                            ptext = i.strip()[6:].strip()
+                    elif i.strip().lower().startswith('title='):
+                        title = i.strip()[6:].strip()
+                    elif i.strip().lower().startswith('description='):
+                        description = i.strip()[12:].strip()
+                    elif i.strip().lower().startswith('desc='):
+                        description = i.strip()[5:].strip()
+                    elif i.strip().lower().startswith('image='):
+                        image = i.strip()[6:].strip()
+                    elif i.strip().lower().startswith('thumbnail='):
+                        thumbnail = i.strip()[10:].strip()
+                    elif i.strip().lower().startswith('colour='):
+                        color = i.strip()[7:].strip()
+                    elif i.strip().lower().startswith('color='):
+                        color = i.strip()[6:].strip()
+                    elif i.strip().lower().startswith('footer='):
+                        footer = i.strip()[7:].strip()
+                    elif i.strip().lower().startswith('author='):
+                        author = i.strip()[7:].strip()
+                    elif i.strip().lower().startswith('timestamp'):
+                        timestamp = ctx.message.timestamp
 
-            next_two = entries[1:3]
-            first_entry = entries[0]
-            if first_entry[-1] == ')':
-                first_entry = first_entry[:-1] + '%29'
+                    if color:
+                        if color.startswith('#'):
+                            color = color[1:]
+                        if not color.startswith('0x'):
+                            color = '0x' + color
 
-            if next_two:
-                formatted = '\n'.join(map(lambda x: '<%s>' % x, next_two))
-                msg = '{}\n\n**See also:**\n{}'.format(first_entry, formatted)
+                    if ptext is title is description is image is thumbnail is color is footer is author is None and 'field=' not in msg:
+                        await self.bot.delete_message(ctx.message)
+                        return await self.bot.send_message(ctx.message.channel, content=None,
+                                                           embed=discord.Embed(description=msg))
+
+                    if color:
+                        em = discord.Embed(timestamp=timestamp, title=title, description=description, color=int(color, 16))
+                    else:
+                        em = discord.Embed(timestamp=timestamp, title=title, description=description)
+                    for i in embed_values:
+                        if i.strip().lower().startswith('field='):
+                            field_inline = True
+                            field = i.strip().lstrip('field=')
+                            field_name, field_value = field.split('value=')
+                            if 'inline=' in field_value:
+                                field_value, field_inline = field_value.split('inline=')
+                                if 'false' in field_inline.lower() or 'no' in field_inline.lower():
+                                    field_inline = False
+                            field_name = field_name.strip().lstrip('name=')
+                            em.add_field(name=field_name, value=field_value.strip(), inline=field_inline)
+                    if author:
+                        if 'icon=' in author:
+                            text, icon = author.split('icon=')
+                            if 'url=' in icon:
+                                print("here")
+                                em.set_author(name=text.strip()[5:], icon_url=icon.split('url=')[0].strip(), url=icon.split('url=')[1].strip())
+                            else:
+                                em.set_author(name=text.strip()[5:], icon_url=icon)
+                        else:
+                            if 'url=' in author:
+                                print("here")
+                                em.set_author(name=author.split('url=')[0].strip()[5:], url=author.split('url=')[1].strip())
+                            else:
+                                em.set_author(name=author)
+
+                    if image:
+                        em.set_image(url=image)
+                    if thumbnail:
+                        em.set_thumbnail(url=thumbnail)
+                    if footer:
+                        if 'icon=' in footer:
+                            text, icon = footer.split('icon=')
+                            em.set_footer(text=text.strip()[5:], icon_url=icon)
+                        else:
+                            em.set_footer(text=footer)
+                await self.bot.send_message(ctx.message.channel, content=ptext, embed=em)
             else:
-                msg = first_entry
+                msg = '*Params:*\n```bf\n[title][author][desc][field][footer][thumbnail][image][timestamp][ptext]```'
+                await self.bot.send_message(ctx.message.channel, msg)
+            try:
+                await self.bot.delete_message(ctx.message)
+            except:
+                pass
+        except:
+            await self.bot.send_message(ctx.message.channel, 'looks like something fucked up. or i dont have embed perms')
 
-            self._last_google = msg
-            await ctx.send(msg)
-
-    def to_embed(self, ctx, params):
-        '''Actually formats the parsed parameters into an Embed'''
-        em = discord.Embed()
-
-        if not params.count('{'):
-            if not params.count('}'):
-                em.description = params
-
-        for field in self.get_parts(params):
-            data = self.parse_field(field)
-
-            color = data.get('color') or data.get('colour')
-            if color:
-                color = int(color.strip('#'), 16)
-                em.color = discord.Color(color)
-
-            if data.get('description'):
-                em.description = data['description']
-
-            if data.get('title'):
-                em.title = data['title']
-
-            if data.get('url'):
-                em.url = data['url']
-
-            author = data.get('author')
-            icon, url = data.get('icon'), data.get('url')
-
-            if author:
-                em._author = {'name': author}
-                if icon:
-                    em._author['icon_url'] = icon
-                if url:
-                    em._author['url'] = url
-
-            field, value = data.get('field'), data.get('value')
-            inline = False if str(data.get('inline')).lower() == 'false' else True
-            if field and value:
-                em.add_field(name=field, value=value, inline=inline)
-
-            if data.get('thumbnail'):
-                em._thumbnail = {'url': data['thumbnail']}
-
-            if data.get('image'):
-                em._image = {'url': data['image']}
-
-            if data.get('footer'):
-                em._footer = {'text': data.get('footer')}
-                if data.get('icon'):
-                    em._footer['icon_url'] = data.get('icon')
-
-            if 'timestamp' in data.keys() and len(data.keys()) == 1:
-                em.timestamp = ctx.message.created_at
-
-        return em
-
-    def get_parts(self, string):
-        '''
-        Splits the sections of the embed command
-        '''
-        for i, char in enumerate(string):
-            if char == "{":
-                ret = ""
-                while char != "}":
-                    i += 1
-                    char = string[i]
-                    ret += char
-                yield ret.rstrip('}')
-
-    def parse_field(self, string):
-        '''
-        Recursive function to get all the key val
-        pairs in each section of the parsed embed command
-        '''
-        ret = {}
-
-        parts = string.split(':')
-        key = parts[0].strip().lower()
-        val = ':'.join(parts[1:]).strip()
-
-        ret[key] = val
-
-        if '|' in string:
-            string = string.split('|')
-            for part in string:
-                ret.update(self.parse_field(part))
-        return ret
-
-    async def build_rtfm_lookup_table(self):
-        cache = {}
-
-        page_types = {
-            'rewrite': (
-                'http://discordpy.rtfd.io/en/rewrite/api.html',
-                'http://discordpy.rtfd.io/en/rewrite/ext/commands/api.html'
-            )
-        }
-
-        for key, pages in page_types.items():
-            sub = cache[key] = {}
-            for page in pages:
-                async with self.bot.session.get(page) as resp:
-                    if resp.status != 200:
-                        raise RuntimeError('Cannot build rtfm lookup table, try again later.')
-
-                    text = await resp.text(encoding='utf-8')
-                    root = etree.fromstring(text, etree.HTMLParser())
-                    if root is not None:
-                        nodes = root.findall(".//dt/a[@class='headerlink']")
-                        for node in nodes:
-                            href = node.get('href', '')
-                            as_key = href.replace('#discord.', '').replace('ext.commands.', '')
-                            sub[as_key] = page + href
-
-        self._rtfm_cache = cache
-
-    async def do_rtfm(self, ctx, key, obj):
-        base_url = 'http://discordpy.rtfd.io/en/{}/'.format(key)
-
-        if obj is None:
-            await ctx.send(base_url)
-            return
-
-        if not self._rtfm_cache:
-            await ctx.trigger_typing()
-            await self.build_rtfm_lookup_table()
-
-        # identifiers don't have spaces
-        obj = obj.replace(' ', '_')
-
-        if key == 'rewrite':
-            pit_of_success_helpers = {
-                'vc': 'VoiceClient',
-                'msg': 'Message',
-                'color': 'Colour',
-                'perm': 'Permissions',
-                'channel': 'TextChannel',
-                'chan': 'TextChannel',
-            }
-
-            # point the abc.Messageable types properly:
-            q = obj.lower()
-            for name in dir(discord.abc.Messageable):
-                if name[0] == '_':
-                    continue
-                if q == name:
-                    obj = 'abc.Messageable.{}'.format(name)
-                    break
-
-            def replace(o):
-                return pit_of_success_helpers.get(o.group(0), '')
-
-            pattern = re.compile('|'.join(r'\b{}\b'.format(k) for k in pit_of_success_helpers.keys()))
-            obj = pattern.sub(replace, obj)
-
-        cache = self._rtfm_cache[key]
-        matches = fuzzy.extract_or_exact(obj, cache, scorer=fuzzy.token_sort_ratio, limit=5, score_cutoff=50)
-
-        e = discord.Embed(colour=discord.Colour.blurple())
-        if len(matches) == 0:
-            return await ctx.send('Could not find anything. Sorry.')
-
-        e.description = '\n'.join('[{}]({}) ({}%)'.format(key, url, p) for key, p, url in matches)
-        await ctx.send(embed=e)
 
     def parse_google_card(self, node):
         if node is None:
@@ -561,14 +294,23 @@ class Utility:
                 pass
             else:
                 try:
+                    # inside is a <div> with two <span>
+                    # the first is the actual word, the second is the pronunciation
                     e.title = words[0].text
                     e.description = words[1].text
                 except:
                     return None
 
+                # inside the table there's the actual definitions
+                # they're separated as noun/verb/adjective with a list
+                # of definitions
                 for row in definition_info:
                     if len(row.attrib) != 0:
+                        # definitions are empty <tr>
+                        # if there is something in the <tr> then we're done
+                        # with the definitions
                         break
+
                     try:
                         data = row[0]
                         lexical_category = data[0].text
@@ -596,6 +338,11 @@ class Utility:
                 e.description = '%s\n%s' % (the_time, the_date)
                 return e
 
+        # check for weather card
+        # this one is the most complicated of the group lol
+        # everything is under a <div class="e"> which has a
+        # <h3>{{ weather for place }}</h3>
+        # string, the rest is fucking table fuckery.
         weather = parent.find(".//ol//div[@class='e']")
         if weather is None:
             return None
@@ -610,6 +357,9 @@ class Utility:
         if table is None:
             return None
 
+        # This is gonna be a bit fucky.
+        # So the part we care about is on the second data
+        # column of the first tr
         try:
             tr = table[0]
             img = tr[0].find('img')
@@ -641,7 +391,7 @@ class Utility:
 
         return e
 
-    async def get_google_entries(self, ctx, query):
+    async def get_google_entries(self, query):
         params = {
             'q': query,
             'safe': 'on',
@@ -658,11 +408,29 @@ class Utility:
         # the result of a google card, an embed
         card = None
 
-        async with ctx.session.get('https://www.google.com/search', params=params, headers=headers) as resp:
+        async with aiohttp.get('https://www.google.com.au/search', params=params, headers=headers) as resp:
             if resp.status != 200:
                 raise RuntimeError('Google somehow failed to respond.')
 
             root = etree.fromstring(await resp.text(), etree.HTMLParser())
+
+            # with open('google.html', 'w', encoding='utf-8') as f:
+            #     f.write(etree.tostring(root, pretty_print=True).decode('utf-8'))
+
+            """
+            Tree looks like this.. sort of..
+            <div class="g">
+                ...
+                <h3>
+                    <a href="/url?q=<url>" ...>title</a>
+                </h3>
+                ...
+                <span class="st">
+                    <span class="f">date here</span>
+                    summary here, can contain <em>tag</em>
+                </span>
+            </div>
+            """
 
             card_node = root.find(".//div[@id='topstuff']")
             card = self.parse_google_card(card_node)
@@ -677,101 +445,100 @@ class Utility:
                 if not url.startswith('/url?'):
                     continue
 
-                url = parse_qs(url[5:])['q'][0]
+                url = parse_qs(url[5:])['q'][0] # get the URL from ?q query string
 
+                # if I ever cared about the description, this is how
                 entries.append(url)
+
+                # short = node.find(".//span[@class='st']")
+                # if short is None:
+                #     entries.append((url, ''))
+                # else:
+                #     text = ''.join(short.itertext())
+                #     entries.append((url, text.replace('...', '')))
 
         return card, entries
 
-
-    @commands.command(pass_context=True, hidden=True, name='eval')
-    async def _eval(self, ctx, *, body: str):
-        """Evaluates python code"""
-
-        env = {
-            'bot': self.bot,
-            'ctx': ctx,
-            'channel': ctx.channel,
-            'author': ctx.author,
-            'guild': ctx.guild,
-            'message': ctx.message,
-            '_': self._last_result,
-            'source': inspect.getsource
-        }
-
-        env.update(globals())
-
-        body = self.cleanup_code(body)
-        await self.edit_to_codeblock(ctx, body)
-        stdout = io.StringIO()
-        err = out = None
-
-        to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
-
+    @commands.command(aliases=['g'])
+    async def google(self, *, query):
+        """Searches google and gives you top result."""
+        await self.bot.type()
         try:
-            exec(to_compile, env)
-        except Exception as e:
-            err = await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
-            return await err.add_reaction('\u2049')
-
-        func = env['func']
-        try:
-            with redirect_stdout(stdout):
-                ret = await func()
-        except Exception as e:
-            value = stdout.getvalue()
-            err = await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            card, entries = await self.get_google_entries(query)
+        except RuntimeError as e:
+            await self.bot.say(str(e))
         else:
-            value = stdout.getvalue()
-            if self.bot.token in value:
-                value = value.replace(self.bot.token,"[EXPUNGED]")
-            if ret is None:
+            if card:
+                value = '\n'.join(entries[:3])
                 if value:
-                    try:
-                        out = await ctx.send(f'```py\n{value}\n```')
-                    except:
-                        paginated_text = ctx.paginate(value)
-                        for page in paginated_text:
-                            if page == paginated_text[-1]:
-                                out = await ctx.send(f'```py\n{page}\n```')
-                                break
-                            await ctx.send(f'```py\n{page}\n```')
+                    card.add_field(name='Search Results', value=value, inline=False)
+                return await self.bot.say(embed=card)
+
+            if len(entries) == 0:
+                return await self.bot.say('No results found... sorry.')
+
+            next_two = entries[1:3]
+            first_entry = entries[0]
+            if first_entry[-1] == ')':
+                first_entry = first_entry[:-1] + '%29'
+
+            if next_two:
+                formatted = '\n'.join(map(lambda x: '<%s>' % x, next_two))
+                msg = '{}\n\n**See also:**\n{}'.format(first_entry, formatted)
             else:
-                self._last_result = ret
-                try:
-                    out = await ctx.send(f'```py\n{value}{ret}\n```')
-                except:
-                    paginated_text = ctx.paginate(f"{value}{ret}")
-                    for page in paginated_text:
-                        if page == paginated_text[-1]:
-                            out = await ctx.send(f'```py\n{page}\n```')
-                            break
-                        await ctx.send(f'```py\n{page}\n```')
+                msg = first_entry
 
-        if out:
-            await out.add_reaction('\u2705')
-        if err:
-            await err.add_reaction('\u2049')
+            await self.bot.say(msg)
+
+    @commands.command(pass_context=True)
+    async def source(self, ctx, *, command):
+        '''See the source code for any command.'''
+        await self.bot.say('```py\n'+str(inspect.getsource(self.bot.get_command(command).callback)+'```'))
+
+    @commands.command()
+    async def coinflip(self):
+        '''Flips a coin'''
+        randnum = random.randint(0,1)
+        if randnum == 0:
+            coin = 'Head'
+        else:
+            coin = 'Tail'
+        emb = discord.Embed(color=discord.Color.gold(), title="You Flipped A...", description = coin)
+        await self.bot.say('', embed = emb)
+
+    @commands.command(pass_context=True)
+    async def channels(self, ctx):
+        """Return all channels"""
+        text = []
+        voice = []
+        for channel in sorted(ctx.message.server.channels, key=lambda c: c.position):
+            if channel.type == discord.ChannelType.voice:
+                voice.append(channel.name)
+            else:
+                text.append('#'+channel.name)
+        em1 = discord.Embed(title="Text Channels", description="\n".join(text), color=discord.Color.green())
+        em2 = discord.Embed(title="Voice Channels", description="\n".join(voice), color=discord.Color.orange())
+        await self.bot.say(embed=em1)
+        await self.bot.say(embed=em2)
+
+    @commands.command(pass_context=True)
+    async def serverlogo(self, ctx):
+        '''Get the server logo'''
+        em = discord.Embed(color=random.randint(0,0xFFFFFF))
+        em.set_image(url=ctx.message.server.icon_url)
+        em.set_author(name=ctx.message.server.name, url=ctx.message.server.icon_url)
+        await self.bot.say(embed=em)
 
 
-    async def edit_to_codeblock(self, ctx, body):
-        msg = f'{ctx.prefix}eval```py\n{body}\n```'
-        await ctx.message.edit(content=msg)
+    @commands.command(pass_context = True)
+    async def discrim(self, ctx):
+        '''Find people with the same discrim as you'''
+        author = ctx.message.author
+        users = [str(m) for m in self.bot.get_all_members()
+                    if m.discriminator == author.discriminator and m != author]
 
+        await self.bot.say("```bf\n{}\n```".format(", ".join(users)))
 
-    def cleanup_code(self, content):
-        """Automatically removes code blocks from the code."""
-        # remove ```py\n```
-        if content.startswith('```') and content.endswith('```'):
-            return '\n'.join(content.split('\n')[1:-1])
-
-        # remove `foo`
-        return content.strip('` \n')
-
-    def get_syntax_error(self, e):
-        if e.text is None:
-            return f'```py\n{e.__class__.__name__}: {e}\n```'
-        return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
 def setup(bot):
     bot.add_cog(Utility(bot))

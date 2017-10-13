@@ -24,156 +24,122 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
-from urllib.parse import urlparse
-from ext import embedtobox
 import datetime
-import asyncio
-import psutil
+import time
 import random
-import pip
-import os
-import io
+import asyncio
+import json
 
-
-class Information:
+class Info():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["ri","role"])
-    @commands.guild_only()
-    async def roleinfo(self, ctx, *, role: discord.Role):
+    @commands.command(pass_context=True,aliases=['s','serverinfo','si'], no_pm=True)
+    async def server(self, ctx):
+        '''See information about the server.'''
+        server = ctx.message.server
+        online = len([m.status for m in server.members
+                      if m.status == discord.Status.online or
+                      m.status == discord.Status.idle or
+                      m.status == discord.Status.dnd])
+        total_users = len(server.members)
+        text_channels = len([x for x in server.channels
+                             if x.type == discord.ChannelType.text])
+        voice_channels = len(server.channels) - text_channels
+        passed = (ctx.message.timestamp - server.created_at).days
+        created_at = ("Since {}. That's over {} days ago!"
+                      "".format(server.created_at.strftime("%d %b %Y %H:%M"),
+                                passed))
+        colour = ("#%06x" % random.randint(0, 0xFFFFFF))
+        colour = int(colour[1:], 16)
+
+        data = discord.Embed(
+            description=created_at,
+            colour=discord.Colour(value=colour))
+        data.add_field(name="Region", value=str(server.region))
+        data.add_field(name="Users", value="{}/{}".format(online, total_users))
+        data.add_field(name="Text Channels", value=text_channels)
+        data.add_field(name="Voice Channels", value=voice_channels)
+        data.add_field(name="Roles", value=len(server.roles))
+        data.add_field(name="Owner", value=str(server.owner))
+        data.set_footer(text="Server ID: " + server.id)
+
+        if server.icon_url:
+            data.set_author(name=server.name, icon_url=server.icon_url)
+            data.set_thumbnail(url=server.icon_url)
+        else:
+            data.set_author(name=server.name)
+            print(data.to_dict())
+
+        try:
+            await self.bot.say(embed=data)
+
+        except discord.HTTPException:
+            await self.bot.say("I need the `Embed links` permission "
+                               "to send this")
+
+    @commands.command(pass_context=True,no_pm=True,aliases=["ri","role"])
+    async def roleinfo(self, ctx, *, role: discord.Role=None):
         '''Shows information about a role'''
-        guild = ctx.guild
+        server = ctx.message.server
 
-        since_created = (ctx.message.created_at - role.created_at).days
+        if not role:
+            role = server.default_role
+
+        since_created = (ctx.message.timestamp - role.created_at).days
         role_created = role.created_at.strftime("%d %b %Y %H:%M")
-        created_on = "{} ({} days ago!)".format(role_created, since_created)
+        created_on = "{}\n({} days ago!)".format(role_created, since_created)
 
-        users = len([x for x in guild.members if role in x.roles])
+        users = len([x for x in server.members if role in x.roles])
         if str(role.colour) == "#000000":
             colour = "default"
             color = ("#%06x" % random.randint(0, 0xFFFFFF))
             color = int(colour[1:], 16)
         else:
-            colour = str(role.colour).upper()
+            colour = "Hex: {}\nRGB: {}".format(str(role.colour).upper(),str(role.colour.to_tuple()))
             color = role.colour
 
         em = discord.Embed(colour=color)
         em.set_author(name=role.name)
-        em.add_field(name="Users", value=users)
-        em.add_field(name="Mentionable", value=role.mentionable)
-        em.add_field(name="Hoist", value=role.hoist)
-        em.add_field(name="Position", value=role.position)
-        em.add_field(name="Managed", value=role.managed)
-        em.add_field(name="Colour", value=colour)
-        em.add_field(name='Creation Date', value=created_on)
-        em.set_footer(text=f'Role ID: {role.id}')
+        em.add_field(name="ID", value=role.id, inline=True)
+        em.add_field(name="Users", value=users, inline=True)
+        em.add_field(name="Mentionable", value=role.mentionable, inline=True)
+        em.add_field(name="Hoist", value=role.hoist, inline=True)
+        em.add_field(name="Position", value=role.position, inline=True)
+        em.add_field(name="Managed", value=role.managed, inline=True)
+        em.add_field(name="Colour", value=colour, inline=False)
+        em.set_footer(text=created_on)
 
-        await ctx.send(embed=em)
-
-    @commands.command(aliases=['av'])
-    async def avatar(self, ctx, *, member : discord.Member=None):
-        '''Returns someone's avatar url'''
-        member = member or ctx.author
-        av = member.avatar_url
-        if ".gif" in av:
-            av += "&f=.gif"
-        color = await ctx.get_dominant_color(av)
-        em = discord.Embed(url=av, color=color)
-        em.set_author(name=str(member), icon_url=av)
-        em.set_image(url=av)
         try:
-            await ctx.send(embed=em)
+            await self.bot.say(embed=em)
         except discord.HTTPException:
-            em_list = await embedtobox.etb(em)
-            for page in em_list:
-                await ctx.send(page)
-            try:
-                async with ctx.session.get(av) as resp:
-                    image = await resp.read()
-                with io.BytesIO(image) as file:
-                    await ctx.send(file=discord.File(file, 'avatar.png'))
-            except discord.HTTPException:
-                await ctx.send(av)
-
-    @commands.command(aliases=['servericon'])
-    async def serverlogo(self, ctx):
-        '''Return the server's icon url.'''
-        icon = ctx.guild.icon_url
-        color = await ctx.get_dominant_color(icon)
-        server = ctx.guild
-        em = discord.Embed(color=color, url=icon)
-        em.set_author(name=server.name, icon_url=icon)
-        em.set_image(url=icon)
-        try:
-            await ctx.send(embed=em)
-        except discord.HTTPException:
-            em_list = await embedtobox.etb(em)
-            for page in em_list:
-                await ctx.send(page)
-            try:
-                async with ctx.session.get(icon) as resp:
-                    image = await resp.read()
-                with io.BytesIO(image) as file:
-                    await ctx.send(file=discord.File(file, 'serverlogo.png'))
-            except discord.HTTPException:
-                await ctx.send(icon)
-
-    @commands.command(aliases=['server','si','svi'])
-    @commands.guild_only()
-    async def serverinfo(self, ctx, server_id : int=None):
-        '''See information about the server.'''
-        server = self.bot.get_server(id=server_id) or ctx.guild
-        total_users = len(server.members)
-        online = len([m for m in server.members if m.status != discord.Status.offline])
-        text_channels = len([x for x in server.channels if isinstance(x, discord.TextChannel)])
-        voice_channels = len([x for x in server.channels if isinstance(x, discord.VoiceChannel)])
-        categories = len(server.channels) - text_channels - voice_channels
-        passed = (ctx.message.created_at - server.created_at).days
-        created_at = "Since {}. That's over {} days ago!".format(server.created_at.strftime("%d %b %Y %H:%M"), passed)
-
-        colour = await ctx.get_dominant_color(server.icon_url)
-
-        data = discord.Embed(description=created_at,colour=colour)
-        data.add_field(name="Region", value=str(server.region))
-        data.add_field(name="Users", value="{}/{}".format(online, total_users))
-        data.add_field(name="Text Channels", value=text_channels)
-        data.add_field(name="Voice Channels", value=voice_channels)
-        data.add_field(name="Categories", value=categories)
-        data.add_field(name="Roles", value=len(server.roles))
-        data.add_field(name="Owner", value=str(server.owner))
-        data.set_footer(text="Server ID: " + str(server.id))
-        data.set_author(name=server.name, icon_url=None or server.icon_url)
-        data.set_thumbnail(url=None or server.icon_url)
-        try:
-            await ctx.send(embed=data)
-        except discord.HTTPException:
-            em_list = await embedtobox.etb(data)
-            for page in em_list:
-                await ctx.send(page)
+            await self.bot.say("I need the `Embed links` permission "
+                               "to send this")
 
 
-    @commands.command(aliases=['ui'])
-    @commands.guild_only()
-    async def userinfo(self, ctx, *, member : discord.Member=None):
-        '''Get information about a member of a server'''
-        server = ctx.guild
-        user = member or ctx.message.author
-        avi = user.avatar_url
+    @commands.command(pass_context=True,aliases=['ui','user'],description='See user-info of someone.')
+    async def userinfo(self,ctx, user: discord.Member = None):
+        '''See information about a user or yourself.'''
+        server = ctx.message.server
+        user = user or ctx.message.author
+        avi = user.avatar_url or user.default_avatar_url
         roles = sorted(user.roles, key=lambda c: c.position)
-
+        roles = roles[::-1]
         for role in roles:
             if str(role.color) != "#000000":
-                color = role.color
-        if 'color' not in locals():
-            color = 0
+                color = int(str(role.color)[1:], 16)
+                break
 
-        rolenames = ', '.join([r.name for r in roles if r.name != "@everyone"]) or 'None'
-        time = ctx.message.created_at
-        desc = '{0} is chilling in {1} mode.'.format(user.name, user.status)
-        member_number = sorted(server.members, key=lambda m: m.joined_at).index(user) + 1
+        rolenamelist = []
+        for role in roles:
+            if role.name != "@everyone":
+                rolenamelist.append(role.name)
+        rolenames = ', '.join(rolenamelist) or 'None'
 
-        em = discord.Embed(colour=color, description=desc, timestamp=time)
+        time = ctx.message.timestamp
+        desc = '{0} is chilling in {1} mode.'.format(user.name,user.status)
+        member_number = sorted(server.members,key=lambda m: m.joined_at).index(user) + 1
+        em = discord.Embed(colour=color,description = desc,timestamp=time)
         em.add_field(name='Nick', value=user.nick, inline=True)
         em.add_field(name='Member No.',value=str(member_number),inline = True)
         em.add_field(name='Account Created', value=user.created_at.__format__('%A, %d. %B %Y'))
@@ -181,68 +147,72 @@ class Information:
         em.add_field(name='Roles', value=rolenames, inline=True)
         em.set_footer(text='User ID: '+str(user.id))
         em.set_thumbnail(url=avi)
-        em.set_author(name=user, icon_url=server.icon_url)
-
+        em.set_author(name=user, icon_url='http://site-449644.mozfiles.com/files/449644/logo-1.png')
         try:
-            await ctx.send(embed=em)
+            await self.bot.say(embed=em)
+
         except discord.HTTPException:
-            em_list = await embedtobox.etb(em)
-            for page in em_list:
-                await ctx.send(page)
+            await self.bot.say("I need the `Embed links` permission "
+                               "to send this")
 
-    @commands.command(aliases=['bot', 'info'])
-    async def about(self, ctx):
-        '''See information about the selfbot and latest changes.'''
-        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/verixx/selfbot/commit/%H) %s (%cr)"'
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
+    @commands.command(pass_context=True,aliases=['av','dp'])
+    async def avatar(self,ctx, user: discord.User = None):
+        '''Returns ones avatar URL'''
+        if not user:
+            user = ctx.message.author
+        avi = user.avatar_url or user.default_avatar_url
+        if ".gif" in avi:
+            avi+="&f=.gif"
+        avi = avi.replace(".webp",".png").replace("?size=1024","?size=2048")
+        em = discord.Embed(color=random.randint(0, 0xFFFFFF))
+        em.set_image(url=avi)
+        name = str(user)
+        name = " ~ ".join((name, user.nick)) if user.nick else name
+        em.set_author(name=name, url=avi)
+        await self.bot.say(embed=em)
 
-        revision = '\n'.join(os.popen(cmd).read().strip()  .splitlines()[:3])
-        embed = discord.Embed()
-        embed.url = 'https://discord.gg/pmQSbAd'
-        embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
-
-        embed.set_author(name='selfbot.py', icon_url=ctx.author.avatar_url)
-
-        total_members = sum(1 for _ in self.bot.get_all_members())
-        total_online = len({m.id for m in self.bot.get_all_members() if m.status is discord.Status.online})
-        total_unique = len(self.bot.users)
-
-        voice_channels = []
-        text_channels = []
-        for guild in self.bot.guilds:
-            voice_channels.extend(guild.voice_channels)
-            text_channels.extend(guild.text_channels)
-
-        text = len(text_channels)
-        voice = len(voice_channels)
-        dm = len(self.bot.private_channels)
-
-        now = datetime.datetime.utcnow()
-        delta = now - self.bot.uptime
-        hours, remainder = divmod(int(delta.total_seconds()), 3600)
-        minutes, seconds = divmod(remainder, 60)
+    @commands.command(pass_context=True)
+    async def info(self, ctx):
+        '''See bot information, uptime, servers etc.'''
+        uptime = (datetime.datetime.now() - self.bot.uptime)
+        hours, rem = divmod(int(uptime.total_seconds()), 3600)
+        minutes, seconds = divmod(rem, 60)
         days, hours = divmod(hours, 24)
-
-        fmt = '{h}h {m}m {s}s'
         if days:
-            fmt = '{d}d ' + fmt
-        uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-        if revision:
-            embed.add_field(name='Latest Changes', value=revision)
-        embed.add_field(name='Author', value='verixx#7220')
-        embed.add_field(name='Uptime', value=uptime)
-        embed.add_field(name='Guilds', value=len(self.bot.guilds))
-        embed.add_field(name='Members', value=f'{total_unique} total\n{total_online} online')
-        embed.add_field(name='Channels', value=f'{text} text\n{voice} voice\n{dm} direct')
-        memory_usage = self.bot.process.memory_full_info().uss / 1024**2
-        cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
-        embed.add_field(name='Process', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
-        embed.set_footer(text=f'Powered by discord.py {discord.__version__}')
-        await ctx.send(embed=embed)
+            time_ = '%s days, %s hours, %s minutes, and %s seconds' % (days, hours, minutes, seconds)
+        else:
+            time_ = '%s hours, %s minutes, and %s seconds' % (hours, minutes, seconds)
+        servers = len(self.bot.servers)
+        version = '1.2.1'
+        library = 'discord.py'
+        creator = 'verix#7220'
+        discord_ = '[Support Server](https://discord.gg/pmQSbAd)'
+        github = '[/verixx/selfbot](https://github.com/verixx/selfbot)'
+        time = ctx.message.timestamp
+        emb = discord.Embed(colour=0x00FFFF)
+        emb.set_author(name='selfbot.py', icon_url=self.bot.user.avatar_url)
+        emb.add_field(name='Version',value=version)
+        emb.add_field(name='Library',value=library)
+        emb.add_field(name='Creator',value=creator)
+        emb.add_field(name='Servers',value=servers)
+        emb.add_field(name='Github',value=github)
+        emb.add_field(name='Discord',value=discord_)
+        emb.add_field(name='Uptime',value=time_)
+        emb.set_footer(text="ID: {}".format(self.bot.user.id))
+        emb.set_thumbnail(url='https://cdn.discordapp.com/avatars/319395783847837696/349677f658e864c0a5247a658df61eb1.webp?width=80&height=80')
+        await self.bot.say(embed=emb)
 
+    @commands.command(pass_context=True)
+    async def help(self, ctx, *, cmd = None):
+        """Shows this message."""
+        author = ctx.message.author
+        await self.bot.delete_message(ctx.message)
+        pages = self.bot.formatter.format_help_for(ctx, self.bot)
+        for page in pages:
+            try:
+                await self.bot.say(embed=page)
+            except:
+                await self.bot.say('I need the embed links perm.')
 
 def setup(bot):
-	bot.add_cog(Information(bot))
+    bot.add_cog(Info(bot))

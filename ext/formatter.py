@@ -1,160 +1,136 @@
-
-# -*- coding: utf-8 -*-
-
-"""
-The MIT License (MIT)
-Copyright (c) 2015-2017 Rapptz
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-"""
-
 import itertools
 import inspect
-import asyncio
 import discord
-from discord.ext import commands
 from discord.ext.commands.core import GroupMixin, Command
 from discord.ext.commands.errors import CommandError
+from discord.ext.commands.formatter import HelpFormatter
 
+# help -> shows info of bot on top/bottom and lists subcommands
+# help command -> shows detailed info of command
+# help command <subcommand chain> -> same as above
+
+# <description>
+
+# <command signature with aliases>
+
+# <long doc>
+
+# Cog:
+#   <command> <shortdoc>
+#   <command> <shortdoc>
+# Other Cog:
+#   <command> <shortdoc>
+# No Category:
+#   <command> <shortdoc>
+
+# Type <prefix>help command for more info on a command.
+# You can also type <prefix>help category for more info on a category.
 
 class Paginator:
-    """A class that aids in paginating embeds for Discord messages.
+    """A class that aids in paginating code blocks for Discord messages.
+
     Attributes
     -----------
+    prefix: str
+        The prefix inserted to every page. e.g. three backticks.
+    suffix: str
+        The suffix appended at the end of every page. e.g. three backticks.
     max_size: int
         The maximum amount of codepoints allowed in a page.
     """
-    def __init__(self, max_size=1900):
-        self.max_size = max_size
-        self._current_embed = discord.Embed()
-        self._current_field = []
-        self._count = 0
-        self._embeds = []
-        self.last_cog = None
+    def __init__(self, prefix='', suffix='', max_size=2000):
+        self.prefix = prefix
+        self.suffix = suffix
+        self.max_size = max_size - len(suffix)
+        self._current_page = [prefix]
+        self._count = len(prefix) + 1 # prefix + newline
+        self._pages = []
 
     def add_line(self, line='', *, empty=False):
-        """Adds a line to the current embed page.
+        """Adds a line to the current page.
+
         If the line exceeds the :attr:`max_size` then an exception
         is raised.
+
         Parameters
         -----------
         line: str
             The line to add.
         empty: bool
             Indicates if another empty line should be added.
+
         Raises
         ------
         RuntimeError
             The line was too big for the current :attr:`max_size`.
         """
-        if len(line) > self.max_size - 2:
-            raise RuntimeError('Line exceeds maximum page size %s' % (self.max_size - 2))
+        if len(line) > self.max_size - len(self.prefix) - 2:
+            raise RuntimeError('Line exceeds maximum page size %s' % (self.max_size - len(self.prefix) - 2))
 
         if self._count + len(line) + 1 > self.max_size:
             self.close_page()
 
         self._count += len(line) + 1
-        self._current_field.append(line)
+        self._current_page.append(line)
 
         if empty:
-            self._current_field.append('')
+            self._current_page.append('')
+            self._count += 1
 
     def close_page(self):
         """Prematurely terminate a page."""
-        name = value = ''
-        while self._current_field: 
-            curr = self._current_field.pop(0) # goes through each line
-            if curr.strip().endswith(':'): # this means its a CogName:
-                if name: 
-                    if value:
-                        self._current_embed.add_field(name=name, value=value)
-                        name, value = curr, '' # keeps track of the last cog sent,
-                        self.last_cog = curr  # so the next embed can have a `continued` thing                      
-                else:                          
-                    if value:
-                        if self.last_cog:
-                            self._current_embed.add_field(name=f'{self.last_cog} (continued)', value=value)
-                        value = ''
-                    name = curr
-                    self.last_cog = curr
-            else:
-                value += curr + '\n'
-
-        # adds the last parts not done in the while loop
-        print(self.last_cog)
-        if self.last_cog and value:
-            self._current_embed.add_field(name=self.last_cog, value=value)
-            value = ''
-
-        # this means that there was no `Cog:` title thingys, that means that its a command help
-        if value and not self.last_cog:
-            fmt = list(filter(None, value.split('\n')))
-            self._current_embed.title = f'``{fmt[0]}``' # command signiture
-            self._current_embed.description = '\n'.join(fmt[1:]) # command desc
-
-        self._embeds.append(self._current_embed)
-        self._current_embed = discord.Embed()
-        self._current_field = []
-        self._count = 1
+        self._current_page.append(self.suffix)
+        self._pages.append('\n'.join(self._current_page))
+        self._current_page = [self.prefix]
+        self._count = len(self.prefix) + 1 # prefix + newline
 
     @property
     def pages(self):
         """Returns the rendered list of pages."""
         # we have more than just the prefix in our current page
-        if len(self._current_field) > 1:
+        if len(self._current_page) > 1:
             self.close_page()
-        return self._embeds 
+        return self._pages
 
     def __repr__(self):
-        fmt = '<Paginator max_size: {0.max_size} count: {0._count}>'
+        fmt = '<Paginator prefix: {0.prefix} suffix: {0.suffix} max_size: {0.max_size} count: {0._count}>'
         return fmt.format(self)
 
-class EmbedHelp(commands.HelpFormatter):
+class EmbedHelp(HelpFormatter):
     """The default base implementation that handles formatting of the help
     command.
-    To override the behaviour of the formatter, :meth:`~.HelpFormatter.format`
+
+    To override the behaviour of the formatter, :meth:`format`
     should be overridden. A number of utility functions are provided for use
     inside that method.
-    Attributes
+
+    Parameters
     -----------
-    show_hidden: bool
+    show_hidden : bool
         Dictates if hidden commands should be shown in the output.
         Defaults to ``False``.
-    show_check_failure: bool
-        Dictates if commands that have their :attr:`.Command.checks` failed
+    show_check_failure : bool
+        Dictates if commands that have their :attr:`Command.checks` failed
         shown. Defaults to ``False``.
-    width: int
+    width : int
         The maximum number of characters that fit in a line.
         Defaults to 80.
     """
-    def __init__(self, show_hidden=False, show_check_failure=False, width=65):
+    def __init__(self, show_hidden=False, show_check_failure=False, width=80):
         self.width = width
         self.show_hidden = show_hidden
         self.show_check_failure = show_check_failure
 
     def has_subcommands(self):
-        """bool: Specifies if the command has subcommands."""
+        """bool : Specifies if the command has subcommands."""
         return isinstance(self.command, GroupMixin)
 
     def is_bot(self):
-        """bool: Specifies if the command being formatted is the bot itself."""
+        """bool : Specifies if the command being formatted is the bot itself."""
         return self.command is self.context.bot
 
     def is_cog(self):
-        """bool: Specifies if the command being formatted is actually a cog."""
+        """bool : Specifies if the command being formatted is actually a cog."""
         return not self.is_bot() and not isinstance(self.command, Command)
 
     def shorten(self, text):
@@ -165,10 +141,10 @@ class EmbedHelp(commands.HelpFormatter):
 
     @property
     def max_name_size(self):
-        """int: Returns the largest name length of a command or if it has subcommands
+        """int : Returns the largest name length of a command or if it has subcommands
         the largest subcommand name."""
         try:
-            commands = self.command.all_commands if not self.is_cog() else self.context.bot.all_commands
+            commands = self.command.commands if not self.is_cog() else self.context.bot.commands
             if commands:
                 return max(map(lambda c: len(c.name) if self.show_hidden or not c.hidden else 0, commands.values()))
             return 0
@@ -187,28 +163,56 @@ class EmbedHelp(commands.HelpFormatter):
 
     def get_command_signature(self):
         """Retrieves the signature portion of the help page."""
+        result = []
         prefix = self.clean_prefix
         cmd = self.command
-        return prefix + cmd.signature
+        parent = cmd.full_parent_name
+        if len(cmd.aliases) > 0:
+            aliases = '|'.join(cmd.aliases)
+            fmt = '{0}[{1.name}|{2}]'
+            if parent:
+                fmt = '{0}{3} [{1.name}|{2}]'
+            result.append(fmt.format(prefix, cmd, aliases, parent))
+        else:
+            name = prefix + cmd.name if not parent else prefix + parent + ' ' + cmd.name
+            result.append(name)
+
+        params = cmd.clean_params
+        if len(params) > 0:
+            for name, param in params.items():
+                if param.default is not param.empty:
+                    # We don't want None or '' to trigger the [name=value] case and instead it should
+                    # do [name] since [name=None] or [name=] are not exactly useful for the user.
+                    should_print = param.default if isinstance(param.default, str) else param.default is not None
+                    if should_print:
+                        result.append('[{}={}]'.format(name, param.default))
+                    else:
+                        result.append('[{}]'.format(name))
+                elif param.kind == param.VAR_POSITIONAL:
+                    result.append('[{}...]'.format(name))
+                else:
+                    result.append('<{}>'.format(name))
+        
+
+        return ' '.join(result)
 
     def get_ending_note(self):
         command_name = self.context.invoked_with
-        return "Type {0}{1} command for more info on a command.\n" \
-               "You can also type {0}{1} category for more info on a category.".format(self.clean_prefix, command_name)
+        return ""
 
-    async def filter_command_list(self):
+    def filter_command_list(self):
         """Returns a filtered list of commands based on the two attributes
-        provided, :attr:`show_check_failure` and :attr:`show_hidden`.
-        Also filters based on if :meth:`~.HelpFormatter.is_cog` is valid.
+        provided, :attr:`show_check_failure` and :attr:`show_hidden`. Also
+        filters based on if :meth:`is_cog` is valid.
+
         Returns
         --------
         iterable
             An iterable with the filter being applied. The resulting value is
             a (key, value) tuple of the command name and the command itself.
         """
-
-        def sane_no_suspension_point_predicate(tup):
-            cmd = tup[1]
+        def predicate(tuple):
+            cmd = tuple[1]
             if self.is_cog():
                 # filter commands that don't exist to this cog.
                 if cmd.instance is not self.command:
@@ -217,30 +221,18 @@ class EmbedHelp(commands.HelpFormatter):
             if cmd.hidden and not self.show_hidden:
                 return False
 
-            return True
+            if self.show_check_failure:
+                # we don't wanna bother doing the checks if the user does not
+                # care about them, so just return true.
+                return True
 
-        async def predicate(tup):
-            if sane_no_suspension_point_predicate(tup) is False:
-                return False
-
-            cmd = tup[1]
             try:
-                return (await cmd.can_run(self.context))
+                return cmd.can_run(self.context) and self.context.bot.can_run(self.context)
             except CommandError:
                 return False
 
-        iterator = self.command.all_commands.items() if not self.is_cog() else self.context.bot.all_commands.items()
-        if self.show_check_failure:
-            return filter(sane_no_suspension_point_predicate, iterator)
-
-        # Gotta run every check and verify it
-        ret = []
-        for elem in iterator:
-            valid = await predicate(elem)
-            if valid:
-                ret.append(elem)
-
-        return ret
+        iterator = self.command.commands.items() if not self.is_cog() else self.context.bot.commands.items()
+        return filter(predicate, iterator)
 
     def _add_subcommands_to_page(self, max_width, commands):
         for name, command in commands:
@@ -248,20 +240,22 @@ class EmbedHelp(commands.HelpFormatter):
                 # skip aliases
                 continue
 
-            entry = '{2.context.prefix}{0:<{width}} {1}'.format(name, command.short_doc, self, width=max_width)
+            entry = '  .{0:<{width}}      {1}'.format(name, command.short_doc, width=max_width)
             shortened = self.shorten(entry)
-            self._paginator.add_line(f'`{shortened}`')
+            self._paginator.add_line(shortened)
 
-    async def format_help_for(self, context, command_or_bot):
+    def format_help_for(self, context, command_or_bot):
         """Formats the help page and handles the actual heavy lifting of how
         the help command looks like. To change the behaviour, override the
-        :meth:`~.HelpFormatter.format` method.
+        :meth:`format` method.
+
         Parameters
         -----------
-        context: :class:`.Context`
+        context : :class:`Context`
             The context of the invoked help command.
-        command_or_bot: :class:`.Command` or :class:`.Bot`
+        command_or_bot : :class:`Command` or :class:`Bot`
             The bot or command that we are getting the help of.
+
         Returns
         --------
         list
@@ -269,11 +263,13 @@ class EmbedHelp(commands.HelpFormatter):
         """
         self.context = context
         self.command = command_or_bot
-        return (await self.format())
+        return self.format(context)
 
-    async def format(self):
+    def format(self, ctx):
         """Handles the actual behaviour involved with formatting.
+
         To change the behaviour, this method should be overridden.
+
         Returns
         --------
         list
@@ -301,7 +297,23 @@ class EmbedHelp(commands.HelpFormatter):
             # end it here if it's just a regular command
             if not self.has_subcommands():
                 self._paginator.close_page()
-                return self._paginator.pages
+                for page in self._paginator.pages:
+                    msg = page.strip().splitlines()
+                    for i, line in enumerate(msg): 
+                        if i == 0:
+                            x = line.strip().strip('.')
+                            msg[i] = '``' + x + '``'
+                        if not line:
+                            del msg[i]
+                    print(msg)
+                    em = discord.Embed(color=discord.Colour.orange(), title=msg[0])
+                    try:
+                        em.description = ''.join(msg[1:])
+                    except:
+                        pass
+                    print('OVER HERE',em)
+                    return [em]
+
 
         max_width = self.max_name_size
 
@@ -309,26 +321,80 @@ class EmbedHelp(commands.HelpFormatter):
             cog = tup[1].cog_name
             # we insert the zero width space there to give it approximate
             # last place sorting position.
-            return cog + ':' if cog is not None else '\u200bNo Category:'
+            return cog + ':' if cog is not None else 'Default:'
 
-        filtered = await self.filter_command_list()
         if self.is_bot():
-            data = sorted(filtered, key=category)
+            data = sorted(self.filter_command_list(), key=category)
             for category, commands in itertools.groupby(data, key=category):
                 # there simply is no prettier way of doing this.
-                commands = sorted(commands)
+                commands = list(commands)
                 if len(commands) > 0:
                     self._paginator.add_line(category)
 
                 self._add_subcommands_to_page(max_width, commands)
         else:
-            filtered = sorted(filtered)
-            if filtered:
-                self._paginator.add_line('Commands:')
-                self._add_subcommands_to_page(max_width, filtered)
+            self._paginator.add_line('Commands:')
+            self._add_subcommands_to_page(max_width, self.filter_command_list())
 
         # add the ending note
         self._paginator.add_line()
         ending_note = self.get_ending_note()
         self._paginator.add_line(ending_note)
-        return self._paginator.pages
+
+
+        # Formatting the pages into embeds
+
+        author = ctx.message.author
+        msg = ''
+        for page in self._paginator.pages:
+            page = page.strip('```cs')
+            msg += page+'\n'
+
+        msg = msg.strip().splitlines()
+
+        for i, line in enumerate(msg): 
+            if not line.strip().endswith(':'):
+                x = line.strip().strip('.')
+                x = ctx.prefix + x
+                msg[i] = '`' + x + '`'
+
+        categs = [] # index of each category
+
+        for i, e in enumerate(msg):
+            if e.endswith(':'):
+                categs.append(i)
+
+        embeds = []
+
+
+        categs_per_page = 4 # change this value if you want to edit how many categories in one page
+
+        for i in range(len(categs)):
+            if i % categs_per_page == 0:
+                if i == 0:
+                        em = discord.Embed(color=0x00ffff)
+                        em.set_author(name='Help - Commands',
+                                      icon_url=author.avatar_url or author.default_avatar_url)
+                else:
+                    em = discord.Embed(color=0x00ffff, timestamp=ctx.message.timestamp)
+
+                    
+            # This is to get the correct parts of the list on to the embed
+
+            base = categs[i]
+            try:
+                end = categs[i+1]
+                p = msg[base:end]
+            except:
+                p = msg[base:]
+
+
+            em.add_field(name=p[0], value='\n'.join(p[1:])) # Create the fields
+
+            if i % categs_per_page == 0:
+                embeds.append(em) # append the embed to the list
+
+        embeds[len(embeds)-1].set_footer(text='{} commands'.format(len(msg)-len(categs))) #set the footer for the last embed
+
+        return embeds
+

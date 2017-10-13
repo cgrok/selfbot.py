@@ -24,144 +24,233 @@ SOFTWARE.
 
 import discord
 from discord.ext import commands
-from urllib.parse import urlparse
 import datetime
-import asyncio
+import time
 import random
-import pip
+import asyncio
+import json
+import requests
 import os
-import io
 
-
-class Mod:
+class Moderation:
 
     def __init__(self, bot):
-        self.bot = bot
+            self.bot = bot
 
-    async def format_mod_embed(self, ctx, user, success, method):
-        '''Helper func to format an embed to prevent extra code'''
-        emb = discord.Embed()
-        emb.set_author(name=method.title(), icon_url=user.avatar_url)
-        emb.color = await ctx.get_dominant_color(user.avatar_url)
-        emb.set_footer(text=f'User ID: {user.id}')
-        if success:
-            if method == 'ban':
-                emb.description = f'{user} was just {method}ned.'
-            else:
-                emb.description = f'{user} was just {method}ed.'
-        else:
-            emb.description = f"You do not have the permissions to {method} users."
 
-        return emb
+    @commands.command(pass_context=True)
+    async def kick(self, ctx, member : discord.Member):
+            '''Kick someone from the server.'''
+            try:
+                await self.bot.kick(member)
+                await self.bot.edit_message(ctx.message, 'Kicked {} from the server.'.format(member))
+            except:
+                await self.bot.edit_message(ctx.message, 'You dont have the permission to kick members.')
+                await asyncio.sleep(5)
+                await self.bot.delete_message(ctx.message)
 
-    @commands.command()
-    async def kick(self, ctx, member : discord.Member, *, reason='Please write a reason!'):
-        '''Kick someone from the server.'''
+    @commands.command(pass_context=True)
+    async def ban(self, ctx, member : discord.Member):
+            '''Ban someone from the server.'''
+            try:
+                await self.bot.ban(member)
+                await self.bot.edit_message(ctx.message, 'Banned {} from the server.'.format(member))
+            except:
+                await self.bot.edit_message(ctx.message, 'You dont have the permission to ban members.')
+                await asyncio.sleep(5)
+                await self.bot.delete_message(ctx.message)
+
+    @commands.command(pass_context=True)
+    async def softban(self,ctx, member : discord.Member):
+        '''Kick someone out and delete their messages.'''
         try:
-            await ctx.guild.kick(member, reason=reason)
+            await self.bot.ban(member)
+            await self.bot.unban(member.server, member)
+            await self.bot.edit_message(ctx.message, 'Soft-banned {}.'.format(member))
         except:
-            success = False
-        else:
-            success = True
+        	await self.bot.edit_message(ctx.message, 'You dont have the permission to ban members.')
+        	await asyncio.sleep(5)
+        	await self.bot.delete_message(ctx.message)
 
-        emb = await self.format_mod_embed(ctx, member, success, 'kick')
 
-        await ctx.send(embed=emb)
+    def find_user(self, bans, member):
+            return [user for user in bans if user.id == member or user.name.lower() == member.lower()]
 
-    @commands.command()
-    async def ban(self, ctx, member : discord.Member, *, reason='Please write a reason!'):
-        '''Ban someone from the server.'''
+    async def _unban(self, ctx, server, user):
+    	try:
+    		await self.bot.unban(server, user)
+    		await self.bot.edit_message(ctx.message, 'Unbanned {} from the server.'.format(user))
+    	except:
+    		await self.bot.edit_message(ctx.message, 'You dont have the permission to un-ban members.')
+    		await asyncio.sleep(5)
+    		await self.bot.delete_message(ctx.message)
+
+    @commands.command(pass_context=True)
+    async def unban(self, ctx, member : str):
+        '''Unban someone using their user ID or name.'''
+        server = ctx.message.server
         try:
-            await ctx.guild.ban(member, reason=reason)
+            bans = await self.bot.get_bans(server)
         except:
-            success = False
-        else:
-            success = True
+            await self.bot.edit_message(ctx.message, 'You dont have the permission to see the bans.')
+            await asyncio.sleep(5)
+            await self.bot.delete_message(ctx.message)
+            return
 
-        emb = await self.format_mod_embed(ctx, member, success, 'ban')
+        users = self.find_user(bans, member)
+        print(users)
+        print([user.name for user in bans])
 
-        await ctx.send(embed=emb)
-
-    @commands.command()
-    async def unban(self, ctx, name_or_id, *, reason=None):
-        '''Unban someone from the server.'''
-        ban = await ctx.get_ban(name_or_id)
-
-        try:
-            await ctx.guild.unban(ban.user, reason=reason)
-        except:
-            success = False
-        else:
-            success = True
-        
-        emb = await self.format_mod_embed(ctx, ban.user, success, 'unban')
-
-        await ctx.send(embed=emb)
-
-    @commands.command(aliases=['del','p','prune'])
-    async def purge(self, ctx, limit : int):
-        '''Clean a number of messages'''
-        await ctx.purge(limit=limit+1) # TODO: add more functionality
-
-    @commands.command()
-    async def clean(self, ctx, limit : int=15):
-        '''Clean a number of your own messages'''
-        await ctx.purge(limit=limit+1, check=lambda m: m.author == ctx.author)
+        if len(users) > 1:
+        	return await self.bot.edit_message(ctx.message, 'Multiple users found.')
+        if len(users) < 1:
+        	return await self.bot.edit_message(ctx.message, 'User not found.')
 
 
-    @commands.command()
+        await self._unban(ctx, server, users[0])
+
+    @commands.command(pass_context=True)
     async def bans(self, ctx):
-        '''See a list of banned users in the guild'''
-        try:
-            bans = await ctx.guild.bans()
-        except:
-            return await ctx.send('You dont have the perms to see bans.')
+    	'''See a list of banned users.'''
+    	server = ctx.message.server
+    	server = ctx.message.server
+    	try:
+    		bans = await self.bot.get_bans(server)
+    	except:
+    		await self.bot.edit_message(ctx.message, 'You dont have the permission to see the bans.')
+    		await asyncio.sleep(5)
+    		await self.bot.delete_message(ctx.message)
+    	else:
+    		await self.bot.edit_message(ctx.message,'**List of banned users:**```bf\n{}\n```'.format(', '.join([str(u) for u in bans])))
 
-        em = discord.Embed(title=f'List of Banned Members ({len(bans)}):')
-        em.description = ', '.join([str(b.user) for b in bans])
-        em.color = await ctx.get_dominant_color(ctx.guild.icon_url)
+    @commands.command(aliases=['p'], pass_context=True)
+    async def purge(self, ctx, msgs: int, *, txt=None):
+        '''Purge messages if you have the perms.'''
+        await self.bot.delete_message(ctx.message)
+        if msgs < 10000:
+            async for message in self.bot.logs_from(ctx.message.channel, limit=msgs):
+                try:
+                    if txt:
+                        if txt.lower() in message.content.lower():
+                            await self.bot.delete_message(message)
+                    else:
+                        await self.bot.delete_message(message)
+                except:
+                    pass
+        else:
+            await self.bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
-        await ctx.send(embed=em)
 
-    @commands.command()
-    async def baninfo(self, ctx, *, name_or_id):
-        '''Check the reason of a ban from the audit logs.'''
-        ban = await ctx.get_ban(name_or_id)
-        em = discord.Embed()
-        em.color = await ctx.get_dominant_color(ban.user.avatar_url)
-        em.set_author(name=str(ban.user), icon_url=ban.user.avatar_url)
-        em.add_field(name='Reason', value=ban.reason or 'None')
-        em.set_thumbnail(url=ban.user.avatar_url)
-        em.set_footer(text=f'User ID: {ban.user.id}')
+    @commands.command(aliases=['c'], pass_context=True)
+    async def clean(self, ctx, msgs: int = 100):
+        '''Shortcut to clean all your messages.'''
+        await self.bot.delete_message(ctx.message)
+        if msgs < 10000:
+            async for message in self.bot.logs_from(ctx.message.channel, limit=msgs):
+                try:
+                    if message.author == self.bot.user:
+                        await self.bot.delete_message(message)
+                except:
+                    pass
+        else:
+            await self.bot.send_message(ctx.message.channel, 'Too many messages to delete. Enter a number < 10000')
 
-        await ctx.send(embed=em)
-
-    @commands.command()
+    @commands.command(pass_context=True)
     async def addrole(self, ctx, member: discord.Member, *, rolename: str):
         '''Add a role to someone else.'''
-        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.guild.roles)
+        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.server.roles)
         if not role:
-            return await ctx.send('That role does not exist.')
+            return await self.bot.say('That role does not exist.')
         try:
-            await member.add_roles(role)
-            await ctx.send(f'Added: `{role.name}`')
+            await self.bot.add_roles(member, role)
+            await self.bot.say("Added: `{}`".format(role.name))
         except:
-            await ctx.send("I don't have the perms to add that role.")
+            await self.bot.say("I dont have the perms to add that role.")
 
-
-    @commands.command()
+    @commands.command(pass_context=True)
     async def removerole(self, ctx, member: discord.Member, *, rolename: str):
         '''Remove a role from someone else.'''
-        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.guild.roles)
+        role = discord.utils.find(lambda m: rolename.lower() in m.name.lower(), ctx.message.server.roles)
         if not role:
-            return await ctx.send('That role does not exist.')
+            return await self.bot.say('That role does not exist.')
         try:
-            await member.remove_roles(role)
-            await ctx.send(f'Removed: `{role.name}`')
+            await self.bot.remove_roles(member, role)
+            await self.bot.say("Removed: `{}`".format(role.name))
         except:
-            await ctx.send("I don't have the perms to add that role.")
+            await self.bot.say("I dont have the perms to add that role.")
 
 
+    @commands.command(pass_context = True)
+    async def warn(self, ctx, user: discord.Member=None, reason=None):
+        '''Warn a member'''
+        warning = 'You have been warned in **{}** by **{}** for: **{}**'
+        server = ctx.message.server
+        author = ctx.message.author
+        await self.bot.say('**{}** has been warned'.format(user))
+        await self.bot.send_message(user, warning.format(server, author, reason))
+        await self.bot.delete_message(ctx.message)
+
+        
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def muteall(self, ctx):
+        '''Denies the @everyone role to send messages'''
+        everyone_perms = ctx.message.channel.overwrites_for(ctx.message.server.default_role)
+        everyone_perms.send_messages = False
+        await self.bot.edit_channel_permissions(ctx.message.channel, ctx.message.server.default_role, everyone_perms)
+        await self.answer_done(ctx.message)
+        
+
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def unmuteall(self, ctx):
+        '''Allows the @everyone role to send messages'''
+        everyone_perms = ctx.message.channel.overwrites_for(ctx.message.server.default_role)
+        everyone_perms.send_messages = True
+        await self.bot.edit_channel_permissions(ctx.message.channel, ctx.message.server.default_role, everyone_perms)
+        await self.answer_done(ctx.message)
+
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def mute(self, ctx, user: discord.Member):
+        '''Denies someone from sending messages'''
+        perms = ctx.message.channel.overwrites_for(user)
+        perms.send_messages = False
+        await self.bot.edit_channel_permissions(ctx.message.channel, user, perms)
+        await self.answer_done(ctx.message)
+
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def unmute(self, ctx, user: discord.Member):
+        '''Allows someone to send messages'''
+        perms = ctx.message.channel.overwrites_for(user)
+        perms.send_messages = None
+        if not perms.is_empty():
+                await self.bot.edit_channel_permissions(ctx.message.channel, user, perms)
+        else:
+                await self.bot.delete_channel_permissions(ctx.message.channel, user)
+                await self.answer_done(ctx.message)
+
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def unblock(self, ctx, user: discord.Member):
+        '''Allows someone to view a channel'''
+        perms = ctx.message.channel.overwrites_for(user)
+        perms.read_messages = None
+        if not perms.is_empty():
+                await self.bot.edit_channel_permissions(ctx.message.channel, user, perms)
+        else:
+                await self.bot.delete_channel_permissions(ctx.message.channel, user)
+                await self.answer_done(ctx.message)
+
+    @commands.command(pass_context = True)
+    @commands.has_permissions(manage_channels=True)
+    async def block(self, ctx, user: discord.Member):
+        """Denies someone from viewing the channel"""
+        perms = ctx.message.channel.overwrites_for(user)
+        perms.read_messages = False
+        await self.bot.edit_channel_permissions(ctx.message.channel, user, perms)
+        await self.answer_done(ctx.message)
 
 def setup(bot):
-	bot.add_cog(Mod(bot))
+        bot.add_cog(Moderation(bot))

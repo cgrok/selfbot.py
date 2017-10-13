@@ -1,34 +1,30 @@
 <div align="center">
         <p> <img src="https://i.imgur.com/lBSqWgt.png"/> </p>
-        <p><i><b>Moderation, fun, utility and much more! (Rewrite)</b></i></p>
+        <p><i><b>Moderation, fun, utility and much more!</b></i></p>
 	<p> 
 		<a href="https://discord.gg/pmQSbAd"><img src="https://discordapp.com/api/guilds/345787308282478592/widget.png?style=banner2" alt="" /></a>
 	</p>
 	<p>	<img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="passing" /></a>
-		<img src="https://img.shields.io/badge/python-3.6-brightgreen.svg" alt="python 3.6" /></a>
+		<img src="https://img.shields.io/badge/python-3.5-brightgreen.svg" alt="python 3.5" /></a>
 		<a href="https://github.com/Rapptz/discord.py"><img src="https://img.shields.io/badge/discord-py-orange.svg" alt="discord.py" /></a>
 	</p>
 </div> 
 
-## [Rewrite Branch](https://discordpy.readthedocs.io/en/rewrite/) 
-This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is still in development, so expect bugs. Only install it if you will contribute to its development, constantly update it and give feedback. Once the branch is complete, and discord.py rewrite becomes the master branch of the library, this branch will become the master branch. If you want to install a stable version of the selfbot, go to the `master` branch of this repository.
 
 ## [Installation via Heroku](https://github.com/verixx/selfbot/wiki/heroku)
-There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku) or watch the video tutorial [here](https://youtu.be/1c0fJ8KcHcM). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
+There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
 
-## [Normal Installation](https://github.com/verixx/selfbot.py/wiki/Hosting-on-your-own-PC)
-You need the following to run the bot: (currently) 
+## [Normal Installation](https://github.com/verixx/selfbot/wiki)
+You need the following to run the bot: This can be done by `pip install -r /path/to/requirements.txt`
 ```py
-git+https://github.com/Rapptz/discord.py@rewrite
+discord.py
+requests
+PythonGists
+bs4
 lxml
+Pillow
 mtranslate
-colorthief
-sympy
-psutil
-emoji
 ```
-Do `pip install -r path/to/requirements.txt` to install the requirements.
-## Setup
 
 Open a terminal in the directory of the bots location and type
 ```
@@ -39,9 +35,11 @@ On first start the launcher will run and you will need to input data. After that
 If you need to edit your token or prefix, navigate into the data folder and open `config.json` and change the values.
 ```json
 {
-    "token": "your_token_here",
-    "prefix": "r.",
-    "first": true
+    "FIRST": false,
+    "BOT": {
+        "PREFIX": "s.",
+        "TOKEN": "token_here"
+    }
 }
 ```
 
@@ -50,28 +48,26 @@ If you need to edit your token or prefix, navigate into the data folder and open
 * Moderation commands
 * Global emoji commands
 * Complex embed commands
+* Custom formatted paginated help
 * Miscellaneous commands
 * Easy to make your own commands
-* Community Cogs *(coming soon, join [our discord](https://discord.gg/pmQSbAd) for updates)*
 
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
 
 This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](https://github.com/verixx/selfbot/wiki/Heroku) 24/7 for free*  
 
-## Community Cogs
+These are the [default commands](https://github.com/verixx/selfbot/wiki/Default-Commands)
+## Contributors
 
-**This is coming soon, so it's not working at the moment.**
+> [@kwugfighter](https://github.com/kwugfighter)
 
-To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder.        
-To download a cog, add the Cog Name in `data/community_cogs.txt`. Invalid cog names will return an error in your console.
+> [@FloatCobra](https://github.com/FloatCobra)
 
-Currently available cogs:-    
-* cog1
-* cog2
+> [@umbresp](https://github.com/umbresp)
 
-Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
+> [@fourjr](https://github.com/fourjr)
 
 ## Acknowledgements
 
-> Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny
+> Eval command by [Rapptz](https://github.com/Rapptz) from R.Danny
