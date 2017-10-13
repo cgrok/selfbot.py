@@ -20,6 +20,8 @@ Although this selfbot is against discord TOS, so are applications such as better
 
 ## Features
 
+This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](heroku.md) 24/7 for free*  
+
 * Moderation commands
 * Global emoji commands
 * Complex embed commands
@@ -30,18 +32,15 @@ Although this selfbot is against discord TOS, so are applications such as better
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
 
-This is a `stateless selfbot` (Saves no data) *This means that you can [host it on heroku](https://github.com/verixx/selfbot/wiki/Heroku) 24/7 for free*  
-
 ## Community Cogs
 
 **This is coming soon, so it's not working at the moment.**
 
-To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder.        
-To download a cog, add the Cog Name in `data/community_cogs.txt`. Invalid cog names will return an error in your console.
+To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder. To download a cog, add the Cog Name in `data/community_cogs.txt`. Invalid cog names will return an error in your console.
 
 Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
 
 ## Acknowledgements
 
-> `Eval`, `google` and `rtfm/rtfd` commands by [Rapptz](https://github.com/Rapptz) from R.Danny
+> `Eval`, `google` and `rtfm/rtfd` commands by [Rapptz](https://github.com/Rapptz) from R.Danny (bot)
 
