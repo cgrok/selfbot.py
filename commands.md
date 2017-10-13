@@ -11,6 +11,7 @@ Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a l
 # Information
 
 | Command Name | Description | Usage |
+| ------------- | ------------- | ------------- |
 | about  | See information about the selfbot | `{p}about` |
 | avatar  | Returns someone's avatar url | `{p}avatar [user]` |
 | roleinfo | Shows information about a role | `{p}roleinfo <role name>` |
@@ -20,6 +21,7 @@ Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a l
 
 # Moderation
 | Command Name | Description | Usage |
+| ------------- | ------------- | ------------- |
 | addrole |  Add a role to someone else. | `{p}addrole <user> <rolename>` |
 | removerole | Remove a role from someone else. | `{p}removerole <user> <rolename>` |
 | clean | Clean a number of your own messages | `{p}clean [number=10]` |
