@@ -4,8 +4,8 @@ Do `{p}help` to get a list of commands.
 
 ### Key  
 `{p}` - To be repalced with your prefix    
-`[]` - Optional Parameters     
-`<>` - Mandatory Parameters    
+`[ ]` - Optional Parameters     
+`< >` - Mandatory Parameters    
 **Do not include these in your command**
 
 # Information
