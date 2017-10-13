@@ -41,7 +41,7 @@ Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a l
 | animate | Animate a text file on discord! | `{p}animate <file.txt>` |
 | annoy | Want to annoy a member with mentions? | `{p}annoy [user] [num]` |
 | bf | Evaluate 'brainfuck' code (a retarded language). | `{p}bf <code>` |
-| calc | Basic Calculator [+ , - , / , x] | `{p}calc [+|-|/|x] [numbers...]` |
+| calc | Basic Calculator [+ , - , / , x] | `{p}calc [operator] [numbers...]` |
 | dcolor | Shows the dominant color of an image | `{p}dcolor <imageurl>` | 
 | 8ball | Ask questions to the 8ball | `{p}8ball <question>` |
 | emoji | Use emojis without nitro! | `{p}emoji <emojiname>` |
@@ -56,7 +56,7 @@ Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a l
 | Command Name | Description | Usage |
 | ------------- | ------------- | ------------- |
 | py | Quick command to edit into a codeblock. | `{p}py <code>` |
-| charinfo | Shows you information about unicode characters. | `{p}charinfo [chars...` |
+| charinfo | Shows you information about characters. | `{p}charinfo [chars...` |
 | copy | Copy someones message by ID | `{p}copy <id> [channel]`
 | embed | Send complex rich embeds with this command! | `Read support server pins` |
 | google | Searches google and gives you top result. | `{p}google <searchterms>` |
