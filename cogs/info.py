@@ -193,15 +193,9 @@ class Information:
     @commands.command(aliases=['bot', 'info'])
     async def about(self, ctx):
         '''See information about the selfbot and latest changes.'''
-        cmd = r'git show -s HEAD~3..HEAD --format="[{}](https://github.com/verixx/selfbot/commit/%H) %s (%cr)"'
-        if os.name == 'posix':
-            cmd = cmd.format(r'\`%h\`')
-        else:
-            cmd = cmd.format(r'`%h`')
 
-        revision = '\n'.join(os.popen(cmd).read().strip()  .splitlines()[:3])
         embed = discord.Embed()
-        embed.url = 'https://discord.gg/pmQSbAd'
+        embed.url = 'https://selfbot-py.tk'
         embed.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
 
         embed.set_author(name='selfbot.py', icon_url=ctx.author.avatar_url)
@@ -230,8 +224,12 @@ class Information:
         if days:
             fmt = '{d}d ' + fmt
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
-        if revision:
-            embed.add_field(name='Latest Changes', value=revision)
+
+        github = '[Click Here](https://github.com/verixx/selfbot.py/)'
+        server = '[Click Here](https://discord.gg/pmQSbAd)'
+        website = '[selfbot-py.tk](http://selfbot-py.tk/)'
+
+
         embed.add_field(name='Author', value='verixx#7220')
         embed.add_field(name='Uptime', value=uptime)
         embed.add_field(name='Guilds', value=len(self.bot.guilds))
@@ -240,6 +238,9 @@ class Information:
         memory_usage = self.bot.process.memory_full_info().uss / 1024**2
         cpu_usage = self.bot.process.cpu_percent() / psutil.cpu_count()
         embed.add_field(name='Process', value=f'{memory_usage:.2f} MiB\n{cpu_usage:.2f}% CPU')
+        embed.add_field(name='Github', value=github)
+        embed.add_field(name='Discord', value=server)
+        embed.add_field(name='Website', value=website)
         embed.set_footer(text=f'Powered by discord.py {discord.__version__}')
         await ctx.send(embed=embed)
 
