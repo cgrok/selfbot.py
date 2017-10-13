@@ -8,7 +8,7 @@ Do `{p}help` to get a list of commands.
 <> - Mandatory Parameters    
 **Do not include these in your command**
 
-## Information
+# Information
 | Command Name | Description | Usage |
 | ------------- | ------------- | ------------- |
 | about  | See information about the selfbot | `{p} about` |
