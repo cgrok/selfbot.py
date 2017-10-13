@@ -1,7 +1,11 @@
+# Reference
+
+Here you can find information relevent to the selfbot.
+
 
 # Retrieving Your Token
 
-## PC
+### PC
 1. Open Discord, the Web App works too
 2. Press Ctrl+Shift+i
 3. Click "Application" tab (Click the 2 arrows on the right if you can't find it)
@@ -10,7 +14,7 @@
 6. Copy the text in quotes on the same row
 7. Remove the quotes if using [[Heroku]]
 
-## Android
+### Android
 1. Download [this](https://play.google.com/store/apps/details?id=ai.agusibrahim.xhrlog) from the Google Play Store
 2. Press the `>` icon at the top right
 3. Type in `discordapp.com/login`
@@ -25,16 +29,16 @@ REAP:{"token":"your token here"}
 7. Copy your token
 8. Remove the quotes if using [[Heroku]]
 
-## iOS
+### iOS
 We have not found a working solution yet. If you found one, inform us in our [Discord Server](https://discord.gg/pmQSbAd)! 
 
 # Possible Errors
 
-## Getting [SSL: CERTIFICATE_VERIFY_FAILED] on Python 3.6 on OS X?
+### Getting [SSL: CERTIFICATE_VERIFY_FAILED] on Python 3.6 on OS X?
 
 Navigate to your `Applications/Python 3.6/` folder and double click the `Install Certificates.command` to fix this.
 Happy coding!
 
-## Improper Token passed?
+### Improper Token passed?
 
 This means that the token you have inputted is invalid. Check again if your token is correct and edit your config accordingly.

@@ -1,10 +1,10 @@
-# Installation
+Installation
 
 - [Heroku](heroku.md)
 
 - [Computer](installation.md)
 
-# Reference
+Reference
 
 - [Commands](commands.md)
 

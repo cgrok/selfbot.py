@@ -1,8 +1,8 @@
 ![logo](media/dgTICLL.png)
 
-# I'm Grok <small>0.1.1</small>
+# selfbot.py <small>0.1.1</small>
 
-> A multipurpose discord bot!
+> An easy to use selfbot for discord.
 
-[GitHub](https://github.com/verixx/grokbot/)
-[Get Started](#welcome)
+[GitHub](https://github.com/verixx/selfbot.py/)
+[Get Started](README.md)
