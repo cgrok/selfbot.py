@@ -1,4 +1,4 @@
-## Rewrite Branch
+## Introduction
 
 <div align="left">
         <p><i><b>Moderation, fun, utility and much more!</b></i></p>
@@ -10,7 +10,13 @@
     </p>
 </div> 
 
-Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it!
+Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. Using this bot gives you access to a variety of commands that ranging from code evaluation to fun misc commands. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it! 
+
+!> Using selfbots is against the discord TOS. 
+
+When installing this bot you should be aware of this fact and must consent to never use the bot for API abuse since the developers of this bot consider this to be unethical. We however find nothing morally wrong in using selfbots for personal utility as long as the discord API isnt being abused. If you do not wish to break the discord TOS of your own responsibility, please do not use this selfbot.
+
+Although this selfbot is against discord TOS, so are applications such as better discord. However in either of these cases the developers have made a stand as to not ban users unless given a fair reason to (API abuse). So as long as API isn't abused, the bot can be used safely. You have been informed.
 
 ## Features
 
@@ -37,10 +43,5 @@ Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
 
 ## Acknowledgements
 
-> Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny
+> `Eval`, `google` and `rtfm/rtfd` commands by [Rapptz](https://github.com/Rapptz) from R.Danny
 
-## Disclaimer
-
-Using selfbot.py is against discord TOS. When joining installing this bot you should be aware of this fact and must consent to never use the bot for API abuse since the developers of this bot consider this to be unethical. We however find nothing morally wrong in using selfbots for personal utility as long as the discord API isnt being abused. If you do not wish to break the discord TOS of your own responsibility, please do not use this selfbot.
-
-Although this selfbot is against discord TOS, so are applications such as better discord. However in either of these cases the developers have made a stand as to not ban users unless given a fair reason to (API abuse). So as long as API isn't abused, the bot can be used safely. You have been informed.
