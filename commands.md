@@ -1,11 +1,12 @@
 # Commands Reference
 
-Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a list of commands that are currently available on the selfbot.
+Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a list of commands that are currently available on the selfbot. Commands are grouped categorically.
 
 ### Key  
 `{p}` - To be repalced with your prefix    
 `[ ]` - Optional Parameters     
 `< >` - Mandatory Parameters    
+
 **Do not include these in your command**
 
 # Information
@@ -31,3 +32,23 @@ Type in `{p}help` in discord to get a list of commands. Nonetheless, here is a l
 | unban | Unban someone from the server. | `{p}unban <user>` |
 | baninfo | Check the reason of a ban from the audit logs. | `{p}baninfo <username>` |
 | bans | See a list of banned users in the guild. | `{p}bans` |
+
+# Miscellaneous
+| Command Name | Description | Usage |
+| ------------- | ------------- | ------------- |
+| algebra | Solve algabraic equations | `{p}algebra <equation>` |
+| animate | Animate a text file on discord! | `{p}animate <file.txt>` |
+| annoy | Want to annoy a member with mentions? | `{p}annoy [user] [num]` |
+| bf | Evaluate 'brainfuck' code (a retarded language). | `{p}bf <code>` |
+| calc | Basic Calculator [+ , - , / , x] | `{p}calc [+|-|/|x] [numbers...]` |
+| dcolor | Shows the dominant color of an image | `{p}dcolor <imageurl>` | 
+| 8ball | Ask questions to the 8ball | `{p}8ball <question>` |
+| emoji | Use emojis without nitro! | `{p}emoji <emojiname>` |
+| emojis | Lists all emojis in a server | `{p}emojis` |
+| lenny | Lenny and tableflip group commands | `{p}lenny [face]` |
+| py | Quick command to edit into a codeblock. | `{p}py <code>` |
+| react | React to a message with reactions | `{p}react <index> [emojis...]` |
+| color | Enter a color and you will see it! | `{p}color <color>` |
+| tinyurl | Shorten long urls quickly | `{p}tinyurl <url>` |
+| urban | Searches up something in Urban Dictionary | `{p}urban <word>` |
+| virus | Destroy someone's device with this command! | `{p}virus [user] [virus]` |
