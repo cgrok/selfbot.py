@@ -39,9 +39,8 @@ On first start the launcher will run and you will need to input data. After that
 If you need to edit your token or prefix, navigate into the data folder and open `config.json` and change the values.
 ```json
 {
-    "token": "your_token_here",
-    "prefix": "r.",
-    "first": true
+    "TOKEN": "your_token_here",
+    "PREFIX": "r."
 }
 ```
 
