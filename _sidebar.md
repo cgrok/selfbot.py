@@ -2,7 +2,7 @@
 
 - [Heroku](heroku.md)
 
-- [Computer](installation.md)
+- [Local](installation.md)
 
 * Reference
 
