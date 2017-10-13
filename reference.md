@@ -34,9 +34,9 @@ We have not found a working solution yet. If you found one, inform us in our [Di
 
 # Possible Errors
 
-### Getting [SSL: CERTIFICATE_VERIFY_FAILED] on Python 3.6 on OS X?
+### Getting something about a certificate on mac?
 
-Navigate to your `Applications/Python 3.6/` folder and double click the `Install Certificates.command` to fix this.
+If you see this: `[SSL: CERTIFICATE_VERIFY_FAILED]` and you are using Python 3.6, navigate to your `Applications/Python 3.6/` folder and double click the `Install Certificates.command` to fix this.
 Happy coding!
 
 ### Improper Token passed?
