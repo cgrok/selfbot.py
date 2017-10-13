@@ -1,5 +1,6 @@
-<div align="center">
-        <p> <img src="https://i.imgur.com/lBSqWgt.png"/> </p>
+## Rewrite Branch
+
+<div align="left">
         <p><i><b>Moderation, fun, utility and much more! (Rewrite)</b></i></p>
     <p> 
         <a href="https://discord.gg/pmQSbAd"><img src="https://discordapp.com/api/guilds/345787308282478592/embed.png" alt="" /></a>
@@ -9,7 +10,6 @@
     </p>
 </div> 
 
-## Rewrite Branch
 This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is now the main branch of this repository. The `master` branch is no longer supported. So do not install it!
 
 ## Features
