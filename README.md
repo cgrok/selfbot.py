@@ -14,7 +14,7 @@ Selfbot.py is a discord selfbot written in python. It is used to provide persona
 
 !> Using selfbots is against the discord TOS. 
 
-When installing this bot you should be aware of this fact and must consent to never use the bot for API abuse since the developers of this bot consider this to be unethical. We however find nothing morally wrong in using selfbots for personal utility as long as the discord API isnt being abused. If you do not wish to break the discord TOS of your own responsibility, please do not use this selfbot.
+When installing this bot you should be aware of this fact and must consent to never use the bot for API abuse since we consider this to be unethical. We however find nothing morally wrong in using selfbots for personal utility as long as the discord API isnt being abused. If you do not wish to break the discord TOS of your own responsibility, please do not use this selfbot.
 
 Although this selfbot is against discord TOS, so are applications such as better discord. However in either of these cases the developers have made a stand as to not ban users unless given a fair reason to (API abuse). So as long as API isn't abused, the bot can be used safely. You have been informed.
 
