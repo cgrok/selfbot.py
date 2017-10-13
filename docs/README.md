@@ -11,7 +11,7 @@
 </div> 
 
 ## [Rewrite Branch](https://discordpy.readthedocs.io/en/rewrite/) 
-This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is now the main branch of this repository. The `master` branch is no longer supported. So do not install it!
+This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot has been completely rewritten with better code and structure. This branch is now the main branch of this repository.
 
 ## Features
 
