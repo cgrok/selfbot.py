@@ -1,6 +1,6 @@
 # Using with Heroku
 
-If you choose to install the bot using heroku, you dont need to download anything. In fact you can set it all up on a phone. (Provided you have your token).
+If you choose to install the bot using heroku, you dont need to download anything. In fact you can set it all up on a phone. (Provided you have your token). You can easily install it with [this](https://www.youtube.com/watch?v=1c0fJ8KcHcM&feature=youtu.be) video tutorial.
 
 ### GitHub Account
 
