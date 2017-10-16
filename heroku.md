@@ -2,6 +2,12 @@
 
 If you choose to install the bot using heroku, you dont need to download anything. In fact you can set it all up on a phone. (Provided you have your token). You can easily install it with [this](https://www.youtube.com/watch?v=1c0fJ8KcHcM&feature=youtu.be) video tutorial.
 
+<div>
+<iframe 
+width="420" height="345" src="https://www.youtube.com/embed/1c0fJ8KcHcM">
+</iframe>
+</div>
+
 ### GitHub Account
 
 For this to work you will need to make a Github account (If you don't have one already). After you have made your Github account go to this repository and fork it.
