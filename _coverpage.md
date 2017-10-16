@@ -8,4 +8,4 @@
 [Get Started](#introduction)
 
 
-![color](#00FFFF)
+
