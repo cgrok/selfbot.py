@@ -4,6 +4,7 @@ If you choose to install the bot using heroku, you dont need to download anythin
 <div>
 <iframe src="https://www.youtube.com/embed/1c0fJ8KcHcM" 
         width="640" height="360"
+        frameborder="0"
         allowfullscreen="allowfullscreen"
         mozallowfullscreen="mozallowfullscreen" 
         msallowfullscreen="msallowfullscreen" 
