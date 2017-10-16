@@ -2,9 +2,13 @@
 
 If you choose to install the bot using heroku, you dont need to download anything. In fact you can set it all up on a phone. (Provided you have your token). Watch the video tutorial below for an easy installation guide.
 <div>
-<iframe 
-width="640" height="360" src="https://www.youtube.com/embed/1c0fJ8KcHcM">
-</iframe>
+<iframe src="https://www.youtube.com/embed/1c0fJ8KcHcM" 
+        width="640" height="360"
+        allowfullscreen="allowfullscreen"
+        mozallowfullscreen="mozallowfullscreen" 
+        msallowfullscreen="msallowfullscreen" 
+        oallowfullscreen="oallowfullscreen" 
+        webkitallowfullscreen="webkitallowfullscreen"> </iframe> 
 </div>
 
 ### GitHub Account
