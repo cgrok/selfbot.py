@@ -6,4 +6,6 @@
 
 [GitHub](https://github.com/verixx/selfbot.py/)
 [Get Started](#introduction)
-![color](linear-gradient(to left bottom, hsl(248, 100%, 85%) 0%,hsl(164, 100%, 85%) 100%))
+
+
+![color](#00FFFF)
