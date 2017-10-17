@@ -44,6 +44,14 @@ class Misc:
         self.bot = bot
         self.emoji_converter = commands.EmojiConverter()
 
+    @commands.command()
+    async def embedsay(self, ctx, *, message):
+        '''Quick command to embed messages quickly.'''
+        await ctx.message.delete()
+        em = discord.Embed(color=random.randint(0, 0xFFFFFF))
+        em.description = message
+        await ctx.send(embed=em)
+
     def prepare_code(self, code):
         def map_left_bracket(b, p):
             return (b, find_bracket(code, p + 1, b))
