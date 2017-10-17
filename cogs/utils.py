@@ -23,7 +23,7 @@ from discord.ext import commands
 from discord.ext.commands import TextChannelConverter
 from contextlib import redirect_stdout
 from ext.utility import load_json
-from urllib.parse import parse_qs
+from urllib.parse import quote as uriquote
 from mtranslate import translate
 from lxml import etree
 from ext import fuzzy
