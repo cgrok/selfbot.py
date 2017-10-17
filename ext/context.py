@@ -4,7 +4,7 @@ import asyncio
 from colorthief import ColorThief
 from urllib.parse import urlparse
 import io
-
+import os
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
@@ -79,6 +79,12 @@ class CustomContext(commands.Context):
 
     async def get_dominant_color(self, url):
         '''Returns the dominant color of an image from a url'''
+        maybe_col = os.environ.get('COLOR')
+
+        if maybe_col:
+            raw = int(maybe_col.strip('#'), 16)
+            return discord.Color(value=raw)
+
         if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
         try:
