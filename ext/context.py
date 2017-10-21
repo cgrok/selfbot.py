@@ -77,9 +77,11 @@ class CustomContext(commands.Context):
         if any(parsed.path.endswith(i) for i in types):
             return url.replace(parsed.query, 'size=128')
 
-    async def get_dominant_color(self, url):
+    async def get_dominant_color(self, url=None):
         '''Returns the dominant color of an image from a url'''
         maybe_col = os.environ.get('COLOR')
+
+        url = url or self.author.avatar_url
 
         if maybe_col:
             raw = int(maybe_col.strip('#'), 16)

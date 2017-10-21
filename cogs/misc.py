@@ -268,22 +268,17 @@ class Misc:
             except Exception:
                 pass
 
-    @commands.command(name='tinyurl')
-    async def tiny_url(self, ctx, str=None):
-        """Shrink URLs"""
-        apiurl = "http://tinyurl.com/api-create.php?url="
-        tinyurl = urlopen(apiurl + str).read().decode("utf-8")
-        usage = f'Usage: {ctx.prefix}tinyurl https://github.com/verixx/grokbot'
-        if str.message.content.startswith('https://'):
-            await ctx.channel.send(f'`{tinyurl}`')
-        if str is None:
-            await ctx.channel.send(usage)
-        if str is int:
-            await ctx.channel.send(usage)
-        else:
-            await ctx.channel.send(usage)
-        # else:
-        #    pass
+    @commands.command()
+    async def tinyurl(self, ctx, *, link: str):
+        await ctx.message.delete()
+        url = 'http://tinyurl.com/api-create.php?url=' + link
+        async with ctx.session.get(url) as resp:
+            new = await resp.text()
+        emb = discord.Embed(colour=await ctx.get_dominant_color(ctx.author.avatar_url))
+        emb.add_field(name="Original Link", value=link, inline=False)
+        emb.add_field(name="Shortened Link", value=new, inline=False)
+        await ctx.send(embed=emb)
+
 
     @commands.group(invoke_without_command=True, aliases=['calculate', 'calculator'])
     async def calc(self, ctx):
