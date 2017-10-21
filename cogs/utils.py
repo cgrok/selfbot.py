@@ -885,6 +885,7 @@ class Utility:
 
     @commands.command()
     async def hastebin(self, ctx, code):
+        '''Hastebin-ify your code!'''
         async with ctx.session.post("https://hastebin.com/documents", data=code) as resp:
             data = await resp.json()
         await ctx.message.edit(content=f"Hastebin-inified! <https://hastebin.com/{data['key']}.py>")
