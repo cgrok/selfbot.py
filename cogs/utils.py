@@ -38,6 +38,7 @@ import inspect
 import re
 import io
 import os
+import random
 
 class Utility:
     '''Useful commands to make your life easier'''
@@ -266,7 +267,7 @@ class Utility:
         {timestamp} <-this will include a timestamp
         ```
         '''
-        em = self.to_embed(ctx, params)
+        em = await self.to_embed(ctx, params)
         await ctx.message.delete()
         try:
             await ctx.send(embed=em)
@@ -313,7 +314,7 @@ class Utility:
         emb.add_field(name="Wikipedia Results", value=textList[0] + "...")
         await ctx.message.edit(embed=emb)
 
-    def to_embed(self, ctx, params):
+    async def to_embed(self, ctx, params):
         '''Actually formats the parsed parameters into an Embed'''
         em = discord.Embed()
 
@@ -325,12 +326,25 @@ class Utility:
             data = self.parse_field(field)
 
             color = data.get('color') or data.get('colour')
-            if color:
+            if color == 'random':
+                em.color = random.randint(0, 0xFFFFFF)
+            elif color == 'chosen':
+                maybe_col = os.environ.get('COLOR')
+                if maybe_col:
+                    raw = int(maybe_col.strip('#'), 16)
+                    return discord.Color(value=raw)
+                else:
+                    return await ctx.send('Chosen color is not defined.')
+
+            elif color:
                 color = int(color.strip('#'), 16)
                 em.color = discord.Color(color)
 
             if data.get('description'):
                 em.description = data['description']
+
+            if data.get('desc'):
+                em.description = data['desc']
 
             if data.get('title'):
                 em.title = data['title']
