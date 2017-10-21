@@ -10,8 +10,8 @@
 	</p>
 </div> 
 
-## [Rewrite Branch](https://discordpy.readthedocs.io/en/rewrite/) 
-This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot is being completely rewritten with better code and structure. This branch is the main branch. Head on to the website for documentation and easy to understand install guides: http://selfbot-py.tk
+## [Welcome](http://selfbot-py.tk) 
+This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot has been completely rewritten with better code and structure. Head on to the website for documentation and easy to understand install guides: http://selfbot-py.tk
 
 ## [Installation via Heroku](https://github.com/verixx/selfbot/wiki/heroku)
 There are two ways of using the bot, one way is to download it and install it on your computer, the other is to host for free 24/7 on a service called **Heroku**. No download is required, everything is done online. Read the installation guide [here](https://github.com/verixx/selfbot/wiki/Heroku) or watch the video tutorial [here](https://youtu.be/1c0fJ8KcHcM). Its possible to install the selfbot using your phone and it has been done before. If you have any questions, join the support discord server and we will be happy to help.
