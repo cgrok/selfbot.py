@@ -883,5 +883,11 @@ class Utility:
             return f'```py\n{e.__class__.__name__}: {e}\n```'
         return f'```py\n{e.text}{"^":>{e.offset}}\n{e.__class__.__name__}: {e}```'
 
+    @commands.command()
+    async def hastebin(self, ctx, code):
+        async with ctx.session.post("https://hastebin.com/documents", data=code) as resp:
+            data = await resp.json()
+        await ctx.message.edit(content=f"Hastebin-inified! <https://hastebin.com/{data['key']}.py>")
+
 def setup(bot):
     bot.add_cog(Utility(bot))
