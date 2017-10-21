@@ -77,7 +77,7 @@ class CustomContext(commands.Context):
         if any(parsed.path.endswith(i) for i in types):
             return url.replace(parsed.query, 'size=128')
 
-    async def get_dominant_color(self, url=None):
+    async def get_dominant_color(self, url=None, *, quality=10):
         '''Returns the dominant color of an image from a url'''
         maybe_col = os.environ.get('COLOR')
 
@@ -97,7 +97,7 @@ class CustomContext(commands.Context):
             return discord.Color.default()
 
         with io.BytesIO(image) as f:
-            color = ColorThief(f).get_color(quality=10)
+            color = ColorThief(f).get_color(quality=quality)
             
         return discord.Color.from_rgb(*color)
 

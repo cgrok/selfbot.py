@@ -865,7 +865,7 @@ class Utility:
 
 
     async def edit_to_codeblock(self, ctx, body):
-        msg = f'{ctx.prefix}eval```py\n{body}\n```'
+        msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
         await ctx.message.edit(content=msg)
 
 
