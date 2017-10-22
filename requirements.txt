@@ -6,3 +6,4 @@ sympy
 psutil
 emoji
 wikipedia
+crasync
