@@ -87,8 +87,7 @@ class CustomContext(commands.Context):
             raw = int(maybe_col.strip('#'), 16)
             return discord.Color(value=raw)
 
-        url = self.is_valid_image_url(url)
-        if not url:
+        if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
         try:
             async with self.session.get(url) as resp:
