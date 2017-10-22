@@ -77,7 +77,7 @@ class CustomContext(commands.Context):
         if any(parsed.path.endswith(i) for i in types):
             return url.replace(parsed.query, 'size=128')
 
-    async def get_dominant_color(self, url=None, *, quality=10):
+    async def get_dominant_color(self, url=None, quality=10):
         '''Returns the dominant color of an image from a url'''
         maybe_col = os.environ.get('COLOR')
 
@@ -87,8 +87,7 @@ class CustomContext(commands.Context):
             raw = int(maybe_col.strip('#'), 16)
             return discord.Color(value=raw)
 
-        url = self.is_valid_image_url(url)
-        if not url:
+        if not self.is_valid_image_url(url):
             raise ValueError('Invalid image url passed.')
         try:
             async with self.session.get(url) as resp:
