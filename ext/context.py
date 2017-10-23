@@ -96,7 +96,10 @@ class CustomContext(commands.Context):
             return discord.Color.default()
 
         with io.BytesIO(image) as f:
-            color = ColorThief(f).get_color(quality=quality)
+            try:
+                color = ColorThief(f).get_color(quality=quality)
+            except:
+                return discord.Color.dark_grey()
             
         return discord.Color.from_rgb(*color)
 
