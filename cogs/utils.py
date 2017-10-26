@@ -785,8 +785,8 @@ class Utility:
 
         return card, entries
 
-    @commands.command(aliases=['google'])
-    async def g(self, ctx, *, query):
+    @commands.command(aliases=['g'])
+    async def google(self, ctx, *, query):
         """Searches google and gives you top result."""
         await ctx.trigger_typing()
         try:
@@ -938,6 +938,14 @@ class Utility:
                 await guild.ack()
         await ctx.send('All messages marked read in emote servers!')
 
+    @commands.command()
+    async def choose(self, ctx, *, choices: commands.clean_content):
+        '''Choose between multiple choices. Use `,` to seperate choices.'''
+        choices = choices.split(',')
+        if len(choices) < 2:
+            return await ctx.send('Not enough choices to pick from.')
+        choices[0] = ' ' + choices[0]
+        await ctx.send(str(random.choice(choices))[1:])
 
 def setup(bot):
     bot.add_cog(Utility(bot))
