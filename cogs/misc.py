@@ -37,6 +37,7 @@ import io
 import aiohttp
 import json
 import os
+import urllib.parse
 
 
 class Misc:
@@ -463,7 +464,15 @@ class Misc:
         emb.description = question
         emb.add_field(name='\N{BILLIARDS} Your answer:', value=random.choice(choices), inline=True)
         await ctx.send(embed=emb)
-
+    
+    @commands.command()
+    async def ascii(self, ctx, *, text):
+        async with ctx.session.get(f"http://artii.herokuapp.com/make?text={urllib.parse.quote_plus(text)}") as f:
+            message = await f.text()
+        if len('```' + message + '```') > 2000:
+            await ctx.send('Your ASCII is too long!')
+            return
+        await ctx.send('```' + message + '```')
 
 def setup(bot):
     bot.add_cog(Misc(bot))
