@@ -41,7 +41,6 @@ import textwrap
 from PIL import Image
 import io
 
-
 class Selfbot(commands.Bot):
     '''
     Custom Client for selfbot.py - Made by verix#7220

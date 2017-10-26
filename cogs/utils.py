@@ -40,6 +40,14 @@ import io
 import os
 import random
 
+#Feel free to add to these via a PR
+emotes_servers = [
+    368436386157690880,
+    356823991215980544,
+    310157548244434947,
+    361611981024919552
+]
+
 class Utility:
     '''Useful commands to make your life easier'''
     def __init__(self, bot):
@@ -903,6 +911,31 @@ class Utility:
         async with ctx.session.post("https://hastebin.com/documents", data=code) as resp:
             data = await resp.json()
         await ctx.message.edit(content=f"Hastebin-inified! <https://hastebin.com/{data['key']}.py>")
+
+    @commands.command()
+    async def clear(self, ctx, *, serverid = None):
+        if serverid != None:
+            if serverid == 'all':
+                for guild in self.bot.guilds:
+                    await guild.ack()
+                await ctx.send('Cleared all unread messages')
+                return
+            try:
+                serverid = int(serverid)
+            except:
+                await ctx.send('Invalid Server ID')
+                return
+            server = discord.utils.get(self.bot.guilds, id=int(serverid))
+            if server == None:
+                await ctx.send('Invalid Server ID')
+                return
+            await server.ack()
+            await ctx.send(f'All messages marked read in {server.name}!')
+            return
+        for guild in self.bot.guilds:
+            if guild.id in emotes_servers:
+                await guild.ack()
+        await ctx.send('All messages marked read in emote servers!')
 
 def setup(bot):
     bot.add_cog(Utility(bot))
