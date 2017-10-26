@@ -229,7 +229,7 @@ class Mod:
     @commands.command()
     async def unmute(self, ctx, member:discord.Member, *, reason=None):
         '''Removes channel overrides for specified member'''
-        progress = 'Unmuting user!'
+        progress = await ctx.send('Unmuting user!')
         try:
             for channel in ctx.message.guild.channels:
                 await channel.set_permissions(member, overwrite=None, reason=reason)
