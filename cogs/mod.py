@@ -45,12 +45,12 @@ class Mod:
         emb.color = await ctx.get_dominant_color(user.avatar_url)
         emb.set_footer(text=f'User ID: {user.id}')
         if success:
-            if method == 'ban':
+            if method == 'ban' or method == 'hackban':
                 emb.description = f'{user} was just {method}ned.'
             else:
                 emb.description = f'{user} was just {method}ed.'
         else:
-            emb.description = f"You do not have the permissions to {method} users."
+            emb.description = f"You do not have the permissions to {method} {user.name}."
 
         return emb
 
@@ -160,6 +160,29 @@ class Mod:
             await ctx.send(f'Removed: `{role.name}`')
         except:
             await ctx.send("I don't have the perms to add that role.")
+
+    @commands.command()
+    async def hackban(self, ctx, userid, *, reason=None):
+        '''Ban someone not in the server'''
+        try:
+            userid = int(userid)
+        except:
+            await ctx.send('Invalid ID!')
+        
+        try:
+            await ctx.guild.ban(discord.Object(userid), reason=reason)
+        except:
+            success = False
+        else:
+            success = True
+
+        if success:
+            async for entry in ctx.guild.audit_logs(limit=1, user=ctx.guild.me, action=discord.AuditLogAction.ban):
+                emb = await self.format_mod_embed(ctx, entry.target, success, 'hackban')
+        else:
+            emb = await self.format_mod_embed(ctx, userid, success, 'hackban')
+        await ctx.send(embed=emb)
+
 
 
 
