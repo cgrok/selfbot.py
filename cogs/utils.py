@@ -914,6 +914,7 @@ class Utility:
 
     @commands.command()
     async def clear(self, ctx, *, serverid = None):
+        '''Marks messages from selected servers or emote servers as read'''
         if serverid != None:
             if serverid == 'all':
                 for guild in self.bot.guilds:
@@ -936,6 +937,7 @@ class Utility:
             if guild.id in emotes_servers:
                 await guild.ack()
         await ctx.send('All messages marked read in emote servers!')
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
