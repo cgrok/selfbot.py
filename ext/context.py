@@ -103,6 +103,20 @@ class CustomContext(commands.Context):
             
         return discord.Color.from_rgb(*color)
 
+    async def success(self, msg=None, delete=False):
+        if delete:
+            await ctx.message.delete()
+        if msg:
+            await self.send(msg)
+        else:
+            await self.message.add_reaction('✅')
+
+    async def failure(self, msg=None):
+        if msg:
+            await self.send(msg)
+        else:
+            await self.message.add_reaction('⁉')
+
     @staticmethod
     def paginate(text: str):
         '''Simple generator that paginates text.'''
