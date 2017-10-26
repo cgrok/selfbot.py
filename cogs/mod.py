@@ -38,7 +38,7 @@ class Mod:
     def __init__(self, bot):
         self.bot = bot
 
-    async def format_mod_embed(self, ctx, user, success, method):
+    async def format_mod_embed(self, ctx, user, success, method, duration = None):
         '''Helper func to format an embed to prevent extra code'''
         emb = discord.Embed()
         emb.set_author(name=method.title(), icon_url=user.avatar_url)
@@ -47,6 +47,10 @@ class Mod:
         if success:
             if method == 'ban' or method == 'hackban':
                 emb.description = f'{user} was just {method}ned.'
+            elif method == 'unmute':
+                emb.description = f'{user} was just {method}d.'
+            elif method == 'mute':
+                emb.description = f'{user} was just {method}d for {duration}.'
             else:
                 emb.description = f'{user} was just {method}ed.'
         else:
@@ -183,7 +187,60 @@ class Mod:
             emb = await self.format_mod_embed(ctx, userid, success, 'hackban')
         await ctx.send(embed=emb)
 
+    @commands.command()
+    async def mute(self, ctx, member:discord.Member, duration, *, reason=None):
+        '''Denies someone from chatting in all text channels and talking in voice channels for a specified duration'''
+        unit = duration[-1]
+        if unit == 's':
+            time = int(duration[:-1])
+            longunit = 'seconds'
+        elif unit == 'm':
+            time = int(duration[:-1]) * 60
+            longunit = 'minutes'
+        elif unit == 'h':
+            time = int(duration[:-1]) * 60 * 60
+            longunit = 'hours'
+        else:
+            await ctx.send('Invalid Unit! Use `s`, `m`, or `h`.')
+            return
 
+        progress = await ctx.send('Muting user!')
+        try:
+            for channel in ctx.guild.text_channels:
+                await channel.set_permissions(member, overwrite=discord.PermissionOverwrite(send_messages = False), reason=reason)
+
+            for channel in ctx.guild.voice_channels:
+                await channel.set_permissions(member, overwrite=discord.PermissionOverwrite(speak=False), reason=reason)
+        except:
+            success = False
+        else:
+            success = True
+
+        emb = await self.format_mod_embed(ctx, member, success, 'mute', f'{str(duration[:-1])} {longunit}')
+        progress.delete()
+        await ctx.send(embed=emb)
+        await asyncio.sleep(time)
+        try:
+            for channel in ctx.guild.channels:
+                await channel.set_permissions(member, overwrite=None, reason=reason)
+        except:
+            pass
+        
+    @commands.command()
+    async def unmute(self, ctx, member:discord.Member, *, reason=None):
+        '''Removes channel overrides for specified member'''
+        progress = 'Unmuting user!'
+        try:
+            for channel in ctx.message.guild.channels:
+                await channel.set_permissions(member, overwrite=None, reason=reason)
+        except:
+            success = False
+        else:
+            success = True
+            
+        emb = await self.format_mod_embed(ctx, member, success, 'unmute')
+        progress.delete()
+        await ctx.send(embed=emb)
 
 
 def setup(bot):
