@@ -58,7 +58,7 @@ class ClashRoyale:
             profile = await self.client.get_profile(tags=tag)
         except ConnectionError as err:
             return await ctx.send(err)
-        if profile == None:
+        except NameError:
             em.description = "Please enter a valid player tag."
             return await ctx.send(embed=em)
 
@@ -70,7 +70,7 @@ class ClashRoyale:
         except:
             em.set_author(name='Profile')
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em) 
 
 
 def setup(bot):
