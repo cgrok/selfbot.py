@@ -4,3 +4,4 @@ __pycache__/
 *.DS_Store
 *.json
 cogs/testsplit.py
+data/community_cogs.txt
