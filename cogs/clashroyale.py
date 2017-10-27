@@ -54,9 +54,8 @@ class ClashRoyale:
         if tag == None:
             em.description = "Please add `CR_TAG` to your config."
             return await ctx.send(embed=em)
-        try:
-            profile = await self.client.get_profile(tag)
-        except:
+        profile = await self.client.get_profile(tag)
+        if profile == None:
             em.description = "Please enter a valid player tag."
             return await ctx.send(embed=em)
 
