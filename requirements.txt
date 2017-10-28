@@ -6,4 +6,4 @@ sympy
 psutil
 emoji
 wikipedia
-git+https://github.com/grokkers/cr-async
+crasync
