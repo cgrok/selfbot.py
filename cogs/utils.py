@@ -37,6 +37,7 @@ import aiohttp
 import inspect
 import asyncio
 import crasync
+import cr_py
 import time
 import re
 import io

@@ -7,3 +7,4 @@ psutil
 emoji
 wikipedia
 crasync
+cr-py
