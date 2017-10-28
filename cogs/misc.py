@@ -204,6 +204,47 @@ class Misc:
                 except commands.BadArgument:
                     pass
 
+    @commands.command(description='To use the webapp go to http://eeemo.net/')
+    async def zalgo(self, ctx, *, message=None):
+        """Fuck up text"""
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+        if message == None:
+            await ctx.send(f'Usage: `{ctx.prefix}zalgo [your text]`')
+            return
+
+        words = message.split()
+        try:
+            iterations = int(words[len(words) - 1])
+            words = words[:-1]
+        except Exception:
+            iterations = 1
+
+        if iterations > 100:
+            iterations = 100
+        if iterations < 1:
+            iterations = 1
+
+        zalgo = " ".join(words)
+        for i in range(iterations):
+            if len(zalgo) > 2000:
+                break
+            zalgo = self._zalgo(zalgo)
+
+        zalgo = zalgo[:2000]
+        e = discord.Embed()
+        e.set_author(name=ctx.message.author.display_name, icon_url=ctx.message.author.avatar_url)
+        e.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
+        e.description = zalgo
+        try:
+            await ctx.send(embed=e)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(e)
+            for page in em_list:
+                await ctx.send(page)
+
     @commands.command(aliases=['color', 'colour', 'sc'])
     async def show_color(self, ctx, *, color: discord.Colour):
         '''Enter a color and you will see it!'''
