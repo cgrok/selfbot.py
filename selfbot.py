@@ -40,7 +40,6 @@ import re
 import textwrap
 from PIL import Image
 import io
-import crasync
 
 class Selfbot(commands.Bot):
     '''
@@ -57,7 +56,6 @@ class Selfbot(commands.Bot):
         super().__init__(command_prefix=self.get_pre, self_bot=True)
         self.formatter = EmbedHelp()
         self.session = aiohttp.ClientSession(loop=self.loop)
-        self.cr = crasync.Client(session=self.session)
         self.process = psutil.Process()
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.last_message = None
