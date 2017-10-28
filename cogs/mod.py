@@ -1,7 +1,7 @@
 '''
 MIT License
 
-Copyright (c) 2017 verixx
+Copyright (c) 2017 Grok
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -229,7 +229,7 @@ class Mod:
     @commands.command()
     async def unmute(self, ctx, member:discord.Member, *, reason=None):
         '''Removes channel overrides for specified member'''
-        progress = 'Unmuting user!'
+        progress = await ctx.send('Unmuting user!')
         try:
             for channel in ctx.message.guild.channels:
                 await channel.set_permissions(member, overwrite=None, reason=reason)

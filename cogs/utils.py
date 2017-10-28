@@ -1,6 +1,6 @@
 '''
 MIT License
-Copyright (c) 2017 verixx
+Copyright (c) 2017 Grok
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -45,7 +45,11 @@ emotes_servers = [
     368436386157690880,
     356823991215980544,
     310157548244434947,
-    361611981024919552
+    361611981024919552,
+    355117358743945216,
+    285670702294630401,
+    227543998590353408,
+    358365432564154369
 ]
 
 class Utility:

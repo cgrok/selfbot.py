@@ -1,7 +1,7 @@
 '''
 MIT License
 
-Copyright (c) 2017 verixx
+Copyright (c) 2017 Grok
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -82,7 +82,7 @@ class Selfbot(commands.Bot):
         '''Loads up community extensions.'''
         with open('data/community_cogs.txt') as fp:
             to_load = fp.read().splitlines()
-        self.load_extensions(to_load, 'cogs.community')
+        self.load_extensions(to_load, 'cogs.community.')
 
     @property
     def token(self):
