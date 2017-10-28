@@ -55,7 +55,7 @@ class ClashRoyale:
                 em.description = "Please add `CR_TAG` to your config."
                 return await ctx.send(embed=em)
         try:
-            profile = await self.client.get_profile(tags=tag)
+            profile = await self.client.get_profile(tag)
         except ConnectionError as err:
             return await ctx.send(err)
         except NameError:
