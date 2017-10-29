@@ -358,9 +358,8 @@ class Misc:
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
-        global check_emojis
         emoji = emoji.split(":")
-        emoji_check = check_emojis(ctx.bot.emojis, emoji)
+        emoji_check = self.check_emojis(ctx.bot.emojis, emoji)
         if emoji_check[0]:
             emo = emoji_check[1]
         else:
@@ -383,13 +382,12 @@ class Misc:
     @_emoji.command()
     @commands.has_permissions(manage_emojis=True)
     async def copy(self, ctx, *, emoji: str):
-        global check_emojis
         '''Copy an emoji from another server to your own'''
         if len(ctx.message.guild.emojis) == 50:
             await ctx.message.delete()
             await ctx.send('Your Server has already hit the 50 Emoji Limit!')
             return
-        emo_check = check_emojis(ctx.bot.emojis, emoji.split(":"))
+        emo_check = self.check_emojis(ctx.bot.emojis, emoji.split(":"))
         if emo_check[0]:
             emo = emo_check[1]
         else:
