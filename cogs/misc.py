@@ -72,7 +72,7 @@ class Misc:
 
     def read(self, string):
         valid = ['>', '<', '+', '-', '.', ',', '[', ']']
-        return prepare_code([c for c in string if c in valid])
+        return self.prepare_code([c for c in string if c in valid])
 
     def eval_step(self, code, data, code_pos, data_pos):
         c = code[code_pos]
@@ -116,7 +116,7 @@ class Misc:
         outputty = None
         while c_pos < len(code):
             out = None
-            (data, c_pos, d_pos, step, output) = eval_step(code, data, c_pos, d_pos)
+            (data, c_pos, d_pos, step, output) = self.eval_step(code, data, c_pos, d_pos)
             if outputty == None and output == None:
                 c_pos += step
             elif outputty == None and out == None and output != None:
@@ -141,8 +141,8 @@ class Misc:
         preinput = thruput[5:]
         preinput2 = "\"\"\"\n" + preinput
         input = preinput2 + "\n\"\"\""
-        code = read(input)
-        output = bfeval(code)
+        code = self.read(input)
+        output = self.bfeval(code)
         await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
@@ -345,7 +345,7 @@ class Misc:
         em.add_field(name='Result', value=f'```py\n{result}```')
         await ctx.send(embed=em)
 
-    def check_emojis(bot_emojis, emoji):
+    def check_emojis(self, bot_emojis, emoji):
         for exist_emoji in bot_emojis:
             if emoji[0] == "<" or emoji[0] == "":
                 if exist_emoji.name.lower() == emoji[1]:
