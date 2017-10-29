@@ -345,20 +345,34 @@ class Misc:
         em.add_field(name='Result', value=f'```py\n{result}```')
         await ctx.send(embed=em)
 
+    def check_emojis(bot_emojis, emoji):
+        for exist_emoji in bot_emojis:
+            if emoji[0] == "<" or emoji[0] == "":
+                if exist_emoji.name.lower() == emoji[1]:
+                    return [True, exist_emoji]
+            else:
+                if exist_emoji.name.lower() == emoji[0]:
+                    return [True, exist_emoji]
+        return [False, None]
+
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
-        emoji = [e.lower() for e in emoji]
-        if emoji[0] == "<" or emoji[0] == "":
-            emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
+        emoji_check = check_emojis(ctx.bot.emojis, emoji)
+        if emoji_check[0]:
+            emo = emoji_check[1]
         else:
-            emo = discord.utils.find(lambda e: emoji[0] in e.name.lower(), ctx.bot.emojis)
-        if emo == None:
-            em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
-            em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
-            await ctx.send(embed=em)
-            return
+            emoji = [e.lower() for e in emoji]
+            if emoji[0] == "<" or emoji[0] == "":
+                emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
+            else:
+                emo = discord.utils.find(lambda e: emoji[0] in e.name.lower(), ctx.bot.emojis)
+            if emo == None:
+                em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
+                em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+                await ctx.send(embed=em)
+                return
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
@@ -366,13 +380,18 @@ class Misc:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
+    @commands.has_permissions(manage_emojis=True)
     async def copy(self, ctx, *, emoji: str):
         '''Copy an emoji from another server to your own'''
         if len(ctx.message.guild.emojis) == 50:
             await ctx.message.delete()
             await ctx.send('Your Server has already hit the 50 Emoji Limit!')
             return
-        emo = discord.utils.find(lambda e: emoji.replace(":", "") in e.name, ctx.bot.emojis)
+        emo_check = check_emojis(ctx.bot.emojis, emoji.split(":"))
+        if emo_check[0]:
+            emo = emo_check[1]
+        else:
+            emo = discord.utils.find(lambda e: emoji.replace(":", "") in e.name, ctx.bot.emojis)
         em = discord.Embed()
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         if emo == None:
