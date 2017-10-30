@@ -442,7 +442,7 @@ class Misc:
         emb.description = definition.definition
         emb.url = definition.permalink
         emb.add_field(name='Example', value=definition.example)
-        emb.add_field(name='Votes', value=f'{definition.upvotes}👍    {definiton.downvotes}👎')
+        emb.add_field(name='Votes', value=f'{definition.upvotes}👍    {definition.downvotes}👎')
         emb.set_footer(text="Definition written by {definition.author}", icon_url="http://urbandictionary.com/favicon.ico")
         await ctx.send(embed=emb)
 
