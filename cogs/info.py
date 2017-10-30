@@ -39,7 +39,36 @@ class Information:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=["ri","role"])
+    @commands.command(no_pm=True)
+    async def channels(self, ctx):
+        """Shows ALL channels, use wisely!"""
+
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color()
+
+        voice = ''
+        text = ''
+        categories = ''
+
+        for channel in ctx.guild.voice_channels:
+            voice += f'\U0001f508 {channel}\n'
+        for channel in ctx.guild.categories:
+            categories += f'\U0001f4da {channel}\n'
+        for channel in ctx.guild.text_channels:
+            text += f'\U0001f4dd {channel}\n'
+        
+        e.add_field(name='Text Channels', value=f'```{text}```')
+        e.add_field(name='Categories', value=f'```{categories}```')
+        e.add_field(name='Voice Channels', value=f'```{voice}```')
+
+        try:
+            await ctx.send(embed=e)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(e)
+            for page in em_list:
+                await ctx.send(page)
+
+    @commands.command(aliases=["ri","role"], no_pm=True)
     @commands.guild_only()
     async def roleinfo(self, ctx, *, role: discord.Role):
         '''Shows information about a role'''
@@ -96,7 +125,7 @@ class Information:
             except discord.HTTPException:
                 await ctx.send(av)
 
-    @commands.command(aliases=['servericon'])
+    @commands.command(aliases=['servericon'], no_pm=True)
     async def serverlogo(self, ctx):
         '''Return the server's icon url.'''
         icon = ctx.guild.icon_url
@@ -119,7 +148,7 @@ class Information:
             except discord.HTTPException:
                 await ctx.send(icon)
 
-    @commands.command(aliases=['server','si','svi'])
+    @commands.command(aliases=['server','si','svi'], no_pm=True)
     @commands.guild_only()
     async def serverinfo(self, ctx, server_id : int=None):
         '''See information about the server.'''
@@ -153,7 +182,7 @@ class Information:
                 await ctx.send(page)
 
 
-    @commands.command(aliases=['ui'])
+    @commands.command(aliases=['ui'], no_pm=True)
     @commands.guild_only()
     async def userinfo(self, ctx, *, member : discord.Member=None):
         '''Get information about a member of a server'''
