@@ -38,6 +38,7 @@ import aiohttp
 import json
 import os
 import urllib.parse
+import urbanasync
 
 
 class Misc:
@@ -418,6 +419,7 @@ class Misc:
     @commands.command()
     async def urban(self, ctx, *, search_terms: str):
         '''Searches Up a Term in Urban Dictionary'''
+        client = urbanasync.Client(ctx.session)
         search_terms = search_terms.split()
         definition_number = terms = None
         try:
@@ -427,22 +429,18 @@ class Misc:
             definition_number = 0
         if definition_number not in range(0, 11):
             pos = 0
-        search_terms = "+".join(search_terms)
-        url = "http://api.urbandictionary.com/v0/define?term=" + search_terms
-        async with ctx.session.get(url) as r:
-            result = await r.json()
+        search_terms = " ".join(search_terms)
+        try:
+            term = await client.get_term(search_terms)
+        except LookupError:
+            emb.title = "Search term not found."
+            return await ctx.send(embed=emb)
         emb = discord.Embed()
         emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
-        if result.get('list'):
-            definition = result['list'][definition_number]['definition']
-            example = result['list'][definition_number]['example']
-            defs = len(result['list'])
-            search_terms = search_terms.split("+")
-            emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number + 1, defs)
-            emb.description = definition
-            emb.add_field(name='Example', value=example)
-        else:
-            emb.title = "Search term not found."
+        definition = term.definitions[definition_number]
+        emb.title = f"{definition.word}  ({definition_number+1}/{len(term.definitions)})"
+        emb.description = definition.definition
+        emb.add_field(name='Example', value=definiton.example)
         await ctx.send(embed=emb)
 
     @commands.group(invoke_without_command=True)
