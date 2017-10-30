@@ -1,4 +1,4 @@
-1.0
+2.3
 ```Opening Settings...```
 ```Opening Security tab```
 ```Activating Unknown Sources 23%```
@@ -11,6 +11,7 @@
 ```Target device registered```
 ```Removing Injecktor icon...```
 ```root@root access granted```
-```Devise successfully paired!```
-```Devise successfully paired!```
+```Device successfully paired!```
+```___________________________```
+```Device successfully paired!```
 Have a nice day :)
