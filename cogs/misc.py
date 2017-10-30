@@ -440,7 +440,10 @@ class Misc:
         definition = term.definitions[definition_number]
         emb.title = f"{definition.word}  ({definition_number+1}/{len(term.definitions)})"
         emb.description = definition.definition
+        emb.url = definition.permalink
         emb.add_field(name='Example', value=definition.example)
+        emb.add_field(name='Votes', value=f'{definition.upvotes}👍    {definiton.downvotes}👎')
+        emb.set_footer(text="Definition written by {definition.author}", icon_url="http://urbandictionary.com/favicon.ico")
         await ctx.send(embed=emb)
 
     @commands.group(invoke_without_command=True)
