@@ -430,12 +430,12 @@ class Misc:
         if definition_number not in range(0, 11):
             pos = 0
         search_terms = " ".join(search_terms)
+        emb = discord.Embed()
         try:
             term = await client.get_term(search_terms)
         except LookupError:
             emb.title = "Search term not found."
             return await ctx.send(embed=emb)
-        emb = discord.Embed()
         emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
         definition = term.definitions[definition_number]
         emb.title = f"{definition.word}  ({definition_number+1}/{len(term.definitions)})"
