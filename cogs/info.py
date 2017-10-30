@@ -42,26 +42,31 @@ class Information:
     @commands.command(no_pm=True)
     async def channels(self, ctx):
         """Shows ALL channels, use wisely!"""
+
+        e = discord.Embed()
+        e.color = await ctx.get_dominant_color()
+
+        voice = ''
+        text = ''
+        categories = ''
+
+        for channel in ctx.guild.voice_channels:
+            voice += f'\U0001f508 {channel}\n'
+        for channel in ctx.guild.categories:
+            categories += f'\U0001f4da {channel}\n'
+        for channel in ctx.guild.text_channels:
+            text += f'\U0001f4dd {channel}\n'
+        
+        e.add_field(name='Text Channels', value=f'```{text}```')
+        e.add_field(name='Categories', value=f'```{categories}```')
+        e.add_field(name='Voice Channels', value=f'```{voice}```')
+
         try:
-            e = discord.Embed()
-            e.color = await ctx.get_dominant_color(url=ctx.author.avatar_url)
-
-            for channel in sorted(ctx.guild.voice_channels, key=lambda c: c.position):
-                e.add_field(name='Voice Channels:', value=f'```\U0001f508 {channel}```', inline=True)
-            for channel in sorted(ctx.guild.categories, key=lambda c: c.position):
-                e.add_field(name='CATEGORIES', value=f'```\U0001f4da {channel}```', inline=True)
-            for channel in sorted(ctx.guild.text_channels, key=lambda c: c.position):
-                e.add_field(name='Text Channels:', value=f'```\U0001f4dd {channel}```', inline=True)
-
-            try:
-                await ctx.send(embed=e)
-            except discord.HTTPException:
-                em_list = await embedtobox.etb(e)
-                for page in em_list:
-                    await ctx.send(page)
-
-        except Exception as e:
-            await ctx.send(f'```{e}```')
+            await ctx.send(embed=e)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(e)
+            for page in em_list:
+                await ctx.send(page)
 
     @commands.command(aliases=["ri","role"], no_pm=True)
     @commands.guild_only()
