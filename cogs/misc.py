@@ -440,7 +440,7 @@ class Misc:
         definition = term.definitions[definition_number]
         emb.title = f"{definition.word}  ({definition_number+1}/{len(term.definitions)})"
         emb.description = definition.definition
-        emb.add_field(name='Example', value=definiton.example)
+        emb.add_field(name='Example', value=definition.example)
         await ctx.send(embed=emb)
 
     @commands.group(invoke_without_command=True)
