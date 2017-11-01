@@ -421,7 +421,8 @@ class Misc:
             search_terms = search_terms.split("+")
             emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number + 1, defs)
             emb.description = definition
-            emb.add_field(name='Example', value=example)
+            if example is not None and example is not '':
+                emb.add_field(name='Example', value=example)
         else:
             emb.title = "Search term not found."
         await ctx.send(embed=emb)
