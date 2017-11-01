@@ -38,6 +38,7 @@ import aiohttp
 import json
 import os
 import urllib.parse
+import urbanasync
 
 
 class Misc:
@@ -72,7 +73,7 @@ class Misc:
 
     def read(self, string):
         valid = ['>', '<', '+', '-', '.', ',', '[', ']']
-        return prepare_code([c for c in string if c in valid])
+        return self.prepare_code([c for c in string if c in valid])
 
     def eval_step(self, code, data, code_pos, data_pos):
         c = code[code_pos]
@@ -116,7 +117,7 @@ class Misc:
         outputty = None
         while c_pos < len(code):
             out = None
-            (data, c_pos, d_pos, step, output) = eval_step(code, data, c_pos, d_pos)
+            (data, c_pos, d_pos, step, output) = self.eval_step(code, data, c_pos, d_pos)
             if outputty == None and output == None:
                 c_pos += step
             elif outputty == None and out == None and output != None:
@@ -141,8 +142,8 @@ class Misc:
         preinput = thruput[5:]
         preinput2 = "\"\"\"\n" + preinput
         input = preinput2 + "\n\"\"\""
-        code = read(input)
-        output = bfeval(code)
+        code = self.read(input)
+        output = self.bfeval(code)
         await ctx.send("Input:\n`{}`\nOutput:\n`{}`".format(preinput, output))
 
     @commands.command()
@@ -345,20 +346,34 @@ class Misc:
         em.add_field(name='Result', value=f'```py\n{result}```')
         await ctx.send(embed=em)
 
+    def check_emojis(self, bot_emojis, emoji):
+        for exist_emoji in bot_emojis:
+            if emoji[0] == "<" or emoji[0] == "":
+                if exist_emoji.name.lower() == emoji[1]:
+                    return [True, exist_emoji]
+            else:
+                if exist_emoji.name.lower() == emoji[0]:
+                    return [True, exist_emoji]
+        return [False, None]
+
     @commands.group(invoke_without_command=True, name='emoji', aliases=['emote', 'e'])
     async def _emoji(self, ctx, *, emoji: str):
         '''Use emojis without nitro!'''
         emoji = emoji.split(":")
-        emoji = [e.lower() for e in emoji]
-        if emoji[0] == "<" or emoji[0] == "":
-            emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
+        emoji_check = self.check_emojis(ctx.bot.emojis, emoji)
+        if emoji_check[0]:
+            emo = emoji_check[1]
         else:
-            emo = discord.utils.find(lambda e: emoji[0] in e.name.lower(), ctx.bot.emojis)
-        if emo == None:
-            em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
-            em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
-            await ctx.send(embed=em)
-            return
+            emoji = [e.lower() for e in emoji]
+            if emoji[0] == "<" or emoji[0] == "":
+                emo = discord.utils.find(lambda e: emoji[1] in e.name.lower(), ctx.bot.emojis)
+            else:
+                emo = discord.utils.find(lambda e: emoji[0] in e.name.lower(), ctx.bot.emojis)
+            if emo == None:
+                em = discord.Embed(title="Send Emoji", description="Could not find emoji.")
+                em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
+                await ctx.send(embed=em)
+                return
         async with ctx.session.get(emo.url) as resp:
             image = await resp.read()
         with io.BytesIO(image) as file:
@@ -366,13 +381,18 @@ class Misc:
             await ctx.send(file=discord.File(file, 'emoji.png'))
 
     @_emoji.command()
+    @commands.has_permissions(manage_emojis=True)
     async def copy(self, ctx, *, emoji: str):
         '''Copy an emoji from another server to your own'''
         if len(ctx.message.guild.emojis) == 50:
             await ctx.message.delete()
             await ctx.send('Your Server has already hit the 50 Emoji Limit!')
             return
-        emo = discord.utils.find(lambda e: emoji.replace(":", "") in e.name, ctx.bot.emojis)
+        emo_check = self.check_emojis(ctx.bot.emojis, emoji.split(":"))
+        if emo_check[0]:
+            emo = emo_check[1]
+        else:
+            emo = discord.utils.find(lambda e: emoji.replace(":", "") in e.name, ctx.bot.emojis)
         em = discord.Embed()
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         if emo == None:
@@ -399,6 +419,7 @@ class Misc:
     @commands.command()
     async def urban(self, ctx, *, search_terms: str):
         '''Searches Up a Term in Urban Dictionary'''
+        client = urbanasync.Client(ctx.session)
         search_terms = search_terms.split()
         definition_number = terms = None
         try:
@@ -408,23 +429,21 @@ class Misc:
             definition_number = 0
         if definition_number not in range(0, 11):
             pos = 0
-        search_terms = "+".join(search_terms)
-        url = "http://api.urbandictionary.com/v0/define?term=" + search_terms
-        async with ctx.session.get(url) as r:
-            result = await r.json()
+        search_terms = " ".join(search_terms)
         emb = discord.Embed()
-        emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
-        if result.get('list'):
-            definition = result['list'][definition_number]['definition']
-            example = result['list'][definition_number]['example']
-            defs = len(result['list'])
-            search_terms = search_terms.split("+")
-            emb.title = "{}  ({}/{})".format(" ".join(search_terms), definition_number + 1, defs)
-            emb.description = definition
-            if example is not None and example is not '':
-                emb.add_field(name='Example', value=example)
-        else:
+        try:
+            term = await client.get_term(search_terms)
+        except LookupError:
             emb.title = "Search term not found."
+            return await ctx.send(embed=emb)
+        emb.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+        definition = term.definitions[definition_number]
+        emb.title = f"{definition.word}  ({definition_number+1}/{len(term.definitions)})"
+        emb.description = definition.definition
+        emb.url = definition.permalink
+        emb.add_field(name='Example', value=definition.example)
+        emb.add_field(name='Votes', value=f'{definition.upvotes}👍    {definition.downvotes}👎')
+        emb.set_footer(text=f"Definition written by {definition.author}", icon_url="http://urbandictionary.com/favicon.ico")
         await ctx.send(embed=emb)
 
     @commands.group(invoke_without_command=True)

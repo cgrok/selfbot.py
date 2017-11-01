@@ -101,6 +101,9 @@ class Selfbot(commands.Bot):
             prefix = json.load(f).get('PREFIX')
         return os.environ.get('PREFIX') or prefix or 'r.'
 
+    def restart(self):
+        os.execv(sys.executable, ['python'] + sys.argv)
+
     @staticmethod
     def run_wizard():
         '''Wizard for first start'''

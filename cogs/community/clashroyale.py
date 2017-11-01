@@ -55,11 +55,9 @@ class ClashRoyale:
                 em.description = "Please add `CR_TAG` to your config."
                 return await ctx.send(embed=em)
         try:
-            profile = await self.client.get_profile(tags=tag)
-        except ConnectionError as err:
-            return await ctx.send(err)
-        if profile == None:
-            em.description = "Please enter a valid player tag."
+            profile = await self.client.get_profile(tag)
+        except:
+            em.description = "Either API is down or that's an invalid tag."
             return await ctx.send(embed=em)
 
         em.title = profile.name
@@ -70,7 +68,7 @@ class ClashRoyale:
         except:
             em.set_author(name='Profile')
 
-        await ctx.send(embed=em)
+        await ctx.send(embed=em) 
 
 
 def setup(bot):
