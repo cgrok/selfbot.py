@@ -512,19 +512,5 @@ class Misc:
 
         await ctx.send(embed=discord.Embed(title=f'Servers I Have Nicknames In', description = message, color=await ctx.get_dominant_color(url=ctx.message.author.avatar_url)))
 
-    @commands.command()
-    async def virus(self, ctx, virus=None, *, user: discord.Member = None):
-        '''
-        Destroy someone's device with this virus command!
-        '''
-        virus = virus or 'discord'
-        user = user or ctx.author
-        with open('data/virus.txt') as f:
-            animation = f.read().splitlines()
-        base = await ctx.send(animation[0])
-        for line in animation[1:]:
-            await base.edit(content=line.format(virus=virus, user=user))
-            await asyncio.sleep(random.randint(1, 4))
-
 def setup(bot):
     bot.add_cog(Misc(bot))
