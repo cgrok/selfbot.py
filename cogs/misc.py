@@ -494,5 +494,37 @@ class Misc:
             return
         await ctx.send('```' + message + '```')
 
+    @commands.command()
+    async def whoisplaying(self, ctx, *, game):
+        message = ''
+        for member in ctx.guild.members:
+            if member.game != None:
+                if member.game.name == game:
+                    message += str(member) + '\n'
+        await ctx.send(embed=discord.Embed(title=f'Who is playing {game}?', description = message, color=await ctx.get_dominant_color(url=ctx.message.author.avatar_url)))
+
+    @commands.command()
+    async def nickscan(self, ctx):
+        message = '**Server | Nick**\n'
+        for guild in self.bot.guilds:
+            if guild.me.nick != None:
+                message += f'{guild.name} | {guild.me.nick}\n'
+
+        await ctx.send(embed=discord.Embed(title=f'Servers I Have Nicknames In', description = message, color=await ctx.get_dominant_color(url=ctx.message.author.avatar_url)))
+
+    @commands.command()
+    async def virus(self, ctx, virus=None, *, user: discord.Member = None):
+        '''
+        Destroy someone's device with this virus command!
+        '''
+        virus = virus or 'discord'
+        user = user or ctx.author
+        with open('data/virus.txt') as f:
+            animation = f.read().splitlines()
+        base = await ctx.send(animation[0])
+        for line in animation[1:]:
+            await base.edit(content=line.format(virus=virus, user=user))
+            await asyncio.sleep(random.randint(1, 4))
+
 def setup(bot):
     bot.add_cog(Misc(bot))
