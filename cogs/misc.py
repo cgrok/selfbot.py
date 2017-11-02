@@ -411,10 +411,23 @@ class Misc:
     @commands.command(aliases=['emotes'])
     async def emojis(self, ctx):
         '''Lists all emojis in a server'''
-        try:
-            await ctx.send('\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in ctx.message.guild.emojis]))
-        except:
-            await ctx.send("You have too many emojis in your server. It's getting hard to even look at it!")
+        emotes = '\n'.join(['{1} `:{0}:`'.format(e.name, str(e)) for e in ctx.message.guild.emojis])
+        if len(emotes) > 2000:
+            paginated_text = ctx.paginate(emotes)
+            for page in paginated_text:
+                if page == paginated_text[-1]:
+                    await ctx.send(f'{page}')
+                    break
+                await ctx.send(f'{page}')
+            # for page in pages:
+            #     await ctx.send(page)
+            # async with ctx.session.post("https://hastebin.com/documents", data=code) as resp:
+            #     data = await resp.json()
+            # await ctx.send(content=f"Here are all the emotes you have: <https://hastebin.com/{data['key']}.py>")
+
+            #await ctx.send()
+        else:
+            await ctx.send(emotes)
 
     @commands.command()
     async def urban(self, ctx, *, search_terms: str):
