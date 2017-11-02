@@ -205,47 +205,6 @@ class Misc:
                 except commands.BadArgument:
                     pass
 
-    @commands.command(description='To use the webapp go to http://eeemo.net/')
-    async def zalgo(self, ctx, *, message=None):
-        """Fuck up text"""
-        try:
-            await ctx.message.delete()
-        except discord.Forbidden:
-            pass
-        if message == None:
-            await ctx.send(f'Usage: `{ctx.prefix}zalgo [your text]`')
-            return
-
-        words = message.split()
-        try:
-            iterations = int(words[len(words) - 1])
-            words = words[:-1]
-        except Exception:
-            iterations = 1
-
-        if iterations > 100:
-            iterations = 100
-        if iterations < 1:
-            iterations = 1
-
-        zalgo = " ".join(words)
-        for i in range(iterations):
-            if len(zalgo) > 2000:
-                break
-            zalgo = self._zalgo(zalgo)
-
-        zalgo = zalgo[:2000]
-        e = discord.Embed()
-        e.set_author(name=ctx.message.author.display_name, icon_url=ctx.message.author.avatar_url)
-        e.colour = await ctx.get_dominant_color(ctx.author.avatar_url)
-        e.description = zalgo
-        try:
-            await ctx.send(embed=e)
-        except discord.HTTPException:
-            em_list = await embedtobox.etb(e)
-            for page in em_list:
-                await ctx.send(page)
-
     @commands.command(aliases=['color', 'colour', 'sc'])
     async def show_color(self, ctx, *, color: discord.Colour):
         '''Enter a color and you will see it!'''
@@ -569,7 +528,43 @@ class Misc:
     @commands.command()
     async def textmojify(self, ctx, *, msg):
         """Convert text into emojis"""
-        await ctx.send(msg.lower().replace(' ', '    ').replace('10', '🔟').replace('ab', '🆎').replace('cl', '🆑').replace('0', '0⃣').replace('1', '1⃣').replace('2', '2⃣').replace('3', '3⃣').replace('4', '4⃣').replace('5', '5⃣').replace('6', '6⃣').replace('7', '7⃣').replace('8', '8⃣').replace('9', '9⃣').replace('!', '❗').replace('?', '❔').replace('vs', '🆚').replace('.', '🔸').replace(',', '🔻').replace('a', '🅰').replace('b', '🅱').replace('c', '🇨').replace('d', '🇩').replace('e', '🇪').replace('f', '🇫').replace('g', '🇬').replace('h', '🇭').replace('i', '🇮').replace('j', '🇯').replace('k', '🇰').replace('l', '🇱').replace('m', '🇲').replace('n', '🇳').replace('o', '🅾').replace('p', '🅿').replace('q', '🇶').replace('r', '🇷').replace('s', '🇸').replace('t', '🇹').replace('u', '🇺').replace('v', '🇻').replace('w', '🇼').replace('x', '🇽').replace('y', '🇾').replace('z', '🇿'))
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+
+        if msg != None:
+            out = msg.lower()
+            text = out.replace(' ', '    ').replace('10', '\u200B:keycap_ten:')\
+                      .replace('ab', '\u200B🆎').replace('cl', '\u200B🆑')\
+                      .replace('0', '\u200B:zero:').replace('1', '\u200B:one:')\
+                      .replace('2', '\u200B:two:').replace('3', '\u200B:three:')\
+                      .replace('4', '\u200B:four:').replace('5', '\u200B:five:')\
+                      .replace('6', '\u200B:six:').replace('7', '\u200B:seven:')\
+                      .replace('8', '\u200B:eight:').replace('9', '\u200B:nine:')\
+                      .replace('!', '\u200B❗').replace('?', '\u200B❓')\
+                      .replace('vs', '\u200B🆚').replace('.', '\u200B🔸')\
+                      .replace(',', '🔻').replace('a', '\u200B🅰')\
+                      .replace('b', '\u200B🅱').replace('c', '\u200B🇨')\
+                      .replace('d', '\u200B🇩').replace('e', '\u200B🇪')\
+                      .replace('f', '\u200B🇫').replace('g', '\u200B🇬')\
+                      .replace('h', '\u200B🇭').replace('i', '\u200B🇮')\
+                      .replace('j', '\u200B🇯').replace('k', '\u200B🇰')\
+                      .replace('l', '\u200B🇱').replace('m', '\u200B🇲')\
+                      .replace('n', '\u200B🇳').replace('ñ', '\u200B🇳')\
+                      .replace('o', '\u200B🅾').replace('p', '\u200B🅿')\
+                      .replace('q', '\u200B🇶').replace('r', '\u200B🇷')\
+                      .replace('s', '\u200B🇸').replace('t', '\u200B🇹')\
+                      .replace('u', '\u200B🇺').replace('v', '\u200B🇻')\
+                      .replace('w', '\u200B🇼').replace('x', '\u200B🇽')\
+                      .replace('y', '\u200B🇾').replace('z', '\u200B🇿')
+            try:
+                await ctx.send(text)
+            except Exception as e:
+                await ctx.send(f'```{e}```')
+        else:
+            await ctx.send('Write something, reee!', delete_after=3.0)
+
 
 def setup(bot):
     bot.add_cog(Misc(bot))
