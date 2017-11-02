@@ -890,9 +890,9 @@ class Utility:
                         await ctx.send(f'```py\n{page}\n```')
 
         if out:
-            await out.add_reaction('\u2705')
+            await out.add_reaction('\u2705') #tick
         if err:
-            await err.add_reaction('\u2049')
+            await err.add_reaction('\u2049') #x
 
 
     async def edit_to_codeblock(self, ctx, body):

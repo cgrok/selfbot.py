@@ -77,8 +77,14 @@ class Information:
         since_created = (ctx.message.created_at - role.created_at).days
         role_created = role.created_at.strftime("%d %b %Y %H:%M")
         created_on = "{} ({} days ago!)".format(role_created, since_created)
+        members = ''
+        i = 0
+        for user in role.members:
+            members += f'{user.name}, '
+            i+=1
+            if i > 30:
+                break
 
-        users = len([x for x in guild.members if role in x.roles])
         if str(role.colour) == "#000000":
             colour = "default"
             color = ("#%06x" % random.randint(0, 0xFFFFFF))
@@ -89,13 +95,14 @@ class Information:
 
         em = discord.Embed(colour=color)
         em.set_author(name=role.name)
-        em.add_field(name="Users", value=users)
+        em.add_field(name="Users", value=len(role.members))
         em.add_field(name="Mentionable", value=role.mentionable)
         em.add_field(name="Hoist", value=role.hoist)
         em.add_field(name="Position", value=role.position)
         em.add_field(name="Managed", value=role.managed)
         em.add_field(name="Colour", value=colour)
         em.add_field(name='Creation Date', value=created_on)
+        em.add_field(name='Members', value=members[:-2], inline=False)
         em.set_footer(text=f'Role ID: {role.id}')
 
         await ctx.send(embed=em)
