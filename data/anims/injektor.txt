@@ -1,0 +1,17 @@
+2.3
+```Opening Settings...```
+```Opening Security tab```
+```Activating Unknown Sources 23%```
+```Unknown Sources Activated 100%```
+```Loading Injektor v0.2.3 BETA```
+```Injektin patch update v5.0.1```
+```Silent activation completed!```
+```Downloading latest update...```
+```Injektor update installed!```
+```Target device registered```
+```Removing Injecktor icon...```
+```root@root access granted```
+```Device successfully paired!```
+```___________________________```
+```Device successfully paired!```
+Have a nice day :)
