@@ -328,13 +328,6 @@ class Misc:
         em.set_image(url="attachment://color.png")
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
-    """
-    @commands.command()
-    async def add(self, ctx, *numbers : int):
-        '''Add multiple numbers together'''
-        await ctx.send(f'Result: `{sum(numbers)}`')
-    """
-
     @commands.command(description='This command might get you banned')
     async def annoy(self, ctx, *, member=None, times: int = None):
         """Want to annoy a member with mentions?"""
@@ -421,8 +414,8 @@ class Misc:
         e = discord.Embed()
         e.color = await ctx.get_dominant_color(user.avatar_url)
         e.description = f'{msg}'
-        e.add_field(name='Input:', value="```{formula}```", inline=True)
-        e.add_field(name='Result:', value="```{round(answer, 2)}```", inline=True)
+        e.add_field(name='Input:', value=f'```{formula}```', inline=True)
+        e.add_field(name='Result:', value=f'```{round(answer, 2)}```', inline=True)
         await ctx.send(embed=e)
 
     @commands.command()
