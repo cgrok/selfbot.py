@@ -27,6 +27,7 @@ from discord.ext import commands
 from ext.utility import parse_equation
 from ext.colours import ColorNames
 from urllib.request import urlopen
+from bs4 import BeautifulSoup
 from sympy import solve
 from PIL import Image
 import asyncio
@@ -37,6 +38,7 @@ import io
 import aiohttp
 import json
 import os
+import requests
 import urllib.parse
 import urbanasync
 
