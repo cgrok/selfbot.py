@@ -419,10 +419,8 @@ class Misc:
             return
 
         # Correct input prints correct answer
-        msg = f'\N{INPUT SYMBOL FOR NUMBERS} {user.display_name}'
         e = discord.Embed()
         e.color = await ctx.get_dominant_color(user.avatar_url)
-        e.description = f'{msg}'
         e.add_field(name='Input:', value=f'```{formula}```', inline=True)
         e.add_field(name='Result:', value=f'```{round(answer, 2)}```', inline=True)
         await ctx.send(embed=e)
