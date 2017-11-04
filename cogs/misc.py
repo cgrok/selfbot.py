@@ -27,6 +27,7 @@ from discord.ext import commands
 from ext.utility import parse_equation
 from ext.colours import ColorNames
 from urllib.request import urlopen
+from bs4 import BeautifulSoup
 from sympy import solve
 from PIL import Image
 import asyncio
@@ -37,6 +38,7 @@ import io
 import aiohttp
 import json
 import os
+import requests
 import urllib.parse
 import urbanasync
 
@@ -564,6 +566,20 @@ class Misc:
                 await ctx.send(f'```{e}```')
         else:
             await ctx.send('Write something, reee!', delete_after=3.0)
+
+    @commands.command(aliases=['yt', 'vid', 'video'])
+    async def youtube(self, ctx, *, search):
+        """Search for videos on YouTube"""
+        search = search.replace(' ', '+').lower()
+        response = requests.get(f"https://www.youtube.com/results?search_query={search}").text
+        result = BeautifulSoup(response, "lxml")
+        dir_address = f"{result.find_all(attrs={'class': 'yt-uix-tile-link'})[0].get('href')}"
+        output=f"**Top Result:**\nhttps://www.youtube.com{dir_address}"
+        try:
+            await ctx.send(output)
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
 
 
 def setup(bot):
