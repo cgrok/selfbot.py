@@ -60,9 +60,12 @@ class ClashRoyale:
             em.description = "Either API is down or that's an invalid tag."
             return await ctx.send(embed=em)
 
+        level = str(profile.current_trophies))
+        
         em.title = profile.name
         em.description = f"#{tag}"
         em.url = f"http://cr-api.com/profile/{tag}"
+        em.add_field = (name=Level, value=level)
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
         except:
