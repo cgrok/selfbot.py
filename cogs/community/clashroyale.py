@@ -63,7 +63,7 @@ class ClashRoyale:
         trophies = str(profile.current_trophies)
         pb = str(profile.highest_trophies)
         xp = str(profile.level)
-        
+        experience = str(profile.experience[0]) + '/' + str(profile.experience[1])
         
         em.title = profile.name
         em.set_thumbnail(url=profile.arena.image_url)
@@ -72,7 +72,7 @@ class ClashRoyale:
         em.add_field(name='Current Trophies', value=trophies)
         em.add_field(name='Highest Trophies',value=pb)
         em.add_field(name='Player XP', value=xp)
-        em.add_field(name='Level(Experience)', value='/'.join(profile.experience))
+        em.add_field(name='Level(Experience)', value=experience)
         em.add_field(name='Wins/Losses/Draws', value=f'{profile.wins}/{profile.losses}/{profile.draws}')
                 
         try:
