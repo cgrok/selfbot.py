@@ -62,11 +62,13 @@ class ClashRoyale:
 
         trophies = str(profile.current_trophies)
         pb = str(profile.highest_trophies)
+        xp = str(profile.level)
         
         em.title = profile.name
         em.description = f"#{tag}"
         em.url = f"http://cr-api.com/profile/{tag}"
         em.add_field(name='Current Trophies', value=trophies + "\n" + "Highest Trophies" + "\n" + pb)
+        em.add_field(name='Player XP', value=xp)
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
         except:
