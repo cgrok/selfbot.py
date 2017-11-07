@@ -63,6 +63,9 @@ class ClashRoyale:
         trophies = str(profile.current_trophies)
         pb = str(profile.highest_trophies)
         xp = str(profile.level)
+        playerwins = str(profile.wins)
+        playerlosses = str(profile.losses)
+        playerdraws = str(profile.draws)
         
         em.title = profile.name
         em.description = f"#{tag}"
@@ -70,6 +73,7 @@ class ClashRoyale:
         em.add_field(name='Current Trophies', value=trophies)
         em.add_field(name='Highest Trophies',value=pb)
         em.add_field(name='Player XP', value=xp)
+        em.add_field(name='Wins/Losses/Draws', value=playerwins + '/' + playerlosses + '/' playerdraws)
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
         except:
