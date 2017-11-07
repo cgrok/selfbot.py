@@ -67,7 +67,8 @@ class ClashRoyale:
         em.title = profile.name
         em.description = f"#{tag}"
         em.url = f"http://cr-api.com/profile/{tag}"
-        em.add_field(name='Current Trophies', value=trophies + "\n" + "Highest Trophies" + "\n" + pb)
+        em.add_field(name='Current Trophies', value=trophies)
+        em.add_field(name='Highest Trophies',value=pb)
         em.add_field(name='Player XP', value=xp)
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
