@@ -51,10 +51,10 @@ class ClashRoyale:
         em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         if tag == None:
             tag = self.tag
-            tag = tag.strip('#').replace('O', '0')
             if tag == None:
                 em.description = "Please add `CR_TAG` to your config."
                 return await ctx.send(embed=em)
+        tag = tag.strip('#').replace('O', '0')
         try:
             profile = await self.client.get_profile(tag)
         except:
