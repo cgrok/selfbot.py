@@ -72,8 +72,8 @@ class ClashRoyale:
         em.url = f"http://cr-api.com/profile/{tag}"
         em.add_field(name='Current Trophies', value=trophies)
         em.add_field(name='Highest Trophies',value=pb)
-        em.add_field(name='Player XP', value=xp)
-        em.add_field(name='Level(Experience)', value=experience)
+        em.add_field(name='Level', value=xp)
+        em.add_field(name='Experience', value=experience)
         em.add_field(name='Wins/Losses/Draws', value=f'{profile.wins}/{profile.losses}/{profile.draws}')
                 
         try:
