@@ -76,7 +76,7 @@ class ClashRoyale:
         em.add_field(name='Experience', value=experience)
         em.add_field(name='Wins/Losses/Draws', value=f'{profile.wins}/{profile.losses}/{profile.draws}')
         em.add_field(name='Global Rank', value=f'{profile.global_rank}')         
-        em.add_field(name='Clan Name', value=f'{profile.clan.name}')
+        em.add_field(name='Clan Name', value=f'{profile.clan_name}')
         
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
