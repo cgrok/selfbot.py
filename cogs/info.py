@@ -262,7 +262,7 @@ class Information:
         uptime = fmt.format(d=days, h=hours, m=minutes, s=seconds)
 
         github = '[Click Here](https://github.com/verixx/selfbot.py/)'
-        server = '[Click Here](https://discord.gg/pmQSbAd)'
+        server = '[Click Here](https://discord.gg/2B4UvKx)'
         website = '[selfbot-py.tk](http://selfbot-py.tk/)'
 
 
