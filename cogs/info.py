@@ -31,6 +31,7 @@ import asyncio
 import psutil
 import random
 import pip
+import json
 import os
 import io
 
@@ -188,6 +189,32 @@ class Information:
             for page in em_list:
                 await ctx.send(page)
 
+    @commands.command(aliases=['tags'])
+    async def tag(self, ctx, *, text: str=None):
+        ''' Get useful selfbot tags '''
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+        with open('data/tags.json', 'r') as f:
+            s = f.read()
+            tags = json.loads(s)
+        if text in tags:
+            await ctx.send(f'{tags[str(text)]}')
+        else:
+            p = f' {ctx.prefix}{ctx.invoked_with} '
+            usage = f'\n***AVAILABLE TAGS:***\n\n' \
+                    f'`1.`{p}heroku\n`2.`{p}change-token\n' \
+                    f'`3.`{p}hosting\n`4.`{p}rules-selfbot\n`5.`{p}tutorial\n' \
+                    f'`6.`{p}update\n`7.`{p}support-invite\n`8.`{p}support\n' \
+                    f'`9.`{p}android-token\n`10.`{p}android-heroku'
+            e = discord.Embed()
+            e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
+            e.add_field(name='Tag not found!', value=usage)
+            try:
+                await ctx.send(embed=e)
+            except Exception as e:
+                await ctx.send(f'```{e}```')
 
     @commands.command(aliases=['ui'], no_pm=True)
     @commands.guild_only()
