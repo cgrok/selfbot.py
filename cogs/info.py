@@ -189,9 +189,9 @@ class Information:
             for page in em_list:
                 await ctx.send(page)
 
-    @commands.command(aliases=['tags'])
-    async def tag(self, ctx, *, text: str=None):
-        ''' Get useful selfbot tags '''
+    @commands.command()
+    async def tags(self, ctx, *, text: str=None):
+        ''' Get useful selfbot tags & tutorials '''
         try:
             await ctx.message.delete()
         except discord.Forbidden:
@@ -212,7 +212,7 @@ class Information:
             e.color = await ctx.get_dominant_color(url=ctx.message.author.avatar_url)
             e.add_field(name='Tag not found!', value=usage)
             try:
-                await ctx.send(embed=e)
+                await ctx.send(embed=e, delete_after=15)
             except Exception as e:
                 await ctx.send(f'```{e}```')
 
