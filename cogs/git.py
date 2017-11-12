@@ -67,7 +67,7 @@ class Git:
             return await ctx.send('Including `|` in your title/description will break the system :(')
         details[0] = details[0].strip(' \t\n\r')
         details[1] = details[1].strip(' \t\n\r')
-        async with ctx.session.post(f'https://api.github.com/repos/repo/issues', json={"title": details[0], "body": details[1], "labels": ["discord"]}, headers={'Authorization': f'Bearer {await self.githubtoken()}'}) as resp:
+        async with ctx.session.post('https://api.github.com/repos/repo/issues', json={"title": details[0], "body": details[1], "labels": ["discord"]}, headers={'Authorization': f'Bearer {await self.githubtoken()}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
             else:
