@@ -57,7 +57,7 @@ class Selfbot(commands.Bot):
         self.formatter = EmbedHelp()
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.process = psutil.Process()
-        self.prefix = None
+        
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.last_message = None
         self.messages_sent = 0
@@ -100,9 +100,7 @@ class Selfbot(commands.Bot):
         '''Returns the prefix.'''
         with open('data/config.json') as f:
             prefix = json.load(f).get('PREFIX')
-        prefix = os.environ.get('PREFIX') or prefix or 'r.'
-        self.prefix = prefix
-        return prefix
+        return os.environ.get('PREFIX') or prefix or 'r.'
 
     def restart(self):
         os.execv(sys.executable, ['python'] + sys.argv)
