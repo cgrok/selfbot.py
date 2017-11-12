@@ -46,7 +46,7 @@ class Git:
             issuetype = 'Issue'
         else:
             issuetype = 'Pull Request'
-        em = discord.Embed(title=issueinfo['title'], description=issueinfo['body'], url=issueinfo['html_url'], color=colour)
+        em = discord.Embed(title=issueinfo['title'] + ' (#' + str(issueinfo['number']) + ')', description=issueinfo['body'], url=issueinfo['html_url'], color=colour)
         em.set_author(name=issueinfo['user']['login'] + ' (' + issueinfo['author_association'].capitalize() + ')', icon_url=issueinfo['user']['avatar_url'])
         em.set_footer(text=issuetype + ' | ' + issueinfo['created_at'])
         for comment in commentsinfo:
@@ -62,7 +62,7 @@ class Git:
             else:
                 return await ctx.send('ConnectionError: Github API Issue.')
 
-        em = discord.Embed(title=issueinfo['title'], description=issueinfo['body'], url=issueinfo['html_url'], color=0xcb2431)
+        em = discord.Embed(title=issueinfo['title'] + ' (#' + str(issueinfo['number']) + ')', description=issueinfo['body'], url=issueinfo['html_url'], color=0xcb2431)
         em.set_author(name=issueinfo['user']['login'] + ' (' + issueinfo['author_association'].capitalize() + ')', icon_url=issueinfo['user']['avatar_url'])
         em.set_footer(text='Issue | ' + issueinfo['created_at'])
         await ctx.send(embed=em)
