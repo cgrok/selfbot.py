@@ -73,7 +73,7 @@ class Git:
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues/{issueid}/comments', json={"body": content}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status != 200 and resp.status != 201:
                 return await ctx.send('ConnectionError: Github API Issue.')
-        await ctx.send('Submitted comment to issue ' + issueid)
+        await ctx.send('Submitted comment to issue ' + str(issueid))
 
 def setup(bot):
     bot.add_cog(Git(bot))
