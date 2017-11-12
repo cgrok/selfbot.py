@@ -57,6 +57,7 @@ class Selfbot(commands.Bot):
         self.formatter = EmbedHelp()
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.process = psutil.Process()
+        self.prefix = None
         self._extensions = [x.replace('.py', '') for x in os.listdir('cogs') if x.endswith('.py')]
         self.last_message = None
         self.messages_sent = 0
