@@ -45,7 +45,7 @@ import io
 import os
 import random
 
-#Feel free to add to these via a PR
+# Feel free to add to these via a PR
 emotes_servers = [
     368436386157690880,
     356823991215980544,
@@ -57,8 +57,10 @@ emotes_servers = [
     358365432564154369
 ]
 
+
 class Utility:
     '''Useful commands to make your life easier'''
+
     def __init__(self, bot):
         self.bot = bot
         self.lang_conv = load_json('data/langs.json')
@@ -66,7 +68,6 @@ class Utility:
         self._rtfm_cache = None
         self._last_google = None
         self._last_result = None
-
 
     @commands.command(name='logout')
     async def _logout(self, ctx):
@@ -78,7 +79,7 @@ class Utility:
         await self.bot.logout()
 
     @commands.command(name='help')
-    async def new_help_command(self, ctx, *commands : str):
+    async def new_help_command(self, ctx, *commands: str):
         """Shows this message."""
         destination = ctx.message.author if self.bot.pm_help else ctx.message.channel
 
@@ -158,18 +159,27 @@ class Utility:
             await self.bot.change_presence(status=discord.Status.invisible, game=discord.Game(name=message), afk=True)
             color = discord.Color(value=0x747f8d).to_rgb()
         elif status == "stream":
-            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message,type=1,url=f'https://www.twitch.tv/{message}'), afk=True)
+            await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message, type=1, url=f'https://www.twitch.tv/{message}'), afk=True)
             color = discord.Color(value=0x593695).to_rgb()
+        elif status == "listen":
+            await self.bot.change_presence(game=discord.Game(name=message, type=2), afk=True)
+            color = discord.Color(value=0x43b581).to_rgb()
+        elif status == "watch":
+            await self.bot.change_presence(game=discord.Game(name=message, type=3), afk=True)
+            color = discord.Color(value=0x43b581).to_rgb()
         elif status == "clear":
             await self.bot.change_presence(game=None, afk=True)
             emb.description = "Presence cleared."
             return await ctx.send(embed=emb)
         else:
-            emb.description = "Please enter either `online`, `idle`, `dnd`, `invisible`, or `clear`."
+            emb.description = "Please enter either `online`, `idle`, `dnd`, `invisible`, `stream`, `watch`, `listen`, or `clear`."
             return await ctx.send(embed=emb)
 
         Image.new('RGB', (500, 500), color).save(file, format='PNG')
-        emb.description = "Your presence has been changed."
+        if message:
+            emb.description = f"Your presence has been changed. 'Game': {message}"
+        else:
+            emb.description = f"Your presence has been changed"
         file.seek(0)
         emb.set_author(name=status.title(), icon_url="attachment://color.png")
         try:
@@ -179,12 +189,11 @@ class Utility:
             for page in em_list:
                 await ctx.send(page)
 
-
     @commands.command()
     async def source(self, ctx, *, command):
         '''See the source code for any command.'''
         source = str(inspect.getsource(self.bot.get_command(command).callback))
-        fmt = '```py\n'+source.replace('`','\u200b`')+'\n```'
+        fmt = '```py\n' + source.replace('`', '\u200b`') + '\n```'
         if len(fmt) > 2000:
             async with ctx.session.post("https://hastebin.com/documents", data=source) as resp:
                 data = await resp.json()
@@ -193,9 +202,8 @@ class Utility:
         else:
             return await ctx.send(fmt)
 
-
     @commands.command()
-    async def copy(self, ctx, id : int, channel : discord.TextChannel=None):
+    async def copy(self, ctx, id: int, channel: discord.TextChannel=None):
         '''Copy someones message by ID'''
         await ctx.message.delete()
         msg = await ctx.get_message(channel or ctx.channel, id)
@@ -210,7 +218,7 @@ class Utility:
                 await ctx.send(msg.content)
 
     @commands.command()
-    async def quote(self, ctx, id : int, channel : discord.TextChannel=None):
+    async def quote(self, ctx, id: int, channel: discord.TextChannel=None):
         """Quote someone's message by ID"""
         await ctx.message.delete()
 
@@ -223,7 +231,7 @@ class Utility:
         em.set_author(name=str(msg.author), icon_url=msg.author.avatar_url)
 
         if isinstance(msg.channel, discord.TextChannel):
-            em.set_footer(text='#'+str(msg.channel))
+            em.set_footer(text='#' + str(msg.channel))
         else:
             em.set_footer(text=str(msg.channel))
 
@@ -267,7 +275,7 @@ class Utility:
     @commands.command(name='last_embed')
     async def _last_embed(self, ctx):
         '''Sends the command used to send the last embed'''
-        await ctx.send('`'+self._last_embed+'`')
+        await ctx.send('`' + self._last_embed + '`')
 
     @commands.command()
     async def embed(self, ctx, *, params):
@@ -496,11 +504,13 @@ class Utility:
             def replace(o):
                 return pit_of_success_helpers.get(o.group(0), '')
 
-            pattern = re.compile('|'.join(r'\b{}\b'.format(k) for k in pit_of_success_helpers.keys()))
+            pattern = re.compile('|'.join(r'\b{}\b'.format(k)
+                                          for k in pit_of_success_helpers.keys()))
             obj = pattern.sub(replace, obj)
 
         cache = self._rtfm_cache[key]
-        matches = fuzzy.extract_or_exact(obj, cache, scorer=fuzzy.token_sort_ratio, limit=5, score_cutoff=50)
+        matches = fuzzy.extract_or_exact(
+            obj, cache, scorer=fuzzy.token_sort_ratio, limit=5, score_cutoff=50)
 
         e = discord.Embed(colour=discord.Colour.blurple())
         if len(matches) == 0:
@@ -546,7 +556,8 @@ class Utility:
                 second_node = unit_conversions[1]
                 second_unit = xpath(second_node)[0]
                 second_value = float(second_node.get('value'))
-                e.description = ' '.join((str(first_value), first_unit, '=', str(second_value), second_unit))
+                e.description = ' '.join(
+                    (str(first_value), first_unit, '=', str(second_value), second_unit))
             except Exception:
                 return None
             else:
@@ -592,7 +603,8 @@ class Utility:
         if info is not None:
             try:
                 e.title = ''.join(info.itertext()).strip()
-                actual_information = info.xpath("parent::div/parent::div//div[@class='_XWk' or contains(@class, 'kpd-ans')]")[0]
+                actual_information = info.xpath(
+                    "parent::div/parent::div//div[@class='_XWk' or contains(@class, 'kpd-ans')]")[0]
                 e.description = ''.join(actual_information.itertext()).strip()
             except Exception:
                 return None
@@ -653,8 +665,8 @@ class Utility:
             lex = etree.XPath(".//div[@class='lr_dct_sf_h']/i/span")
 
             # this one is derived if we were based on the position from lex
-            xpath = etree.XPath("../../../ol[@class='lr_dct_sf_sens']//" \
-                                "div[not(@class and @class='lr_dct_sf_subsen')]/" \
+            xpath = etree.XPath("../../../ol[@class='lr_dct_sf_sens']//"
+                                "div[not(@class and @class='lr_dct_sf_subsen')]/"
                                 "div[@class='_Jig']/div[@data-dobid='dfn']/span")
             for word in words:
                 # we must go two parents up to get the root node
@@ -674,7 +686,8 @@ class Utility:
                         for index, value in enumerate(definitions, 1):
                             descrip.append(f'{index}. {value.text}')
 
-                        e.add_field(name=f'{word.text} /{pronunciation.text}/', value='\n'.join(descrip))
+                        e.add_field(name=f'{word.text} /{pronunciation.text}/',
+                                    value='\n'.join(descrip))
                     except:
                         continue
 
@@ -685,7 +698,6 @@ class Utility:
         if location is None:
             return None
 
-
         # these units should be metric
 
         date = node.find("./div[@id='wob_dts']")
@@ -693,7 +705,8 @@ class Utility:
         # <img alt="category here" src="cool image">
         category = node.find(".//img[@id='wob_tci']")
 
-        xpath = etree.XPath(".//div[@id='wob_d']//div[contains(@class, 'vk_bk')]//span[@class='wob_t']")
+        xpath = etree.XPath(
+            ".//div[@id='wob_d']//div[contains(@class, 'vk_bk')]//span[@class='wob_t']")
         temperatures = xpath(node)
 
         misc_info_node = node.find(".//div[@class='vk_gy vk_sh wob-dtl']")
@@ -704,7 +717,6 @@ class Utility:
         precipitation = misc_info_node.find("./div/span[@id='wob_pp']")
         humidity = misc_info_node.find("./div/span[@id='wob_hm']")
         wind = misc_info_node.find("./div/span/span[@id='wob_tws']")
-
 
         try:
             e.title = 'Weather for ' + location.text.strip()
@@ -776,7 +788,7 @@ class Utility:
             </div>
             """
 
-            card_node = root.xpath(".//div[@id='rso']/div[@class='_NId']//" \
+            card_node = root.xpath(".//div[@id='rso']/div[@class='_NId']//"
                                    "div[contains(@class, 'vk_c') or @class='g mnr-c g-blk' or @class='kp-blk']")
 
             if card_node is None or len(card_node) == 0:
@@ -804,7 +816,8 @@ class Utility:
             await ctx.send(str(e))
         else:
             if card:
-                value = '\n'.join(f'[{title}]({url.replace(")", "%29")})' for url, title in entries[:3])
+                value = '\n'.join(f'[{title}]({url.replace(")", "%29")})' for url,
+                                  title in entries[:3])
                 if value:
                     card.add_field(name='Search Results', value=value, inline=False)
                 return await ctx.send(embed=card)
@@ -865,7 +878,7 @@ class Utility:
         else:
             value = stdout.getvalue()
             if self.bot.token in value:
-                value = value.replace(self.bot.token,"[EXPUNGED]")
+                value = value.replace(self.bot.token, "[EXPUNGED]")
             if ret is None:
                 if value:
                     try:
@@ -890,15 +903,13 @@ class Utility:
                         await ctx.send(f'```py\n{page}\n```')
 
         if out:
-            await out.add_reaction('\u2705') #tick
+            await out.add_reaction('\u2705')  # tick
         if err:
-            await err.add_reaction('\u2049') #x
-
+            await err.add_reaction('\u2049')  # x
 
     async def edit_to_codeblock(self, ctx, body):
         msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
         await ctx.message.edit(content=msg)
-
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""
@@ -922,7 +933,7 @@ class Utility:
         await ctx.message.edit(content=f"Hastebin-inified! <https://hastebin.com/{data['key']}.py>")
 
     @commands.command()
-    async def clear(self, ctx, *, serverid = None):
+    async def clear(self, ctx, *, serverid=None):
         '''Marks messages from selected servers or emote servers as read'''
         if serverid != None:
             if serverid == 'all':
@@ -955,6 +966,7 @@ class Utility:
             return await ctx.send('Not enough choices to pick from.')
         choices[0] = ' ' + choices[0]
         await ctx.send(str(random.choice(choices))[1:])
+
 
 def setup(bot):
     bot.add_cog(Utility(bot))
