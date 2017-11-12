@@ -338,37 +338,23 @@ class Misc:
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
     @commands.command(description='This command might get you banned')
-    async def annoy(self, ctx, *, member=None, times: int = None):
-        """Want to annoy a member with mentions?"""
-        channel = ctx.message.channel
-        author = ctx.message.author
-        message = ctx.message
-        usage = f'```Usage: {ctx.prefix}ultimate_annoying_spam_command [@member] [times]```'
-
-        if member or times is None:
-            await ctx.channel.send(usage)
-            return
-
-        if times > 100:
-            times = 35
-
-        if times is 0:
-            sorry = f'Someone, not saying who, *cough cough {author}* felt sorry about using this command.'
-            await ctx.channel.send(sorry)
-            return
-
-        if times < 0:
-            chicken = "Well, that's just not enough times to annoy anybody. Don't chicken out now!"
-            await ctx.channel.send(chicken)
-            return
-
-        await message.delete()
-
-        for i in range(0, times):
-            try:
-                await channel.send(f'{member.mention} LOL')
-            except Exception:
-                pass
+    async def annoy(self, ctx, member: discord.Member=None, number: int=2):
+        """ Usage: annoy @b1nzy#1337 50
+        NOTICE: If you get banned, don't come back crying! """
+        if number > 5:
+            number = 5
+        member = member or ctx.author
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+        if member != None:
+            for x in range(number):
+                await ctx.channel.trigger_typing()
+                await ctx.send(member.mention)
+                await asyncio.sleep(8)
+        else:
+            return await ctx.send(f"{ctx.author.mention}, I don't know how to use commands. Help!")
 
     @commands.command()
     async def tinyurl(self, ctx, *, link: str):
