@@ -6,6 +6,7 @@ import aiohttp
 import traceback
 
 class Git:
+    '''Github Cog, facilitates viewing and creating issues'''
     def __init__(self, bot):
         self.bot = bot
 
@@ -24,6 +25,7 @@ class Git:
 
     @commands.command()
     async def issue(self, ctx, repo, issueid):
+        '''View an issue from Github!'''
         async with ctx.session.get(f"https://api.github.com/repos/{repo}/issues/{issueid}") as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
@@ -53,8 +55,7 @@ class Git:
     
     @commands.command()
     async def makeissue(self, ctx, repo, title, *, body):
-        '''Create an issue! `{ctx.prefix}makeissue <title> | <body>'''
-
+        '''Create an issue! `{}makeissue <title> | <body>`'''.format(ctx.prefix)
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues', json={"title": title, "body": body}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
@@ -67,14 +68,12 @@ class Git:
         await ctx.send(embed=em)
 
     @commands.command()
-    async def comment(self, ctx, repo, issueid: int, *, content):
+    async def comment(self, ctx, repo, issueid:int, *, content):
+        '''Comment on a Github Issue'''
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues/{issueid}/comments', json={"body": content}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status != 200 and resp.status != 201:
                 return await ctx.send('ConnectionError: Github API Issue.')
         await ctx.send('Submitted comment to issue ' + issueid)
-
-    async def on_command_error(self, error, ctx):
-        print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
 
 def setup(bot):
     bot.add_cog(Git(bot))
