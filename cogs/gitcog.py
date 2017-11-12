@@ -53,7 +53,7 @@ class Git:
     
     @commands.command()
     async def makeissue(self, ctx, repo, title, *, body):
-        '''Create an issue! `{ctx.prefix}makeissue <title> | <body>'''
+        f'''Create an issue! `{ctx.prefix}makeissue <title> | <body>`'''
         details = ' '.join([title, body])
         if '|' not in details:
             return await ctx.send('Use `|` as the seperator between your title and the body.')
@@ -62,7 +62,7 @@ class Git:
             return await ctx.send('Including `|` in your title/description will break the system :(')
         details[0] = details[0].strip(' \t\n\r')
         details[1] = details[1].strip(' \t\n\r')
-        async with ctx.session.post(f'https://api.github.com/repos/repo/issues', json={"title": details[0], "body": details[1], "labels": ["discord"]}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
+        async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues', json={"title": details[0], "body": details[1], "labels": ["discord"]}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
             else:
