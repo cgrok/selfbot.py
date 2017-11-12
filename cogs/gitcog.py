@@ -71,7 +71,7 @@ class Git:
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues/{issueid}/comments', json={"body": content}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status != 200 and resp.status != 201:
                 return await ctx.send('ConnectionError: Github API Issue.')
-        await ctx.send('Submitted comment to issue ' + issueid)
+        await ctx.send('Submitted comment to issue ' + str(issueid))
 
     async def on_command_error(self, error, ctx):
         print(''.join(traceback.format_exception(type(error), error, error.__traceback__)))
