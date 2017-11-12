@@ -19,13 +19,7 @@ class Git:
         '''
         with open('data/config.json') as f:
             config = json.load(f)
-            if config.get('GITHUBTOKEN') is None:
-                if os.environ.get('GITUBTOKEN') is not None:
-                    return os.environ.get('GITUBTOKEN')
-                else:
-                    return await ctx.send('No Github Token provided.')
-            else:
-                return config.get('GITHUBTOKEN')
+            return os.environ.get('GITUBTOKEN') or config.get('GITHUBTOKEN') or await ctx.send('Invalid Github Token!')
 
     @commands.command()
     async def issue(self, ctx, repo, issueid):
