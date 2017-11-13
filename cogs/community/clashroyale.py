@@ -77,7 +77,7 @@ class ClashRoyale:
         em.add_field(name='Wins/Losses/Draws', value=f'{profile.wins}/{profile.losses}/{profile.draws}')
         em.add_field(name='Global Rank', value=f'{profile.global_rank}')         
         em.add_field(name='Clan Info', value=f'{profile.clan_name}' + '\n' + '#' + f'{profile.clan_tag}' + '\n' + f'{profile.clan_role}')
-        
+        em.add_field(name='Win Streak', value=f'{profile.win_streak}')
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
         except:
