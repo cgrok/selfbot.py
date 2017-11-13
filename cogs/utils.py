@@ -970,6 +970,29 @@ class Utility:
             return await ctx.send('Not enough choices to pick from.')
         choices[0] = ' ' + choices[0]
         await ctx.send(str(random.choice(choices))[1:])
+        
+    @commands.command()
+    async def update(self, ctx):
+        git = bot.get_cog('Git')
+        async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res: #get username 
+            if 300 > res.status >= 200:
+                async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title":"Updating Bot","body":"Body", "head":"verixx:rewrite", "base":"rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp: #create pr
+                    if 300 > resp.status >= 200:
+                        async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2: #merge pr
+                            if 300 > resp2.status >= 200:
+                                return await ctx.send('Selfbot updated! Now wait for me to restart!')
+                            else:
+                                return await ctx.send(f'Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n{await resp2.json()}\n```')
+                    else:
+                        if (await resp.json())['message'].startswith('No commits between'):
+                            return await ctx.send('Selfbot already at the latest version!')
+                        else:
+                            return await ctx.send(f'Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n{await resp.json()}\n```')
+            else:
+                if (await res.json())['message'] == 'Bad credentials':
+                    return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+                else:
+                    return await ctx.send(f'Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n{await res.json()}\n```')
 
 
 def setup(bot):
