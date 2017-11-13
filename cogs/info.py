@@ -40,8 +40,15 @@ class Information:
         self.bot = bot
 
     @commands.command(no_pm=True)
-    async def channels(self, ctx):
+    async def channels(self, ctx, serverid:int = None):
         """Shows ALL channels, use wisely!"""
+
+        if serverid is None:
+            server = ctx.guild
+        else:
+            server = discord.utils.get(self.bot.guilds, id=serverid)
+            if server is None:
+                return await ctx.send('Server not found!')
 
         e = discord.Embed()
         e.color = await ctx.get_dominant_color()
@@ -50,16 +57,19 @@ class Information:
         text = ''
         categories = ''
 
-        for channel in ctx.guild.voice_channels:
+        for channel in server.voice_channels:
             voice += f'\U0001f508 {channel}\n'
-        for channel in ctx.guild.categories:
+        for channel in server.categories:
             categories += f'\U0001f4da {channel}\n'
-        for channel in ctx.guild.text_channels:
+        for channel in server.text_channels:
             text += f'\U0001f4dd {channel}\n'
         
-        e.add_field(name='Text Channels', value=f'```{text}```')
-        e.add_field(name='Categories', value=f'```{categories}```')
-        e.add_field(name='Voice Channels', value=f'```{voice}```')
+        if len(server.text_channels) > 0:
+            e.add_field(name='Text Channels', value=f'```{text}```')
+        if len(server.categories) > 0:
+            e.add_field(name='Categories', value=f'```{categories}```')
+        if len(server.voice_channels) > 0:
+            e.add_field(name='Voice Channels', value=f'```{voice}```')
 
         try:
             await ctx.send(embed=e)
