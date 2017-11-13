@@ -40,6 +40,6 @@ Currently available cogs:-
 
 Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
 
-## Acknowledgements
+## Acknowledgements 
 
 > Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny
