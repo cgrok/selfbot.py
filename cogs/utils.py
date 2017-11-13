@@ -252,17 +252,21 @@ class Utility:
 
         await ctx.send('\n'.join(map(to_string, characters)))
 
-    @commands.group()
+    @commands.group(aliases=['trans'])
     async def translate(self, ctx, lang, *, text):
         """Translate text!"""
         conv = self.lang_conv
         if lang in conv:
-            return await self.bot.say('```{}```'.format(translate(text, lang)))
+            return await self.bot.say(f'*{translate(text, lang)}*')
         lang = dict(zip(conv.values(), conv.keys())).get(lang.lower().title())
         if lang:
-            await ctx.send('```{}```'.format(translate(text, lang)))
+            await ctx.send(f'*{translate(text, lang)}*')
         else:
-            await ctx.send('```That is not an available language.```')
+            await ctx.send('`Language not available.`', delete_after=5)
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
 
     @translate.command()
     async def langs(self, ctx):
