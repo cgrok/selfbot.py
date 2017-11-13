@@ -973,7 +973,7 @@ class Utility:
         
     @commands.command()
     async def update(self, ctx):
-        git = bot.get_cog('Git')
+        git = self.bot.get_cog('Git')
         async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res: #get username 
             if 300 > res.status >= 200:
                 async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title":"Updating Bot","body":"Body", "head":"verixx:rewrite", "base":"rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp: #create pr
