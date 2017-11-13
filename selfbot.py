@@ -100,9 +100,7 @@ class Selfbot(commands.Bot):
         '''Returns the prefix.'''
         with open('data/config.json') as f:
             prefix = json.load(f).get('PREFIX')
-        prefix = os.environ.get('PREFIX') or prefix or 'r.'
-        self.prefix = prefix
-        return prefix
+        return os.environ.get('PREFIX') or prefix or 'r.'
 
     def restart(self):
         os.execv(sys.executable, ['python'] + sys.argv)
@@ -155,7 +153,7 @@ class Selfbot(commands.Bot):
         ---------------
         Logged in as: {self.user}
         User ID: {self.user.id}
-        Prefix: {self.prefix}
+        Prefix: {self.get_pre}
         ---------------
         Current Version: 1.0.0
         ---------------
