@@ -153,7 +153,6 @@ class Selfbot(commands.Bot):
         ---------------
         Logged in as: {self.user}
         User ID: {self.user.id}
-        Prefix: {self.get_pre}
         ---------------
         Current Version: 1.0.0
         ---------------
