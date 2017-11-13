@@ -982,17 +982,17 @@ class Utility:
                             if 300 > resp2.status >= 200:
                                 return await ctx.send('Selfbot updated! Now wait for me to restart!')
                             else:
-                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + await resp2.json() + '\n```')
+                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
                     else:
                         if (await resp.json())['message'].startswith('No commits between'):
                             return await ctx.send('Selfbot already at the latest version!')
                         else:
-                            return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + await resp.json() + '\n```')
+                            return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
             else:
                 if (await res.json())['message'] == 'Bad credentials':
                     return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
                 else:
-                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + await res.json() + '\n```')
+                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
 
 
 def setup(bot):
