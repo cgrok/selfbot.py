@@ -984,7 +984,7 @@ class Utility:
                             else:
                                 return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
                     else:
-                        if (await resp.json())['message'].startswith('No commits between'):
+                        if (await resp.json())['errors']['message'].startswith('No commits between'):
                             return await ctx.send('Selfbot already at the latest version!')
                         else:
                             return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
