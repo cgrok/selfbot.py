@@ -80,7 +80,6 @@ class ClashRoyale:
         em.add_field(name='Clan Info', value=f'{profile.clan_name}' + '\n' + '#' + f'{profile.clan_tag}' + '\n' + f'{profile.clan_role}')
         em.add_field(name='Win Streak', value=f'{profile.win_streak}')
         em.set_footer(text="Powered By cr-api.com", icon_url="http://cr-api.com/static/img/branding/cr-api-logo.png")
-    try:
         try:
             em.set_author(name="Profile", icon_url=profile.clan_badge_url)
         except:
