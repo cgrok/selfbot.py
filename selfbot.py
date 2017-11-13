@@ -96,7 +96,7 @@ class Selfbot(commands.Bot):
         return os.environ.get('TOKEN') or token
 
     @staticmethod
-    async def get_pre(bot):
+    async def get_pre(bot, message):
         '''Returns the prefix.'''
         with open('data/config.json') as f:
             prefix = json.load(f).get('PREFIX')
