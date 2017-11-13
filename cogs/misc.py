@@ -338,7 +338,7 @@ class Misc:
         await ctx.send(file=discord.File(file, 'color.png'), embed=em)
 
     @commands.command(description='This command might get you banned')
-    async def annoy(self, ctx, member: discord.Member=None, number: int=2):
+    async def annoy(self, ctx, member: discord.Member=None, number: int=5):
         """ Usage: annoy @b1nzy#1337 50
         NOTICE: If you get banned, don't come back crying! """
         if number > 5:
