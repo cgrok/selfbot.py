@@ -1023,13 +1023,13 @@ class Utility:
 
     @commands.command(pass_context=True)
     async def rpoll(self, ctx, *, msg):
-        """Create a poll using reactions. >help rpoll for more information.
-        [p]rpoll <question> | <answer> | <answer> - Create a poll. You may use as many answers as you want, placing a pipe | symbol in between them.
+        """Create a poll using reactions. {p}help rpoll for more information.
+        {p}rpoll <question> | <answer> | <answer> - Create a poll. You may use as many answers as you want, placing a pipe | symbol in between them.
         Example:
-        [p]rpoll What is your favorite anime? | Steins;Gate | Naruto | Attack on Titan | Shrek
+        {p}rpoll What is your favorite anime? | Steins;Gate | Naruto | Attack on Titan | Shrek
         You can also use the "time" flag to set the amount of time in seconds the poll will last for.
         Example:
-        [p]rpoll What time is it? | HAMMER TIME! | SHOWTIME! | time=10
+        {p}rpoll What time is it? | HAMMER TIME! | SHOWTIME! | time=10
         """
         await ctx.message.delete()
         options = msg.split(" | ")
