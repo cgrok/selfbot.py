@@ -1082,12 +1082,13 @@ class Utility:
     @commands.group(invoke_without_command=True)
     async def cc(self, ctx):
         '''Custom Commands!'''
+        git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
     @cc.command(aliases=['create', 'add'])
     async def make(self, ctx, name, *, content):
         '''Create a custom command!'''
-        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         git = self.bot.get_cog('Git')
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         with open('data/cc.json') as f:
             commands = json.load(f)
         try:
@@ -1101,8 +1102,8 @@ class Utility:
     @cc.command()
     async def edit(self, ctx, name, *, content):
         '''Edits a currently existing custom command'''
-        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         git = self.bot.get_cog('Git')
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         try:
             commands[name]
         except KeyError:
@@ -1114,8 +1115,8 @@ class Utility:
     @cc.command()
     async def delete(self, ctx, *, name):
         '''Deletes a custom command'''
-        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         git = self.bot.get_cog('Git')
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>') 
         try:
             commands[name]
         except KeyError:
