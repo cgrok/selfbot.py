@@ -44,6 +44,8 @@ import re
 import io
 import os
 import random
+import json
+import base64
 
 # Feel free to add to these via a PR
 emotes_servers = [
@@ -923,8 +925,10 @@ class Utility:
 
         if out:
             await out.add_reaction('\u2705')  # tick
-        if err:
+        elif err:
             await err.add_reaction('\u2049')  # x
+        else:
+            await ctx.message.add_reaction('\u2705')
 
     async def edit_to_codeblock(self, ctx, body):
         msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
@@ -988,29 +992,149 @@ class Utility:
 
     @commands.command()
     async def update(self, ctx):
+        '''Auto Update command, checks if you have latest version
+        Use tags github-token to find out how to set up this token'''
         git = self.bot.get_cog('Git')
-        # get username
-        async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
-            if 300 > res.status >= 200:
-                # create pr
-                async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
-                    if 300 > resp.status >= 200:
-                        # merge pr
-                        async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
-                            if 300 > resp2.status >= 200:
-                                return await ctx.send('Selfbot updated! Now wait for me to restart!')
-                            else:
-                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
-                    else:
-                        if (await resp.json())['errors'][0]['message'].startswith('No commits between'):
-                            return await ctx.send('Selfbot already at the latest version!')
+        if git.starred('verixx/selfbot.py'):
+            # get username
+            async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
+                if 300 > res.status >= 200:
+                    # create pr
+                    async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
+                        if 300 > resp.status >= 200:
+                            # merge pr
+                            async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
+                                if 300 > resp2.status >= 200:
+                                    return await ctx.send('Selfbot updated! Now wait for me to restart!')
+                                else:
+                                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
                         else:
-                            return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
-            else:
-                if (await res.json())['message'] == 'Bad credentials':
-                    return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+                            if (await resp.json())['errors'][0]['message'].startswith('No commits between'):
+                                return await ctx.send('Selfbot already at the latest version!')
+                            else:
+                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
                 else:
-                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
+                    if (await res.json())['message'] == 'Bad credentials':
+                        return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+                    else:
+                        return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
+        else:
+            return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+
+    @commands.command(pass_context=True)
+    async def rpoll(self, ctx, *, args):
+        """Create a poll using reactions. {p}help rpoll for more information.
+        {p}rpoll <question> | <answer> | <answer> - Create a poll. You may use as many answers as you want, placing a pipe | symbol in between them.
+        Example:
+        {p}rpoll What is your favorite anime? | Steins;Gate | Naruto | Attack on Titan | Shrek
+        You can also use the "time" flag to set the amount of time in seconds the poll will last for.
+        Example:
+        {p}rpoll What time is it? | HAMMER TIME! | SHOWTIME! | time=10
+        """
+        await ctx.message.delete()
+        options = args.split(" | ")
+        time = [x for x in options if x.startswith("time=")]
+        if time:
+            time = time[0]
+        if time:
+            options.remove(time)
+        if len(options) <= 1:
+            raise commands.errors.MissingRequiredArgument
+        if len(options) >= 11:
+            return await ctx.send(self.bot.bot_prefix + "You must have 9 options or less.")
+        if time:
+            time = int(time.strip("time="))
+        else:
+            time = 30
+        emoji = ['1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣']
+        to_react = []
+        confirmation_msg = "**{}?**:\n\n".format(options[0].rstrip("?"))
+        for idx, option in enumerate(options[1:]):
+            confirmation_msg += "{} - {}\n".format(emoji[idx], option)
+            to_react.append(emoji[idx])
+        confirmation_msg += "\n\nYou have {} seconds to vote!".format(time)
+        poll_msg = await ctx.send(confirmation_msg)
+        for emote in to_react:
+            await poll_msg.add_reaction(emote)
+        await asyncio.sleep(time)
+        async for message in ctx.message.channel.history():
+            if message.id == poll_msg.id:
+                poll_msg = message
+        results = {}
+        for reaction in poll_msg.reactions:
+            if reaction.emoji in to_react:
+                results[reaction.emoji] = reaction.count - 1
+        end_msg = "The poll is over. The results:\n\n"
+        for result in results:
+            end_msg += "{} {} - {} votes\n".format(result, options[emoji.index(result)+1], results[result])
+        top_result = max(results, key=lambda key: results[key])
+        if len([x for x in results if results[x] == results[top_result]]) > 1:
+            top_results = []
+            for key, value in results.items():
+                if value == results[top_result]:
+                    top_results.append(options[emoji.index(key)+1])
+            end_msg += "\nThe victory is tied between: {}".format(", ".join(top_results))
+        else:
+            top_result = options[emoji.index(top_result)+1]
+            end_msg += "\n{} is the winner!".format(top_result)
+        await ctx.send(end_msg)
+
+    @commands.group(invoke_without_command=True)
+    async def cc(self, ctx):
+        '''Custom Commands!'''
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+    @cc.command(aliases=['create', 'add'])
+    async def make(self, ctx, name, *, content):
+        '''Create a custom command!'''
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        git = self.bot.get_cog('Git')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
+        try:
+            commands[name]
+        except KeyError:
+            commands.update({name: content})
+            if await ctx.updatedata('data/cc.json', commands, f'New Custom Command: {name}/{content}'):
+                await ctx.send('Created command.')
+        else:
+            await ctx.send('Use `cc edit` to edit this command as it already exists.')
+    @cc.command()
+    async def edit(self, ctx, name, *, content):
+        '''Edits a currently existing custom command'''
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        git = self.bot.get_cog('Git')
+        try:
+            commands[name]
+        except KeyError:
+            await ctx.send('Use `cc make` to create this command.')
+        else:
+            commands[name] = content
+            if await ctx.updatedata('data/cc.json', commands, f'Edited Custom Command: {name}/{content}'):
+                await ctx.send('Edited command.')
+    @cc.command()
+    async def delete(self, ctx, *, name):
+        '''Deletes a custom command'''
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        git = self.bot.get_cog('Git')
+        try:
+            commands[name]
+        except KeyError:
+            await ctx.send('Requested command does not exist.')
+        else:
+            del commands[name]
+            if await ctx.updatedata('data/cc.json', commands, f'Deleted Custom Command: {name}'):
+                await ctx.send('Deleted command.')
+
+    #reading cc
+    async def on_message(self, message):
+        if message.author != self.bot.user: return
+        if message.content.startswith(await self.bot.get_pre(self.bot, message)):
+            with open('data/cc.json') as f:
+                commands = json.load(f)
+            try:
+                await message.channel.send(commands[message.content.strip(await self.bot.get_pre(self.bot, message))])
+            except KeyError:
+                pass
 
 
 def setup(bot):
