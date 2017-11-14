@@ -108,9 +108,14 @@ class Mod:
         await ctx.send(embed=emb)
 
     @commands.command(aliases=['del','p','prune'])
-    async def purge(self, ctx, limit : int):
+    async def purge(self, ctx, limit : int, member:discord.Member=None):
         '''Clean a number of messages'''
-        await ctx.purge(limit=limit+1) # TODO: add more functionality
+        if member is None:
+            await ctx.purge(limit=limit+1)
+        else:
+            async for message in ctx.channel.history(limit=limit+1):
+                if message.author is member:
+                    await message.delete()
 
     @commands.command()
     async def clean(self, ctx, limit : int=15):
