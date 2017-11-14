@@ -988,6 +988,8 @@ class Utility:
 
     @commands.command()
     async def update(self, ctx):
+        '''Auto Update command, checks if you have latest version
+        Use tags github-token to find out how to set up this token'''
         git = self.bot.get_cog('Git')
         # get username
         async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
