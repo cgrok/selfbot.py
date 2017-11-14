@@ -2,7 +2,7 @@
         <p> <img src="https://i.imgur.com/lBSqWgt.png"/> </p>
         <p><i><b>Moderation, fun, utility and much more! (Rewrite)</b></i></p>
 	<p> 
-		<a href="https://discord.gg/pmQSbAd"><img src="https://discordapp.com/api/guilds/345787308282478592/widget.png?style=banner2" alt="" /></a>
+		<a href="https://discord.gg/2B4UvKx"><img src="https://discordapp.com/api/guilds/376697605029101569/widget.png?style=banner2" alt="" /></a>
 	</p>
 	<p>	<img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="passing" /></a>
 		<img src="https://img.shields.io/badge/python-3.6-brightgreen.svg" alt="python 3.6" /></a>
@@ -40,6 +40,6 @@ Currently available cogs:-
 
 Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
 
-## Acknowledgements
+## Acknowledgements 
 
 > Eval and google commands by [Rapptz](https://github.com/Rapptz) from R.Danny

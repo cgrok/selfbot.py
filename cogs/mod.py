@@ -31,6 +31,7 @@ import random
 import pip
 import os
 import io
+import json
 
 
 class Mod:
@@ -40,7 +41,7 @@ class Mod:
 
     async def format_mod_embed(self, ctx, user, success, method, duration = None, location=None):
         '''Helper func to format an embed to prevent extra code'''
-        emb = discord.Embed()
+        emb = discord.Embed(timestamp=ctx.message.created_at)
         emb.set_author(name=method.title(), icon_url=user.avatar_url)
         emb.color = await ctx.get_dominant_color(user.avatar_url)
         emb.set_footer(text=f'User ID: {user.id}')
@@ -60,7 +61,19 @@ class Mod:
                 emb.description = f"You do not have the permissions to {method} `{location.name}`."
             else:
                 emb.description = f"You do not have the permissions to {method} {user.name}."
-
+        
+        with open('data/config.json') as f:
+            config = json.load(f)
+            modlog = os.environ.get('MODLOG') or config.get('MODLOG')
+        if modlog is None:
+            await ctx.send('You have not set `MODLOG` in your config vars.', delete_after=5)
+        else:
+            modlog = discord.utils.get(self.bot.get_all_channels(), id=int(modlog))
+            if modlog is None:
+                await ctx.send('Your `MODLOG` channel ID is invalid.', delete_after=5)
+            else:
+                await modlog.send(embed=emb)
+            
         return emb
 
     @commands.command()
@@ -108,9 +121,14 @@ class Mod:
         await ctx.send(embed=emb)
 
     @commands.command(aliases=['del','p','prune'])
-    async def purge(self, ctx, limit : int):
+    async def purge(self, ctx, limit : int, member:discord.Member=None):
         '''Clean a number of messages'''
-        await ctx.purge(limit=limit+1) # TODO: add more functionality
+        if member is None:
+            await ctx.purge(limit=limit+1)
+        else:
+            async for message in ctx.channel.history(limit=limit+1):
+                if message.author is member:
+                    await message.delete()
 
     @commands.command()
     async def clean(self, ctx, limit : int=15):
