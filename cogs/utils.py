@@ -1000,7 +1000,7 @@ class Utility:
             async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
                 if 300 > res.status >= 200:
                     # create pr
-                    async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
+                    async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
                         if 300 > resp.status >= 200:
                             # merge pr
                             async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
@@ -1081,9 +1081,11 @@ class Utility:
 
     @commands.group(invoke_without_command=True)
     async def cc(self, ctx):
+        '''Custom Commands!'''
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
     @cc.command(aliases=['create', 'add'])
     async def make(self, ctx, name, *, content):
+        '''Create a custom command!'''
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         git = self.bot.get_cog('Git')
         with open('data/cc.json') as f:
@@ -1098,7 +1100,9 @@ class Utility:
             await ctx.send('Use `cc edit` to edit this command as it already exists.')
     @cc.command()
     async def edit(self, ctx, name, *, content):
+        '''Edits a currently existing custom command'''
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        git = self.bot.get_cog('Git')
         try:
             commands[name]
         except KeyError:
@@ -1109,7 +1113,9 @@ class Utility:
                 await ctx.send('Edited command.')
     @cc.command()
     async def delete(self, ctx, *, name):
+        '''Deletes a custom command'''
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        git = self.bot.get_cog('Git')
         try:
             commands[name]
         except KeyError:
