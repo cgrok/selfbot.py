@@ -132,7 +132,6 @@ async def send_cmd_help(ctx):
 @bot.event
 async def on_command_error(error, ctx):
    print(error)
-   channel = ctx.message.channel
    if isinstance(error, commands.MissingRequiredArgument):
        await send_cmd_help(ctx)
        print('Sent command help')
@@ -140,7 +139,7 @@ async def on_command_error(error, ctx):
        await send_cmd_help(ctx)
        print('Sent command help')
    elif isinstance(error, commands.DisabledCommand):
-       await bot.send_message(channel, "That command is disabled.")
+       await bot.send_message(ctx.message.channel, "That command is disabled.")
        print('Command disabled.')
    elif isinstance(error, commands.CommandInvokeError):
        # A bit hacky, couldn't find a better way
@@ -150,7 +149,7 @@ async def on_command_error(error, ctx):
        if is_help_cmd and is_forbidden and error.original.text == no_dms:
            msg = ("I couldn't send the help message to you in DM. Either"
                   " you blocked me or you disabled DMs in this server.")
-           await bot.send_message(channel, msg)
+           await bot.send_message(ctx.message.channel, msg)
            return
 
 @bot.command(pass_context=True)
