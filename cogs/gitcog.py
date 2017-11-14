@@ -29,6 +29,13 @@ class Git:
             if 300 > resp.status >= 200:
                 return (await resp.json())['login']
 
+    async def starred(self, repo):
+        async with self.session.get('https://api.github.com/user/starred/' + repo, headers={"Authorization": f"Bearer {self.githubtoken}"}) as resp:
+            if resp.status == 204:
+                return True
+            if resp.status == 404:
+                return False
+
     @commands.command()
     async def issue(self, ctx, repo, issueid):
         '''View an issue from Github!'''

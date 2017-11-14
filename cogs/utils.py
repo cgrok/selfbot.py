@@ -993,74 +993,80 @@ class Utility:
         '''Auto Update command, checks if you have latest version
         Use tags github-token to find out how to set up this token'''
         git = self.bot.get_cog('Git')
-        # get username
-        async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
-            if 300 > res.status >= 200:
-                # create pr
-                async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
-                    if 300 > resp.status >= 200:
-                        # merge pr
-                        async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
-                            if 300 > resp2.status >= 200:
-                                return await ctx.send('Selfbot updated! Now wait for me to restart!')
-                            else:
-                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
-                    else:
-                        if (await resp.json())['errors'][0]['message'].startswith('No commits between'):
-                            return await ctx.send('Selfbot already at the latest version!')
+        if git.starred('verixx/selfbot.py'):
+            # get username
+            async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
+                if 300 > res.status >= 200:
+                    # create pr
+                    async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
+                        if 300 > resp.status >= 200:
+                            # merge pr
+                            async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
+                                if 300 > resp2.status >= 200:
+                                    return await ctx.send('Selfbot updated! Now wait for me to restart!')
+                                else:
+                                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
                         else:
-                            return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
-            else:
-                if (await res.json())['message'] == 'Bad credentials':
-                    return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+                            if (await resp.json())['errors'][0]['message'].startswith('No commits between'):
+                                return await ctx.send('Selfbot already at the latest version!')
+                            else:
+                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
                 else:
-                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
+                    if (await res.json())['message'] == 'Bad credentials':
+                        return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+                    else:
+                        return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
+        else:
+            return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
 
     @commands.command()
     async def cc(self, ctx, option, name='None', content=None):
         git = self.bot.get_cog('Git')
-        with open('data/cc.json') as f:
-            commands = json.load(f)
-        if option.lower() == 'make':
-            if name is None or content is None:
-                return await ctx.send('Please provide a name and content.')
-            try:
-                commands[name]
-            except KeyError:
-                commands.update({name: content})
-                if await ctx.updatedata('data/cc.json', commands, f'New Custom Command: {name}/{content}'):
-                    await ctx.send('Created command.')
-            else:
-                await ctx.send('Use `cc edit` to edit this command as it already exists.')
-        elif option.lower() == 'edit':
-            if name is None or content is None:
-                return await ctx.send('Please provide a name and content.')
-            try:
-                commands[name]
-            except KeyError:
-                await ctx.send('Use `cc make` to create this command.')
-            else:
-                commands[name] = content
-                if await ctx.updatedata('data/cc.json', commands, f'Edited Custom Command: {name}/{content}'):
-                    await ctx.send('Edited command.')
-        elif option.lower() == 'delete':
-            if name is None:
-                return await ctx.send('Please provide a name.')
-            try:
-                commands[name]
-            except KeyError:
-                await ctx.send('Requested command does not exist.')
-            else:
-                del commands[name]
-                if await ctx.updatedata('data/cc.json', commands, f'Deleted Custom Command: {name}'):
-                    await ctx.send('Deleted command.')
-        else: #read
-            try:
-                commands[option]
-            except KeyError:
-                await ctx.send('Custom Command not found!')
-            else:
-                await ctx.send(commands[option])
+        if await git.starred('verixx/selfbot.py'):
+            with open('data/cc.json') as f:
+                commands = json.load(f)
+            if option.lower() == 'make':
+                if name is None or content is None:
+                    return await ctx.send('Please provide a name and content.')
+                try:
+                    commands[name]
+                except KeyError:
+                    commands.update({name: content})
+                    if await ctx.updatedata('data/cc.json', commands, f'New Custom Command: {name}/{content}'):
+                        await ctx.send('Created command.')
+                else:
+                    await ctx.send('Use `cc edit` to edit this command as it already exists.')
+            elif option.lower() == 'edit':
+                if name is None or content is None:
+                    return await ctx.send('Please provide a name and content.')
+                try:
+                    commands[name]
+                except KeyError:
+                    await ctx.send('Use `cc make` to create this command.')
+                else:
+                    commands[name] = content
+                    if await ctx.updatedata('data/cc.json', commands, f'Edited Custom Command: {name}/{content}'):
+                        await ctx.send('Edited command.')
+            elif option.lower() == 'delete':
+                if name is None:
+                    return await ctx.send('Please provide a name.')
+                try:
+                    commands[name]
+                except KeyError:
+                    await ctx.send('Requested command does not exist.')
+                else:
+                    del commands[name]
+                    if await ctx.updatedata('data/cc.json', commands, f'Deleted Custom Command: {name}'):
+                        await ctx.send('Deleted command.')
+            else: #read
+                try:
+                    commands[option]
+                except KeyError:
+                    await ctx.send('Custom Command not found!')
+                else:
+                    await ctx.send(commands[option])
+        else:
+            return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
 
 
 def setup(bot):
