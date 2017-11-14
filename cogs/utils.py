@@ -1022,7 +1022,7 @@ class Utility:
             return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
 
     @commands.command(pass_context=True)
-    async def rpoll(self, ctx, *, msg):
+    async def rpoll(self, ctx, *, args):
         """Create a poll using reactions. {p}help rpoll for more information.
         {p}rpoll <question> | <answer> | <answer> - Create a poll. You may use as many answers as you want, placing a pipe | symbol in between them.
         Example:
@@ -1032,7 +1032,7 @@ class Utility:
         {p}rpoll What time is it? | HAMMER TIME! | SHOWTIME! | time=10
         """
         await ctx.message.delete()
-        options = msg.split(" | ")
+        options = args.split(" | ")
         time = [x for x in options if x.startswith("time=")]
         if time:
             time = time[0]
