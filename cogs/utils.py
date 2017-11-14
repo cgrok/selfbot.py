@@ -143,31 +143,50 @@ class Utility:
 
     @commands.command(name='presence')
     async def _presence(self, ctx, status, *, message=None):
-        '''Change your Discord status! (Stream, Online, Idle, DND, Invisible, or clear it)'''
+        '''Change your Discord status! (Stream, Watch, Listen, Online, Idle, DND, Invisible, or clear it)'''
         status = status.lower()
         emb = discord.Embed(title="Presence")
         emb.color = await ctx.get_dominant_color(ctx.author.avatar_url)
         file = io.BytesIO()
         if status == "online":
             await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message), afk=True)
+            if message:
+                emb.description = f'Presence set to online. Playing `{message}`.'
+            else:
+                emb.description = 'Presence set to online.'
             color = discord.Color(value=0x43b581).to_rgb()
         elif status == "idle":
             await self.bot.change_presence(status=discord.Status.idle, game=discord.Game(name=message), afk=True)
+            if message:
+                emb.description = f'Presence set to idle. Playing `{message}`.'
+            else:
+                emb.description = 'Presence set to idle.'
             color = discord.Color(value=0xfaa61a).to_rgb()
         elif status == "dnd":
             await self.bot.change_presence(status=discord.Status.dnd, game=discord.Game(name=message), afk=True)
+            if message:
+                emb.description = f'Presence set to do not disturb. Playing `{message}`.'
+            else:
+                emb.description = 'Presence set to do not disturb.'
             color = discord.Color(value=0xf04747).to_rgb()
         elif status == "invis" or status == "invisible":
             await self.bot.change_presence(status=discord.Status.invisible, game=discord.Game(name=message), afk=True)
+            if message:
+                emb.description = f'Presence set to invisible. Playing `{message}`.'
+            else:
+                emb.description = 'Presence set to invisible.'
             color = discord.Color(value=0x747f8d).to_rgb()
         elif status == "stream":
             await self.bot.change_presence(status=discord.Status.online, game=discord.Game(name=message, type=1, url=f'https://www.twitch.tv/{message}'), afk=True)
+            emb.description = f'Presence set to stream. Streaming `{message}`.'
             color = discord.Color(value=0x593695).to_rgb()
         elif status == "listen":
             await self.bot.change_presence(game=discord.Game(name=message, type=2), afk=True)
+            emb.description = f'Presence set to listen. Listening to `{message}`.'
             color = discord.Color(value=0x43b581).to_rgb()
         elif status == "watch":
             await self.bot.change_presence(game=discord.Game(name=message, type=3), afk=True)
+            emb.description = f'Presence set to watch. Watching `{message}`.'
             color = discord.Color(value=0x43b581).to_rgb()
         elif status == "clear":
             await self.bot.change_presence(game=None, afk=True)
@@ -178,10 +197,6 @@ class Utility:
             return await ctx.send(embed=emb)
 
         Image.new('RGB', (500, 500), color).save(file, format='PNG')
-        if message:
-            emb.description = f"Your presence has been changed. 'Game': {message}"
-        else:
-            emb.description = f"Your presence has been changed"
         file.seek(0)
         emb.set_author(name=status.title(), icon_url="attachment://color.png")
         try:
@@ -972,15 +987,20 @@ class Utility:
             return await ctx.send('Not enough choices to pick from.')
         choices[0] = ' ' + choices[0]
         await ctx.send(str(random.choice(choices))[1:])
-        
+
     @commands.command()
     async def update(self, ctx):
+        '''Auto Update command, checks if you have latest version
+        Use tags github-token to find out how to set up this token'''
         git = self.bot.get_cog('Git')
-        async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res: #get username 
+        # get username
+        async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
             if 300 > res.status >= 200:
-                async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title":"Updating Bot","body":"Body", "head":"verixx:rewrite", "base":"rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp: #create pr
+                # create pr
+                async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "body": "Body", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
                     if 300 > resp.status >= 200:
-                        async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2: #merge pr
+                        # merge pr
+                        async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
                             if 300 > resp2.status >= 200:
                                 return await ctx.send('Selfbot updated! Now wait for me to restart!')
                             else:
