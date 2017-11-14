@@ -925,8 +925,10 @@ class Utility:
 
         if out:
             await out.add_reaction('\u2705')  # tick
-        if err:
+        elif err:
             await err.add_reaction('\u2049')  # x
+        else:
+            await ctx.message.add_reaction('\u2705')
 
     async def edit_to_codeblock(self, ctx, body):
         msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
