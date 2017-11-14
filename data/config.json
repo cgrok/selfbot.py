@@ -1,5 +1,6 @@
 {
     "PREFIX": "r.",
     "TOKEN": "your_token_here",
-    "GITHUBTOKEN":"github_token"
+    "GITHUBTOKEN":"github_token",
+    "CR_TAG":"your clash royale tag for cr cog"
 }
