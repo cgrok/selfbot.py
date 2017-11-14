@@ -9,19 +9,25 @@ class Git:
     '''Github Cog, facilitates viewing and creating issues'''
     def __init__(self, bot):
         self.bot = bot
+        self.session = aiohttp.ClientSession()
 
     @property
     def githubtoken(self):
         '''
         Returns your token wherever it is
 
-        Instructions to get this will be given soon. 
         This token can give any user complete access to the account.
         https://github.com/settings/tokens is where you make a token.
         '''
         with open('data/config.json') as f:
             config = json.load(f)
             return os.environ.get('GITHUBTOKEN') or config.get('GITHUBTOKEN')
+
+    async def githubusername(self):
+        '''Returns Github Username'''
+        async with self.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {self.githubtoken}"}) as resp: #get username 
+            if 300 > resp.status >= 200:
+                return (await resp.json())['login']
 
     @commands.command()
     async def issue(self, ctx, repo, issueid):

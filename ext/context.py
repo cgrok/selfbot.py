@@ -5,6 +5,7 @@ from colorthief import ColorThief
 from urllib.parse import urlparse
 import io
 import os
+import base64
 
 class CustomContext(commands.Context):
     '''Custom Context class to provide utility.'''
@@ -105,7 +106,7 @@ class CustomContext(commands.Context):
 
     async def success(self, msg=None, delete=False):
         if delete:
-            await ctx.message.delete()
+            await self.message.delete()
         if msg:
             await self.send(msg)
         else:
@@ -116,6 +117,24 @@ class CustomContext(commands.Context):
             await self.send(msg)
         else:
             await self.message.add_reaction('⁉')
+
+    
+    async def updatedata(self, path:str, content, commitmsg='No Commit Message'):
+        '''To edit data in Github'''
+        git = self.bot.get_cog('Git')
+        username = await git.githubusername()
+        async with self.session.get(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}') as resp2:
+            if 300 > resp2.status >= 200:
+                async with self.session.put(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}', headers={"Authorization": f"Bearer {git.githubtoken}"}, json={"path":"data/cc.json", "message":commitmsg, "content":base64.b64encode(bytes(str(content).replace("'", '"'), 'utf-8')).decode('ascii'), "sha":(await resp2.json())['sha'], "branch":"rewrite"}) as resp3:
+                    if 300 > resp3.status >= 200:
+                        return True
+                        #data pushed successfully
+                    else:
+                        await self.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp3.json()) + '\n```')
+                        return False 
+            else:
+                await self.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
+                return False
 
     @staticmethod
     def paginate(text: str):

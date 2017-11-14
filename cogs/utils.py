@@ -44,6 +44,8 @@ import re
 import io
 import os
 import random
+import json
+import base64
 
 # Feel free to add to these via a PR
 emotes_servers = [
@@ -993,6 +995,52 @@ class Utility:
                     return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
                 else:
                     return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
+
+    @commands.command()
+    async def cc(self, ctx, option, name='None', content=None):
+        git = self.bot.get_cog('Git')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
+        if option.lower() == 'make':
+            if name is None or content is None:
+                return await ctx.send('Please provide a name and content.')
+            try:
+                commands[name]
+            except KeyError:
+                commands.update({name: content})
+                if await ctx.updatedata('data/cc.json', commands, f'New Custom Command: {name}/{content}'):
+                    await ctx.send('Created command.')
+            else:
+                await ctx.send('Use `cc edit` to edit this command as it already exists.')
+        elif option.lower() == 'edit':
+            if name is None or content is None:
+                return await ctx.send('Please provide a name and content.')
+            try:
+                commands[name]
+            except KeyError:
+                await ctx.send('Use `cc make` to create this command.')
+            else:
+                commands[name] = content
+                if await ctx.updatedata('data/cc.json', commands, f'Edited Custom Command: {name}/{content}'):
+                    await ctx.send('Edited command.')
+        elif option.lower() == 'delete':
+            if name is None:
+                return await ctx.send('Please provide a name.')
+            try:
+                commands[name]
+            except KeyError:
+                await ctx.send('Requested command does not exist.')
+            else:
+                del commands[name]
+                if await ctx.updatedata('data/cc.json', commands, f'Deleted Custom Command: {name}'):
+                    await ctx.send('Deleted command.')
+        else: #read
+            try:
+                commands[option]
+            except KeyError:
+                await ctx.send('Custom Command not found!')
+            else:
+                await ctx.send(commands[option])
 
 
 def setup(bot):
