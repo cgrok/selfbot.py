@@ -974,7 +974,7 @@ class Utility:
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
         # get username
         username = await git.githubusername()
-        async with ctx.session.get('https://api.github.com/repos/verixx/selfbot.py/git/refs/heads/rewrite') as resp:
+        async with ctx.session.get('https://api.github.com/repos/verixx/selfbot.py/git/refs/heads/rewrite', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
             if 300 > resp.status >= 200:
                 async with ctx.session.post(f'https://api.github.com/repos/{username}/selfbot.py/merges', json={"head": (await resp.json())['object']['sha'], "base": "rewrite", "commit_message": "Updating Bot"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
                     if 300 > resp2.status >= 200:
@@ -1083,6 +1083,8 @@ class Utility:
         '''Edits a currently existing custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
         try:
             commands['textcc'][name]
         except KeyError:
@@ -1103,6 +1105,8 @@ class Utility:
         '''Deletes a custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
         try:
             commands['textcc'][name]
         except KeyError:
@@ -1120,54 +1124,23 @@ class Utility:
             if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Deleted text Command: {name}'):
                 await ctx.send('Deleted text command.')
 
-    @cc.command()
-    async def list(self, ctx, option:str = 'all'):
+    @cc.command(name='list')
+    async def _list(self, ctx, option:str = 'all'):
         '''Displays a list of your current custom commands'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
         with open('data/cc.json') as f:
             commands = json.load(f)
-        pages = []
-        fmt = ''
-
         if option == 'all':
-            fmt += '**Text Custom Commands**'
-            for commandtxt in commands['textcc']:
-                if len(fmt) + len(commandtxt) + 3 + len(commands['textcc'][commandtxt]) > 2000:
-                    pages.append(fmt)
-                    fmt = ''
-                fmt += '\n' + commandtxt + ': ' + commands['textcc'][commandtxt]
-            fmt += '\n\n**Python Custom Commands'
-            for commandtxt2 in commands['pycc']:
-                if len(fmt) + len(commandtxt2) + 3 + len(commands['pycc'][commandtxt2]) > 2000:
-                    pages.append(fmt)
-                    fmt = ''
-            fmt += '\n' + commandtxt2 + ': ' + commands['pycc'][commandtxt2]
-            for page in pages:
-                await ctx.send(page)
-            await ctx.send(fmt)
+            await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
         
         elif option == 'text':
-            fmt += '**Text Custom Commands**'
-            for commandtxt in commands['textcc']:
-                if len(fmt) + len(commandtxt) + 3 + len(commands['textcc'][commandtxt]) > 2000:
-                    pages.append(fmt)
-                    fmt = ''
-                fmt += '\n' + commandtxt + ': ' + commands['textcc'][commandtxt]
-            for page in pages:
-                await ctx.send(page)
-            await ctx.send(fmt)
+            del commands['pycc']
+            await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
 
         elif option == 'pycc':
-            fmt += '\n\n**Python Custom Commands**'
-            for commandtxt in commands['pycc']:
-                if len(fmt) + len(commandtxt) + 5 + len(commands['pycc'][commandtxt]) > 2000:
-                    pages.append(fmt)
-                    fmt = ''
-            fmt += '\n' + commandtxt + ': `' + commands['pycc'][commandtxt] + '`'
-            for page in pages:
-                await ctx.send(page)
-            await ctx.send(fmt)
+            del commands['textcc']
+            await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
 
         else:
             await ctx.send('Invalid option. Available options: `text`, `pycc`, `all`')
@@ -1186,8 +1159,29 @@ class Utility:
                     utils = self.bot.get_cog('Utility')
                     await (await self.bot.get_context(message)).invoke(utils._eval, body=commands['pycc'][message.content.strip(await self.bot.get_pre(self.bot, message))], edit=False)
                 except KeyError:
-                    pass      
+                    pass
 
+    @commands.group(invoke_without_command=True)
+    async def options(self, ctx):
+        pass
+    @options.command()
+    async def edit(self, ctx, name, *, value):
+        name = name.upper()
+        with open('data/options.json') as f:
+            options = json.load(f)
+        try:
+            options[name]
+        except KeyError:
+            return await ctx.send('Not a valid option. View all with `{p}options list`')
+        else:
+            options[name] = value
+            if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+                await ctx.send('Option edited. Now wait for me to restart!')
+    
+    @options.command(name='list')
+    async def __list(self, ctx):
+        with open ('data/options.json') as f:
+            await ctx.send('```json\n' + json.dumps(json.load(f), indent=4) + '\n```')
 
 def setup(bot):
     bot.add_cog(Utility(bot))
