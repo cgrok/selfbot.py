@@ -907,8 +907,11 @@ class Utility:
         else:
             await ctx.message.add_reaction('\u2705')
 
-    async def edit_to_codeblock(self, ctx, body):
-        msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
+    async def edit_to_codeblock(self, ctx, body, pycc=False):
+        if not pycc:
+            msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
+        else:
+            msg = f'{ctx.prefix}cc make {pycc}\n```py\n{body}\n```'
         await ctx.message.edit(content=msg)
 
     def cleanup_code(self, content):
@@ -1078,6 +1081,7 @@ class Utility:
                 if '{pycc}' in content:
                     commands['pycc'].update({name: content})
                     cmdtype = 'pycc'
+                    await self.edit_to_codeblock(ctx, content, pycc=True)
                 else:
                     commands['text'].update({name: content})
                     cmdtype = 'text'
