@@ -34,13 +34,12 @@ class ClashRoyale:
 
     def __init__(self, bot):
         self.bot = bot
-        with open('data/config.json') as f:
-            config = json.load(f)
-            if 'CR_TAG' not in config:
-                tag = None
+        with open('data/options.json') as f:
+            options = json.load(f)
+            if 'CR_TAG' not in options:
+                self.tag = None
             else:
-                tag = config['CR_TAG']
-        self.tag = os.environ.get('CR_TAG') or tag
+                self.tag = options['CR_TAG']
         self.client = crasync.Client()
 
 
@@ -52,7 +51,7 @@ class ClashRoyale:
         if tag == None:
             tag = self.tag
             if tag == None:
-                em.description = "Please add `CR_TAG` to your config."
+                em.description = "Please add `CR_TAG` to your options. Do `{p}options edit cr_tag <tag>`"
                 return await ctx.send(embed=em)
         try:
             profile = await self.client.get_profile(tag)
