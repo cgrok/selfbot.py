@@ -49,14 +49,14 @@ class ClashRoyale:
             return await ctx.send(embed=em)
         elif self.tag is not None:
             tag = self.tag
-            
+
         tag = tag.strip('#').replace('O', '0')
         try:
             profile = await self.client.get_profile(tag)
         except:
             em.description = "Either API is down or that's an invalid tag."
             return await ctx.send(embed=em)
-        
+                                      
         em.title = profile.name
         em.set_thumbnail(url=profile.arena.image_url)
         em.description = f"#{tag}"
