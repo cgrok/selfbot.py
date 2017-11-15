@@ -1150,15 +1150,18 @@ class Utility:
 
     @cc.command()
     async def wipe(self, ctx):
-        await ctx.send('Are you sure you want to delete all your custom commands?')
+        message1 = await ctx.send('Are you sure you want to delete all your custom commands?')
         try:
-            await self.bot.wait_for('message', check=self.agreecheck, timeout=5)
+            message2 = await self.bot.wait_for('message', check=self.agreecheck, timeout=5)
         except asyncio.TimeoutError:
+            await message1.delete()
             return
         else:
+            await message1.delete()
+            await message2.delete()
             await ctx.send('Wiping...', delete_after=2)
             if await ctx.updatedata('data/cc.json', json.dumps({"pycc":{},"textcc":{}}, indent=4), f'Wipe custom commands'):
-                await ctx.send('Wiped all commands.')
+                await ctx.send('Wiped all commands.', delete_after=2)
 
     #reading cc
     async def on_message(self, message):
