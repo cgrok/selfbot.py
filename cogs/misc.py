@@ -56,6 +56,7 @@ from urllib.request import urlopen
 from sympy import solve
 from PIL import Image
 import safygiphy
+from ext import embedtobox
 
 
 class NumericStringParserForPython3(object):
