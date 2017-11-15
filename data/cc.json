@@ -1,8 +1,6 @@
 {
-    "pycc":{
-
+    "pycc": {
+        "hi": "await ctx.send('hi') {pycc}"
     },
-    "textcc":{
-        
-    }
+    "textcc": {}
 }
