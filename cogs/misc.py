@@ -55,6 +55,8 @@ from ext.colours import ColorNames
 from urllib.request import urlopen
 from sympy import solve
 from PIL import Image
+import safygiphy
+from ext import embedtobox
 
 
 class NumericStringParserForPython3(object):
@@ -152,6 +154,21 @@ class Misc:
         self.bot = bot
         self.emoji_converter = commands.EmojiConverter()
         self.nsp=NumericStringParserForPython3()
+        
+    @commands.command()
+    async def gif(self, ctx, *, tag):
+        ''' Get a random gif. Usage: gif <tag> '''
+        g = safygiphy.Giphy()
+        gif = g.random(tag=tag)
+        color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        em = discord.Embed(color=color)
+        em.set_image(url=str(gif.get('data', {}).get('image_original_url')))
+        try:
+            await ctx.send(embed=em)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(em)
+            for page in em_list:
+                await ctx.send(page)
 
     @commands.command()
     async def embedsay(self, ctx, *, message):
