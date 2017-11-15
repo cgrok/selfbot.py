@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 import json
 import io
+import safygiphy
 
 class Nsfw:
     """ Nsfw commands """
