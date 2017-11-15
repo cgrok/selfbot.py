@@ -119,13 +119,16 @@ class CustomContext(commands.Context):
             await self.message.add_reaction('⁉')
 
     
-    async def updatedata(self, path:str, content, commitmsg='No Commit Message'):
+    async def updatedata(self, path:str, content:str, commitmsg='No Commit Message'):
         '''To edit data in Github'''
         git = self.bot.get_cog('Git')
+        #get username
         username = await git.githubusername()
+        #get sha (dont even know why this is a compulsory field)
         async with self.session.get(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}') as resp2:
             if 300 > resp2.status >= 200:
-                async with self.session.put(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}', headers={"Authorization": f"Bearer {git.githubtoken}"}, json={"path":"data/cc.json", "message":commitmsg, "content":base64.b64encode(bytes(str(content).replace("'", '"'), 'utf-8')).decode('ascii'), "sha":(await resp2.json())['sha'], "branch":"rewrite"}) as resp3:
+                #push to path
+                async with self.session.put(f'https://api.github.com/repos/{username}/selfbot.py/contents/{path}', headers={"Authorization": f"Bearer {git.githubtoken}"}, json={"path":"data/cc.json", "message":commitmsg, "content":base64.b64encode(bytes(content, 'utf-8')).decode('ascii'), "sha":(await resp2.json())['sha'], "branch":"rewrite"}) as resp3:
                     if 300 > resp3.status >= 200:
                         return True
                         #data pushed successfully
