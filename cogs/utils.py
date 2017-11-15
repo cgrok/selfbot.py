@@ -1145,9 +1145,9 @@ class Utility:
         else:
             await ctx.send('Invalid option. Available options: `text`, `pycc`, `all`')
 
-    def agreecheck(message):
+    def agreecheck(self, message):
         return message.content.lower() == 'yes' and message.author == bot.user
-    
+
     @cc.command()
     async def wipe(self, ctx):
         await ctx.send('Are you sure you want to delete all your custom commands?')
@@ -1155,6 +1155,7 @@ class Utility:
             self.bot.wait_for('message', check=self.agreecheck, timeout=5)
         except asyncio.TimeoutError:
             return
+        await ctx.send('Wiping...', delete_after=1)
         if await ctx.updatedata('data/cc.json', json.dumps({"pycc":{},"textcc":{}}, indent=4), f'Wipe custom commands: {name}'):
             await ctx.send('Wiped all commands.')
 
