@@ -903,8 +903,8 @@ class Utility:
         else:
             await ctx.message.add_reaction('\u2705')
 
-    async def edit_to_codeblock(self, ctx, body, pycc=False):
-        if not pycc:
+    async def edit_to_codeblock(self, ctx, body, pycc='blank'):
+        if pycc == 'blank':
             msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
         else:
             msg = f'{ctx.prefix}cc make {pycc}\n```py\n{body}\n```'
@@ -1068,7 +1068,7 @@ class Utility:
                 if '{pycc}' in content:
                     commands['pycc'].update({name: content.strip('{pycc}')})
                     cmdtype = 'pycc'
-                    await self.edit_to_codeblock(ctx, content, pycc=True)
+                    await self.edit_to_codeblock(ctx, content, pycc=name)
                 else:
                     commands['textcc'].update({name: content})
                     cmdtype = 'text'
