@@ -971,31 +971,22 @@ class Utility:
         '''Auto Update command, checks if you have latest version
         Use tags github-token to find out how to set up this token'''
         git = self.bot.get_cog('Git')
-        if git.starred('verixx/selfbot.py'):
-            # get username
-            async with ctx.session.get('https://api.github.com/user', headers={"Authorization": f"Bearer {git.githubtoken}"}) as res:
-                if 300 > res.status >= 200:
-                    # create pr
-                    async with ctx.session.post('https://api.github.com/repos/' + (await res.json())['login'] + '/selfbot.py/pulls', json={"title": "Updating Bot", "head": "verixx:rewrite", "base": "rewrite"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp:
-                        if 300 > resp.status >= 200:
-                            # merge pr
-                            async with ctx.session.put(str((await resp.json())['url']) + '/merge', headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
-                                if 300 > resp2.status >= 200:
-                                    return await ctx.send('Selfbot updated! Now wait for me to restart!')
-                                else:
-                                    return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp2.json()) + '\n```')
-                        else:
-                            if (await resp.json())['errors'][0]['message'].startswith('No commits between'):
-                                return await ctx.send('Selfbot already at the latest version!')
-                            else:
-                                return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await resp.json()) + '\n```')
-                else:
-                    if (await res.json())['message'] == 'Bad credentials':
-                        return await ctx.send("You either put the wrong github token in your config or you didn't put a github token (refer to {p}tags github-token)")
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        # get username
+        username = await git.githubusername()
+        async with ctx.session.get('https://api.github.com/repos/verixx/selfbot.py/git/refs/heads/rewrite') as resp:
+            if 300 > resp.status >= 200:
+                async with ctx.session.post(f'https://api.github.com/repos/{username}/selfbot.py/merges', json={"head": (await resp.json())['object']['sha'], "base": "rewrite", "commit_message": "Updating Bot"}, headers={"Authorization": f"Bearer {git.githubtoken}"}) as resp2:
+                    if 300 > resp2.status >= 200:
+                        if resp2.status == 204:
+                            return await ctx.send('Already at latest version!')
+                        await ctx.send('Bot updated! Restarting...')
                     else:
-                        return await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512): ```py\n' + str(await res.json()) + '\n```')
-        else:
-            return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+                        if resp2.status == 409:
+                            return await ctx.send('Merge conflict, you did some commits that made this fail!')
+                        await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512) - resp2: ```py\n' + str(await resp2.json()) + '\n```')
+            else:
+                await ctx.send('Well, I failed somehow, send the following to `4JR#2713` (180314310298304512) - resp: ```py\n' + str(await resp.json()) + '\n```')
 
     @commands.command(pass_context=True)
     async def rpoll(self, ctx, *, args):
@@ -1176,7 +1167,7 @@ class Utility:
             for page in pages:
                 await ctx.send(page)
             await ctx.send(fmt)
-            
+
         else:
             await ctx.send('Invalid option. Available options: `text`, `pycc`, `all`')
 
