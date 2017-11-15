@@ -66,6 +66,7 @@ class Selfbot(commands.Bot):
         self.add_command(self.ping)
         self.load_extensions()
         self.add_command(self.load)
+        self.add_command(self.reloadcog)
         self.load_community_extensions()
 
     def load_extensions(self, cogs=None, path='cogs.'):
