@@ -57,6 +57,7 @@ from sympy import solve
 from PIL import Image
 import safygiphy
 from ext import embedtobox
+from ext import nsfwgif
 
 
 class NumericStringParserForPython3(object):
@@ -157,8 +158,13 @@ class Misc:
         
     @commands.command()
     async def gif(self, ctx, *, tag):
-        ''' Get a random gif. Usage: gif <tag> '''
+        ''' Get a random gif. Usage: gif <tag> 
+        this command is sfw, to use nsfw gifs
+        load community.nsfw '''
         g = safygiphy.Giphy()
+        tag = tag.lower()
+        if tag in nsfwgif.nsfw:
+            return await ctx.send('`Please use the nsfw commands to see content like this.`', delete_after=5)
         gif = g.random(tag=tag)
         color = await ctx.get_dominant_color(ctx.author.avatar_url)
         em = discord.Embed(color=color)
