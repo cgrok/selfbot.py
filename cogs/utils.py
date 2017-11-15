@@ -903,8 +903,8 @@ class Utility:
         else:
             await ctx.message.add_reaction('\u2705')
 
-    async def edit_to_codeblock(self, ctx, body, pycc=False):
-        if not pycc:
+    async def edit_to_codeblock(self, ctx, body, pycc='blank'):
+        if pycc == 'blank':
             msg = f'{ctx.prefix}eval\n```py\n{body}\n```'
         else:
             msg = f'{ctx.prefix}cc make {pycc}\n```py\n{body}\n```'
@@ -1066,9 +1066,9 @@ class Utility:
                 commands['pycc'][name]
             except KeyError:
                 if '{pycc}' in content:
-                    commands['pycc'].update({name: content})
+                    commands['pycc'].update({name: content.strip('{pycc}')})
                     cmdtype = 'pycc'
-                    await self.edit_to_codeblock(ctx, content, pycc=True)
+                    await self.edit_to_codeblock(ctx, content.strip('{pycc}'), pycc=name)
                 else:
                     commands['textcc'].update({name: content})
                     cmdtype = 'text'
@@ -1145,27 +1145,51 @@ class Utility:
         else:
             await ctx.send('Invalid option. Available options: `text`, `pycc`, `all`')
 
+    def agreecheck(self, message):
+        return message.content.lower() == 'yes' and message.author == self.bot.user
+
+    @cc.command()
+    async def wipe(self, ctx):
+        """Wipes all your custom commands!"""
+        message1 = await ctx.send('Are you sure you want to delete all your custom commands?')
+        try:
+            message2 = await self.bot.wait_for('message', check=self.agreecheck, timeout=5)
+        except asyncio.TimeoutError:
+            await message1.delete()
+            return
+        else:
+            await message1.delete()
+            await message2.delete()
+            await ctx.send('Wiping...', delete_after=2)
+            if await ctx.updatedata('data/cc.json', json.dumps({"pycc":{},"textcc":{}}, indent=4), f'Wipe custom commands'):
+                await ctx.send('Wiped all commands.', delete_after=2)
 
     #reading cc
     async def on_message(self, message):
         if message.author != self.bot.user: return
-        if message.content.startswith(await self.bot.get_pre(self.bot, message)):
+        prefix = await self.bot.get_pre(self.bot, message)
+        if message.content.startswith(prefix):
             with open('data/cc.json') as f:
                 commands = json.load(f)
             try:
-                await message.channel.send(commands['textcc'][message.content.strip(await self.bot.get_pre(self.bot, message))])
+                commands['textcc'][message.content.strip(prefix)]
             except KeyError:
                 try:
-                    utils = self.bot.get_cog('Utility')
-                    await (await self.bot.get_context(message)).invoke(utils._eval, body=commands['pycc'][message.content.strip(await self.bot.get_pre(self.bot, message))], edit=False)
+                    commands['pycc'][message.content.strip(prefix)]
                 except KeyError:
                     pass
+                else:
+                    utils = self.bot.get_cog('Utility')
+                    await (await self.bot.get_context(message)).invoke(utils._eval, body=str(commands['pycc'][message.content.strip(prefix)]), edit=False)
+            else:
+                await message.channel.send(commands['textcc'][message.content.strip(prefix)])
 
     @commands.group(invoke_without_command=True)
     async def options(self, ctx):
         pass
     @options.command()
     async def edit(self, ctx, name, *, value):
+        """Edits an option"""
         name = name.upper()
         with open('data/options.json') as f:
             options = json.load(f)
@@ -1180,6 +1204,7 @@ class Utility:
     
     @options.command(name='list')
     async def __list(self, ctx):
+        """Lists all options"""
         with open ('data/options.json') as f:
             await ctx.send('```json\n' + json.dumps(json.load(f), indent=4) + '\n```')
 
