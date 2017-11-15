@@ -1,6 +1,4 @@
 {
     "pycc": {},
-    "textcc": {
-        "self": "stats https://github.com/SharpBit/selfstats"
-    }
+    "textcc": {}
 }
