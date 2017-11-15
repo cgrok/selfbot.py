@@ -9,11 +9,15 @@
         "required": true
     },
     "PREFIX": {
-      "description": "Command prefix to use",
+      "description": "Command prefix to use.",
       "required": true
     },
     "GITHUBTOKEN": {
-      "description": "Token for github api use",
+      "description": "Token for github api usage. (optional)",
+      "required": false
+    },
+    "CR_TAG": {
+      "description": "Clash Royale player tag. (optional)",
       "required": false
     }
   }
