@@ -209,6 +209,18 @@ class Selfbot(commands.Bot):
         except Exception as e:
             await ctx.send(f"```py\nError loading {cog}:\n\n{e}\n```", delete_after=5)
 
+    @commands.command(aliases=["reload"])
+    async def reloadcog(self, ctx, *, cog: str):
+        """ Reload any cog """
+        cog = f"cogs.{cog}"
+        await ctx.send(f"Preparing to reload {cog}...", delete_after=5)
+        self.unload_extension(cog)
+        try:
+            self.load_extension(cog)
+            await ctx.send(f"{cog} cog was reloaded successfully!", delete_after=5)
+        except Exception as e:
+            await ctx.send(f"```py\nError loading {cog}:\n\n{e}\n```", delete_after=5)
+
 
 if __name__ == '__main__':
     Selfbot.init()
