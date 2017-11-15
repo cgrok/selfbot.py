@@ -837,7 +837,7 @@ class Utility:
             await ctx.send(msg)
 
     @commands.command(pass_context=True, hidden=True, name='eval')
-    async def _eval(self, ctx, *, body: str):
+    async def _eval(self, ctx, *, body: str, edit=True):
         """Evaluates python code"""
 
         env = {
@@ -854,7 +854,7 @@ class Utility:
         env.update(globals())
 
         body = self.cleanup_code(body)
-        await self.edit_to_codeblock(ctx, body)
+        if edit: await self.edit_to_codeblock(ctx, body)
         stdout = io.StringIO()
         err = out = None
 
@@ -1063,46 +1063,75 @@ class Utility:
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
     @cc.command(aliases=['create', 'add'])
     async def make(self, ctx, name, *, content):
-        '''Create a custom command!'''
+        '''Create a custom command! Include `{pycc}` in the content to specify a pycc!'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         with open('data/cc.json') as f:
             commands = json.load(f)
         try:
-            commands[name]
+            commands['textcc'][name]
         except KeyError:
-            commands.update({name: content})
-            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'New Custom Command: {name}'):
-                await ctx.send('Created command.')
+            try:
+                #{'py': {'te': "await ctx.send('hi')"}, 'text': {'hi': 'bye', 'lol': 'xd'}}
+                commands['pycc'][name]
+            except KeyError:
+                if '{pycc}' in content:
+                    commands['pycc'].update({name: content})
+                    cmdtype = 'pycc'
+                else:
+                    commands['text'].update({name: content})
+                    cmdtype = 'text'
+                if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'New {cmdtype} Command: {name}'):
+                    await ctx.send(f'Created {cmdtype} command.')
+            else:
+                await ctx.send('Use `cc edit` to edit this command as it already exists as a pycc command.')
         else:
-            await ctx.send('Use `cc edit` to edit this command as it already exists.')
+            await ctx.send('Use `cc edit` to edit this command as it already exists a sa text command.')
     @cc.command()
     async def edit(self, ctx, name, *, content):
         '''Edits a currently existing custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         try:
-            commands[name]
+            commands['textcc'][name]
         except KeyError:
-            await ctx.send('Use `cc make` to create this command.')
+            try:
+                commands['pycc'][name]
+            except KeyError:
+                await ctx.send('Use `{p}cc make` to create the command before editing it.')
+            else:
+                commands['pycc'][name] = content
+                if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Edited pycc Command: {name}'):
+                    await ctx.send('Edited pycc command.')
         else:
-            commands[name] = content
-            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Edited Custom Command: {name}/{content}'):
-                await ctx.send('Edited command.')
+            commands['textcc'][name] = content
+            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Edited text Command: {name}'):
+                await ctx.send('Edited text command.')
     @cc.command()
     async def delete(self, ctx, *, name):
         '''Deletes a custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
         try:
-            commands[name]
+            commands['textcc'][name]
         except KeyError:
-            await ctx.send('Requested command does not exist.')
-        else:
-            del commands[name]
-            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Deleted Custom Command: {name}'):
-                await ctx.send('Deleted command.')
+            try:
+                commands['pycc'][name]
+            except KeyError:
+                await ctx.send('Requested command does not exist.')
+            else:
+                del commands['pycc'][name]
+                if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Deleted pycc Command: {name}'):
+                    await ctx.send('Deleted pycc command.')
 
+        else:
+            del commands['textcc'][name]
+            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Deleted text Command: {name}'):
+                await ctx.send('Deleted text command.')
+
+    @cc.command()
+    async def list(self, ctx, option:str = 'all'):
+        pass
     #reading cc
     async def on_message(self, message):
         if message.author != self.bot.user: return
@@ -1110,9 +1139,14 @@ class Utility:
             with open('data/cc.json') as f:
                 commands = json.load(f)
             try:
-                await message.channel.send(commands[message.content.strip(await self.bot.get_pre(self.bot, message))])
+                await message.channel.send(commands['textcc'][message.content.strip(await self.bot.get_pre(self.bot, message))])
             except KeyError:
-                pass
+                try:
+                    utils = self.bot.get_cog('Utility')
+                    await (await self.bot.get_context(message)).invoke(utils._eval, body=commands['pycc'][message.content.strip(await self.bot.get_pre(self.bot, message))], edit=False)
+                except KeyError:
+                    pass
+        
 
 
 def setup(bot):
