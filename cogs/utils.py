@@ -1150,6 +1150,7 @@ class Utility:
 
     @cc.command()
     async def wipe(self, ctx):
+        """Wipes all your custom commands!"""
         message1 = await ctx.send('Are you sure you want to delete all your custom commands?')
         try:
             message2 = await self.bot.wait_for('message', check=self.agreecheck, timeout=5)
