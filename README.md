@@ -18,7 +18,7 @@ This branch of the selfbot runs on discord.py rewrite, the next major version of
 * Moderation commands
 * Global emoji commands
 * Complex embed commands
-* Miscellaneous commands
+* Miscellaneous commands 
 * Easy to make your own commands
 * Community Cogs *(coming soon, join [our discord](https://discord.gg/pmQSbAd) for updates)*
 
