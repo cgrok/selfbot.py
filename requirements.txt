@@ -10,3 +10,4 @@ wikipedia
 crasync
 cr-py
 urban-async
+safygiphy
