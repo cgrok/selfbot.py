@@ -1066,11 +1066,11 @@ class Utility:
                 commands['pycc'][name]
             except KeyError:
                 if '{pycc}' in content:
-                    commands['pycc'].update({name: content})
+                    commands['pycc'].update({name: content.strip('{pycc}')})
                     cmdtype = 'pycc'
                     await self.edit_to_codeblock(ctx, content, pycc=True)
                 else:
-                    commands['textcc'].update({name: content.strip('{pycc}')})
+                    commands['textcc'].update({name: content})
                     cmdtype = 'text'
                 if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'New {cmdtype} Command: {name}'):
                     await ctx.send(f'Created {cmdtype} command.')
@@ -1149,17 +1149,22 @@ class Utility:
     #reading cc
     async def on_message(self, message):
         if message.author != self.bot.user: return
-        if message.content.startswith(await self.bot.get_pre(self.bot, message)):
+        prefix = await self.bot.get_pre(self.bot, message)
+        if message.content.startswith(prefix):
             with open('data/cc.json') as f:
                 commands = json.load(f)
             try:
-                await message.channel.send(commands['textcc'][message.content.strip(await self.bot.get_pre(self.bot, message))])
+                commands['textcc'][message.content.strip(prefix)]
             except KeyError:
                 try:
-                    utils = self.bot.get_cog('Utility')
-                    await (await self.bot.get_context(message)).invoke(utils._eval, body=str(commands['pycc'][message.content.strip(await self.bot.get_pre(self.bot, message))]), edit=False)
+                    commands['pycc'][message.content.strip(prefix)]
                 except KeyError:
                     pass
+                else:
+                    utils = self.bot.get_cog('Utility')
+                    await (await self.bot.get_context(message)).invoke(utils._eval, body=str(commands['pycc'][message.content.strip(prefix)]), edit=False)
+            else:
+                await message.channel.send(commands['textcc'][message.content.strip(prefix)])
 
     @commands.group(invoke_without_command=True)
     async def options(self, ctx):
