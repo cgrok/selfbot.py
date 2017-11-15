@@ -1070,7 +1070,7 @@ class Utility:
                     cmdtype = 'pycc'
                     await self.edit_to_codeblock(ctx, content, pycc=True)
                 else:
-                    commands['text'].update({name: content})
+                    commands['textcc'].update({name: content})
                     cmdtype = 'text'
                 if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'New {cmdtype} Command: {name}'):
                     await ctx.send(f'Created {cmdtype} command.')
@@ -1186,8 +1186,7 @@ class Utility:
                     utils = self.bot.get_cog('Utility')
                     await (await self.bot.get_context(message)).invoke(utils._eval, body=commands['pycc'][message.content.strip(await self.bot.get_pre(self.bot, message))], edit=False)
                 except KeyError:
-                    pass
-        
+                    pass      
 
 
 def setup(bot):
