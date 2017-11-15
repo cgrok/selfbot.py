@@ -199,7 +199,7 @@ class Selfbot(commands.Bot):
     @commands.command(aliases=["loadcog"])
     async def load(self, ctx, *, cog: str):
         """ Load an unloaded cog 
-        For example: {p}load nsfw """
+        For example: {p}load mod"""
         if ctx.author.id in dev_list:
             cog = f"cogs.{cog}"
             await ctx.send(f"Preparing to load {cog}...", delete_after=5)
