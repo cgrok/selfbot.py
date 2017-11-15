@@ -1083,6 +1083,8 @@ class Utility:
         '''Edits a currently existing custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
         try:
             commands['textcc'][name]
         except KeyError:
@@ -1103,6 +1105,8 @@ class Utility:
         '''Deletes a custom command'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
         try:
             commands['textcc'][name]
         except KeyError:
@@ -1125,20 +1129,16 @@ class Utility:
         '''Displays a list of your current custom commands'''
         git = self.bot.get_cog('Git')
         if not await git.starred('verixx/selfbot.py'): return await ctx.send('**This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>**')
-
+        with open('data/cc.json') as f:
+            commands = json.load(f)
         if option == 'all':
-            with open('data/cc.json') as f:
-                await ctx.send('```json\n' + json.dumps(json.load(f), indent=4) + '\n```')
+            await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
         
         elif option == 'text':
-            with open('data/cc.json') as f:
-                commands = json.load(f)
             del commands['pycc']
             await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
 
         elif option == 'pycc':
-            with open('data/cc.json') as f:
-                commands = json.load(f)
             del commands['textcc']
             await ctx.send('```json\n' + json.dumps(commands, indent=4) + '\n```')
 
