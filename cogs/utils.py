@@ -1068,7 +1068,7 @@ class Utility:
                 if '{pycc}' in content:
                     commands['pycc'].update({name: content.strip('{pycc}')})
                     cmdtype = 'pycc'
-                    await self.edit_to_codeblock(ctx, content, pycc=name)
+                    await self.edit_to_codeblock(ctx, content.strip('{pycc}'), pycc=name)
                 else:
                     commands['textcc'].update({name: content})
                     cmdtype = 'text'
