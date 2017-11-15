@@ -1072,7 +1072,7 @@ class Utility:
             commands[name]
         except KeyError:
             commands.update({name: content})
-            if await ctx.updatedata('data/cc.json', commands, f'New Custom Command: {name}/{content}'):
+            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'New Custom Command: {name}'):
                 await ctx.send('Created command.')
         else:
             await ctx.send('Use `cc edit` to edit this command as it already exists.')
@@ -1087,7 +1087,7 @@ class Utility:
             await ctx.send('Use `cc make` to create this command.')
         else:
             commands[name] = content
-            if await ctx.updatedata('data/cc.json', commands, f'Edited Custom Command: {name}/{content}'):
+            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Edited Custom Command: {name}/{content}'):
                 await ctx.send('Edited command.')
     @cc.command()
     async def delete(self, ctx, *, name):
@@ -1100,7 +1100,7 @@ class Utility:
             await ctx.send('Requested command does not exist.')
         else:
             del commands[name]
-            if await ctx.updatedata('data/cc.json', commands, f'Deleted Custom Command: {name}'):
+            if await ctx.updatedata('data/cc.json', json.dumps(commands, indent=4), f'Deleted Custom Command: {name}'):
                 await ctx.send('Deleted command.')
 
     #reading cc
