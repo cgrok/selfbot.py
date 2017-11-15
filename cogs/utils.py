@@ -161,11 +161,13 @@ class Utility:
 
         Image.new('RGB', (500, 500), color).save(file, format='PNG')
         if message:
-            emb.description = f"""Your presence has been changed. 'Game': {message}\n
+            emb.description = f"""
+            Your presence has been changed. 'Game': {message}\n
             NOTICE: due to recent Discord API changes, this command is on revision.
             Available feature is to change Playing message for the time being.
             Please use your client's own feature to change between online, idle, dnd, or invisible.
-            Thanks for your understanding."""
+            Thanks for your understanding.
+            """
         else:
             emb.description = f"Your presence has been changed"
         file.seek(0)
@@ -1129,7 +1131,56 @@ class Utility:
 
     @cc.command()
     async def list(self, ctx, option:str = 'all'):
-        pass
+        git = self.bot.get_cog('Git')
+        if not await git.starred('verixx/selfbot.py'): return await ctx.send('This command is disabled as the user have not starred <https://github.com/verixx/selfbot.py>')
+        with open('data/cc.json') as f:
+            commands = json.load(f)
+        pages = []
+        fmt = ''
+
+        if option == 'all':
+            fmt += '**Text Custom Commands**'
+            for commandtxt in commands['textcc']:
+                if len(fmt) + '\n' + commandtxt + ': ' + commands['textcc'][commandtxt] > 2000:
+                    pages.append(fmt)
+                    fmt = ''
+                fmt += '\n' + commandtxt + ': ' + commands['textcc'][commandtxt]
+            fmt += '\n\n**Python Custom Commands'
+            for commandtxt in commands['pycc']:
+                if len(fmt) + '\n' + commandtxt + ': ' + commands['pycc'][commandtxt] > 2000:
+                    pages.append(fmt)
+                    fmt = ''
+            fmt += '\n' + commandtxt + ': ' + commands['pycc'][commandtxt]
+            for page in pages:
+                await ctx.send(page)
+            await ctx.send(fmt)
+        
+        elif option == 'text':
+            fmt += '**Text Custom Commands**'
+            for commandtxt in commands['textcc']:
+                if len(fmt) + '\n' + commandtxt + ': ' + commands['textcc'][commandtxt] > 2000:
+                    pages.append(fmt)
+                    fmt = ''
+                fmt += '\n' + commandtxt + ': ' + commands['textcc'][commandtxt]
+            for page in pages:
+                await ctx.send(page)
+            await ctx.send(fmt)
+
+        elif option == 'pycc':
+            fmt += '\n\n**Python Custom Commands'
+            for commandtxt in commands['pycc']:
+                if len(fmt) + '\n' + commandtxt + ': ' + commands['pycc'][commandtxt] > 2000:
+                    pages.append(fmt)
+                    fmt = ''
+            fmt += '\n' + commandtxt + ': ' + commands['pycc'][commandtxt]
+            for page in pages:
+                await ctx.send(page)
+            await ctx.send(fmt)
+            
+        else:
+            await ctx.send('Invalid option. Available options: `text`, `pycc`, `all`')
+
+
     #reading cc
     async def on_message(self, message):
         if message.author != self.bot.user: return
