@@ -1166,6 +1166,7 @@ class Utility:
         pass
     @options.command()
     async def edit(self, ctx, name, *, value):
+        """Edits an option"""
         name = name.upper()
         with open('data/options.json') as f:
             options = json.load(f)
@@ -1180,6 +1181,7 @@ class Utility:
     
     @options.command(name='list')
     async def __list(self, ctx):
+        """Lists all options"""
         with open ('data/options.json') as f:
             await ctx.send('```json\n' + json.dumps(json.load(f), indent=4) + '\n```')
 
