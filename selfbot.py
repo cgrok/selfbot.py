@@ -65,6 +65,7 @@ class Selfbot(commands.Bot):
         self.remove_command('help')
         self.add_command(self.ping)
         self.load_extensions()
+        self.add_command(self.load)
         self.load_community_extensions()
 
     def load_extensions(self, cogs=None, path='cogs.'):
@@ -195,6 +196,18 @@ class Selfbot(commands.Bot):
             em_list = await embedtobox.etb(emb)
             for page in em_list:
                 await ctx.send(page)
+
+    @commands.command(aliases=["loadcog"])
+    async def load(self, ctx, *, cog: str):
+        """ Load an unloaded cog 
+        For example: {p}load mod"""
+        cog = f"cogs.{cog}"
+        await ctx.send(f"Preparing to load {cog}...", delete_after=5)
+        try:
+            self.load_extension(cog)
+            await ctx.send(f"{cog} cog was loaded successfully!", delete_after=5)
+        except Exception as e:
+            await ctx.send(f"```py\nError loading {cog}:\n\n{e}\n```", delete_after=5)
 
 
 if __name__ == '__main__':
