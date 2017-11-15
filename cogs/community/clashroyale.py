@@ -36,7 +36,6 @@ class ClashRoyale:
                 self.tag = None
             else:
                 self.tag = options['CR_TAG']
-        self.tag = os.environ.get('CR_TAG') or tag
         self.client = crasync.Client()
     
 
