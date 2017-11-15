@@ -143,7 +143,7 @@ class Utility:
 
     @commands.command(name='presence')
     async def _presence(self, ctx, status, *, message=None):
-        '''Change your Discord status! ("Playing", or clear igt!)'''
+        '''Change your Discord status! ("Playing", or clear it!)'''
         status = status.lower()
         emb = discord.Embed(title="Presence")
         emb.color = await ctx.get_dominant_color(ctx.author.avatar_url)
