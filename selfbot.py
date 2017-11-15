@@ -200,14 +200,13 @@ class Selfbot(commands.Bot):
     async def load(self, ctx, *, cog: str):
         """ Load an unloaded cog 
         For example: {p}load mod"""
-        if ctx.author.id in dev_list:
-            cog = f"cogs.{cog}"
-            await ctx.send(f"Preparing to load {cog}...", delete_after=5)
-            try:
-                self.load_extension(cog)
-                await ctx.send(f"{cog} cog was loaded successfully!", delete_after=5)
-            except Exception as e:
-                await ctx.send(f"```py\nError loading {cog}:\n\n{e}\n```", delete_after=5)
+        cog = f"cogs.{cog}"
+        await ctx.send(f"Preparing to load {cog}...", delete_after=5)
+        try:
+            self.load_extension(cog)
+            await ctx.send(f"{cog} cog was loaded successfully!", delete_after=5)
+        except Exception as e:
+            await ctx.send(f"```py\nError loading {cog}:\n\n{e}\n```", delete_after=5)
 
 
 if __name__ == '__main__':
