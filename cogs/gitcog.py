@@ -39,7 +39,7 @@ class Git:
                 return False
         
     async def __local_check(self, ctx):
-        if githubtoken is None:
+        if self.githubtoken is None:
             await ctx.send('Github token not provided.', delete_after=10)
             return False
         return True
