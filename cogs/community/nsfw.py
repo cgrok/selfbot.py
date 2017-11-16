@@ -30,9 +30,10 @@ from bs4 import BeautifulSoup
 from urllib.request import Request, urlopen
 import json
 import io
+import safygiphy
 
 class Nsfw:
-    """Nsfw commands."""
+    """ Nsfw commands """
     def __init__(self, bot):
         self.bot = bot
 
@@ -44,9 +45,14 @@ class Nsfw:
             return False
         return True
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
+    async def nsfw(self, ctx):
+        """ Get random lewds from the web """
+        pass
+
+    @nsfw.command()
     async def xbooru(self, ctx):
-        """Random image from Xbooru"""
+        """ Random image from Xbooru """
         try:
             try:
                 await ctx.message.delete()
@@ -75,6 +81,65 @@ class Nsfw:
 
         except Exception as e:
             await ctx.send(f'```{e}```')
+
+    @commands.command(aliases=['gelbooru'])
+    async def gel(self, ctx):
+        """ Random image from Gelbooru """
+        try:
+            try:
+                await ctx.message.delete()
+            except discord.Forbidden:
+                pass
+
+            await ctx.channel.trigger_typing()
+            query = urllib.request.urlopen("http://www.gelbooru.com/index.php?page=post&s=random").read()
+            soup = bs.BeautifulSoup(query, 'html.parser')
+            sans = soup.find_all('div', {'class': 'highres-show'})
+            partial = soup.find(id="image").get("src")
+            image = partial.replace('//', '/').replace(':/', '://')
+
+            em = discord.Embed(colour=discord.Colour(0xed791d))
+            em.description = f'[Full Size Link*]({image})'
+            em.set_image(url=image)
+            em.set_footer(text='* click link at your own risk!')
+            try:
+                await ctx.send(embed=em)
+            except discord.HTTPException:
+                # em_list = await embedtobox.etb(em)
+                # for page in em_list:
+                #    await ctx.send(page)
+                await ctx.send('Unable to send embeds here!')
+                try:
+                    async with ctx.session.get(image) as resp:
+                        image = await resp.read()
+                    with io.BytesIO(image) as file:
+                        await ctx.send(file=discord.File(file, 'gelbooru.png'))
+                except discord.HTTPException:
+                    await ctx.send(image)
+
+        except Exception as e:
+            await ctx.send(f'```{e}```')
+
+    @nsfw.command()
+    async def gif(self, ctx, *, tag):
+        """ Get a random lewd gif
+        Usage: gif <tag>
+        Available tags: rule34, nsfw, hentai, tits... """
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            pass
+        g = safygiphy.Giphy()
+        gif = g.random(tag=tag)
+        color = await ctx.get_dominant_color(ctx.author.avatar_url)
+        em = discord.Embed(color=color)
+        em.set_image(url=str(gif.get('data', {}).get('image_original_url')))
+        try:
+            await ctx.send(embed=em)
+        except discord.HTTPException:
+            em_list = await embedtobox.etb(em)
+            for page in em_list:
+                await ctx.send(page)
 
 
 def setup(bot):
