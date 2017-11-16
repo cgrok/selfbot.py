@@ -1227,7 +1227,7 @@ Thanks for your understanding.
         if serverid in options['NICKPROTECT']:
             return await ctx.send('Server ID already in nickprotect.')
         options['NICKPROTECT'].append(serverid)
-        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Added {serverid} to nickprotect'):
             await ctx.send('Server added. Now wait for me to restart!')
 
     @nickprotect.command()
@@ -1239,7 +1239,7 @@ Thanks for your understanding.
         if serverid not in options['NICKPROTECT']:
             return await ctx.send('Server ID not even in nickprotect.')
         options['NICKPROTECT'].remove(serverid)
-        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Removed {serverid} to nickprotect'):
             await ctx.send('Server removed. Now wait for me to restart!')
     
 def setup(bot):
