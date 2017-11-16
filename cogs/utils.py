@@ -1193,16 +1193,19 @@ Thanks for your understanding.
     async def edit(self, ctx, name, *, value):
         """Edits an option"""
         name = name.upper()
-        with open('data/options.json') as f:
-            options = json.load(f)
-        try:
-            options[name]
-        except KeyError:
-            return await ctx.send('Not a valid option. View all with `{p}options list`')
+        if name != 'NICKPROTECT':
+            with open('data/options.json') as f:
+                options = json.load(f)
+            try:
+                options[name]
+            except KeyError:
+                return await ctx.send('Not a valid option. View all with `{p}options list`')
+            else:
+                options[name] = value
+                if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+                    await ctx.send('Option edited. Now wait for me to restart!')
         else:
-            options[name] = value
-            if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
-                await ctx.send('Option edited. Now wait for me to restart!')
+            await ctx.send('Use `{p}nickprotect` to modify nick protect options.', delete_after=2)
     
     @options.command(name='list')
     async def __list(self, ctx):
@@ -1210,5 +1213,34 @@ Thanks for your understanding.
         with open ('data/options.json') as f:
             await ctx.send('```json\n' + json.dumps(json.load(f), indent=4) + '\n```')
 
+    @commands.group(invoke_without_command=True)
+    async def nickprotect(self, ctx):
+        '''Nick Protect Config'''
+        pass
+
+    @nickprotect.command()
+    async def append(self, ctx, serverid=None):
+        '''Adds a guild to nick protect'''
+        with open('data/options.json') as f:
+            options = json.load(f)
+        if serverid is None: serverid = ctx.guild.id
+        if serverid in options['NICKPROTECT']:
+            return await ctx.send('Server ID already in nickprotect.')
+        options['NICKPROTECT'].append(serverid)
+        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+            await ctx.send('Server added. Now wait for me to restart!')
+
+    @nickprotect.command()
+    async def remove(self, ctx, serverid=None):
+        '''Removes a guild from nick protect'''
+        with open('data/options.json') as f:
+            options = json.load(f)
+        if serverid is None: serverid = ctx.guild.id
+        if serverid not in options['NICKPROTECT']:
+            return await ctx.send('Server ID not even in nickprotect.')
+        options['NICKPROTECT'].remove(serverid)
+        if await ctx.updatedata('data/options.json', json.dumps(options, indent=4), f'Update option: {name}'):
+            await ctx.send('Server removed. Now wait for me to restart!')
+    
 def setup(bot):
     bot.add_cog(Utility(bot))

@@ -43,7 +43,7 @@ import io
 
 class Selfbot(commands.Bot):
     '''
-    Custom Client for selfbot.py - Made by verix#7220
+    Custom Client for selfbot.py - Made by verix#7200
     '''
     _mentions_transforms = {
         '@everyone': '@\u200beveryone',
@@ -180,6 +180,17 @@ class Selfbot(commands.Bot):
         self.messages_sent += 1
         self.last_message = time.time()
         await self.process_commands(message)
+    
+    async def on_member_update(self, before, after):
+        if before != self.user: return
+        if before.nick == after.nick: return
+        with open('data/options.json') as f:
+            options = json.load(f)
+        if before.guild.id in options['NICKPROTECT']:
+            try:
+                await after.edit(nick = None)
+            except:
+                pass
 
     def get_server(self, id):
         return discord.utils.get(self.guilds, id=id)
