@@ -34,11 +34,13 @@ If you want to request features, [create an issue](https://github.com/verixx/sel
 
 ## Community Cogs
 
-**This is coming soon, so it's not working at the moment.**
-
-To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder. To download a cog, add the Cog Name in `data/community_cogs.txt`. Invalid cog names will return an error in your console.
+To submit a cog, submit a [pull request](https://github.com/verixx/selfbot.py/pulls) into the [/cogs/community](https://github.com/verixx/selfbot.py/tree/rewrite/cogs/community) folder. To download a cog, add the Cog Name in `data/community_cogs.txt` or do `{p}load community.<cogname>`. Invalid cog names will return an error in your console.
 
 Note: You **do not** have to add default cogs into `data/community_cogs.txt`.
+
+## Suggestions
+
+After getting the selfbot, instructions [here](heroku.md), do `{p}suggest "<short description>" <detailed description>` and we will try our best to implement it if it's possible!
 
 ## Acknowledgements
 
