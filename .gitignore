@@ -2,5 +2,4 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.DS_Store
-*.json
 data/community_cogs.txt
