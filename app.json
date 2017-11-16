@@ -13,12 +13,8 @@
       "required": true
     },
     "GITHUBTOKEN": {
-      "description": "Token for github api usage. (optional)",
-      "required": false
-    },
-    "CR_TAG": {
-      "description": "Clash Royale player tag. (optional)",
-      "required": false
+      "description": "Token for github api usage.",
+      "required": true
     }
   }
 }
