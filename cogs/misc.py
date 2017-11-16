@@ -57,7 +57,6 @@ from sympy import solve
 from PIL import Image
 import safygiphy
 from ext import embedtobox
-from ext import nsfwgif
 
 
 class NumericStringParserForPython3(object):
@@ -163,7 +162,9 @@ class Misc:
         load community.nsfw '''
         g = safygiphy.Giphy()
         tag = tag.lower()
-        if tag in nsfwgif.nsfw:
+        with open('data/nsfw.json')as f:
+            nsfwgif = json.load(f)
+        if tag in nsfwgif:
             return await ctx.send('`Please use the nsfw commands to see content like this.`', delete_after=5)
         gif = g.random(tag=tag)
         color = await ctx.get_dominant_color(ctx.author.avatar_url)
