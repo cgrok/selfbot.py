@@ -68,7 +68,7 @@ class Git:
     
     @commands.command()
     async def makeissue(self, ctx, repo, title, *, body):
-        '''Create an issue! `{}makeissue <title> | <body>`'''.format(ctx.prefix)
+        '''Create an issue! `{p}makeissue <title> | <body>`'''
         async with ctx.session.post(f'https://api.github.com/repos/{repo}/issues', json={"title": title, "body": body}, headers={'Authorization': f'Bearer {self.githubtoken}'}) as resp:
             if resp.status == 200 or resp.status == 201:
                 issueinfo = await resp.json()
