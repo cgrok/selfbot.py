@@ -680,6 +680,10 @@ class Misc:
         except discord.Forbidden:
             pass
 
+    @commands.command()
+    async def spaceify(self, ctx, *, text):
+        await asyncio.sleep(0.1)
+        await ctx.message.edit(text.replace('', ' '))
 
 def setup(bot):
     bot.add_cog(Misc(bot))
