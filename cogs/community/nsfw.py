@@ -31,7 +31,7 @@ from urllib.request import Request, urlopen
 import json
 import io
 import safygiphy
-from ext import embed2box
+from ext import embedtobox
 
 class Nsfw:
     """ Nsfw commands """
