@@ -189,7 +189,7 @@ class Selfbot(commands.Bot):
         if before.guild.id in options['NICKPROTECT']:
             try:
                 await after.edit(nick = None)
-            except:
+            except discord.Forbidden:
                 pass
 
     def get_server(self, id):
