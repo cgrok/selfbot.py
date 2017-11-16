@@ -3,14 +3,14 @@
 <div align="left">
         <p><i><b>Moderation, fun, utility and much more!</b></i></p>
     <p> 
-        <a href="https://discord.gg/pmQSbAd"><img src="https://discordapp.com/api/guilds/345787308282478592/embed.png" alt="" /></a>
+        <a href="https://discord.gg/Fa767ZW"><img src="https://discordapp.com/api/guilds/345787308282478592/embed.png" alt="" /></a>
         <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="passing" /></a>
         <img src="https://img.shields.io/badge/python-3.6-brightgreen.svg" alt="python 3.6" /></a>
         <a href="https://github.com/Rapptz/discord.py"><img src="https://img.shields.io/badge/discord-py-orange.svg" alt="discord.py" /></a>
     </p>
 </div> 
 
-Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. Using this bot gives you access to a variety of commands that ranging from code evaluation to fun and miscellaneous ones. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it! Join [our discord](https://discord.gg/pmQSbAd) for updates, fun and to interact with the developers!
+Selfbot.py is a discord selfbot written in python. It is used to provide personal utility and to aid someone with discord related tasks. Using this bot gives you access to a variety of commands that ranging from code evaluation to fun and miscellaneous ones. This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The `legacy` branch is no longer supported. So do not install it! Join [our discord](https://discord.gg/Fa767ZW) for updates, fun and to interact with the developers!
 
 !> Using selfbots is against the discord TOS. 
 

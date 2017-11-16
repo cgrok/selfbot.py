@@ -3,7 +3,7 @@
 Here you can find information relevent to the selfbot.
 
 
-# Retrieving Your Token
+# Retrieving Your Discord Token
 
 ### PC
 1. Open Discord, the Web App works too
@@ -30,7 +30,23 @@ REAP:{"token":"your token here"}
 8. Remove the quotes if using [[Heroku]]
 
 ### iOS
-We have not found a working solution yet. If you found one, inform us in our [Discord Server](https://discord.gg/pmQSbAd)! 
+We have not found a working solution yet. If you found one, inform us in our [Discord Server](https://discord.gg/Fa767ZW)! 
+
+# Retrieving Your Github Token
+1. Go to [this website](https://github.com/settings/tokens)
+2. Create a token, and tick everything
+3. You can call it whatever you want
+4. Copy the token
+!> If you are not on a PC, this will work on the **desktop site**, so find that button in your browser!
+
+### PC
+1. Open Discord, the Web App works too
+2. Press Ctrl+Shift+i
+3. Click "Application" tab (Click the 2 arrows on the right if you can't find it)
+4. Expand Storage > Local Storage > <https://discordapp.com/>
+5. Find "token" under "key"
+6. Copy the text in quotes on the same row
+7. Remove the quotes if using [[Heroku]]
 
 # Possible Errors
 
