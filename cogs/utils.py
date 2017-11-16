@@ -162,11 +162,11 @@ class Utility:
         Image.new('RGB', (500, 500), color).save(file, format='PNG')
         if message:
             emb.description = f"""
-            Your presence has been changed. 'Game': {message}\n
-            NOTICE: due to recent Discord API changes, this command is on revision.
-            Available feature is to change Playing message for the time being.
-            Please use your client's own feature to change between online, idle, dnd, or invisible.
-            Thanks for your understanding.
+Your presence has been changed. 'Game': {message}\n
+NOTICE: due to recent Discord API changes, this command is on revision.
+Available feature is to change Playing message for the time being.
+Please use your client's own feature to change between online, idle, dnd, or invisible.
+Thanks for your understanding.
             """
         else:
             emb.description = f"Your presence has been changed"
