@@ -26,10 +26,12 @@ This is a "stateless selfbot" (Saves no data) *This means that you can [host it 
 * Global emoji commands
 * Complex embed commands
 * Miscellaneous commands
-* Easy to make your own commands
-* Community Cogs *(coming soon)*
+* Custom Commands
+* NSFW Commands
+* GIF Commands
+* Community Cogs
 
-If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
+If you want to request features, look below!
 
 
 ## Community Cogs
