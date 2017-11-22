@@ -42,7 +42,7 @@ class Nsfw:
         if not ctx.channel.is_nsfw():
             return False
         git = self.bot.get_cog('Git')
-        if not await git.starred('verixx/selfbot.py'):
+        if not await git.starred('kyb3r/selfbot.py'):
             return False
         return True
 
