@@ -37,7 +37,7 @@ class Paginator:
     max_size: int
         The maximum amount of codepoints allowed in a page.
     """
-    def __init__(self, max_size=1900):
+    def __init__(self, max_size=1200):
         self.max_size = max_size
         self._current_embed = discord.Embed()
         self._current_field = []
