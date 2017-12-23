@@ -136,8 +136,8 @@ class Mod:
         Usage: {prefix}clean 5 '''
         async for ctx.message in ctx.channel.history(limit=limit):
             if ctx.message.author == self.bot.user:
-            await ctx.message.delete()
-            await asyncio.sleep(3.0)
+                await ctx.message.delete()
+                await asyncio.sleep(3.0)
 
     @commands.command()
     async def bans(self, ctx):
