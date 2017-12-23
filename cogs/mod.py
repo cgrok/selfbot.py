@@ -135,7 +135,7 @@ class Mod:
         ''' Clean a number of your own messages
         Usage: {prefix}clean 5 '''
         async for message in ctx.channel.history(limit=limit+1):
-            if message.author.id == ctx.bot.user.id:
+            if message.author.id == ctx.author.id:
                 await message.delete()
                 await asyncio.sleep(3.0)
 
