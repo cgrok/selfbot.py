@@ -136,7 +136,7 @@ class Mod:
         Usage: {prefix}clean 5 '''
         async for message in ctx.channel.history(limit=limit):
             if message.author == self.bot.user:
-                await ctx.message.delete()
+                await message.delete()
                 await asyncio.sleep(3.0)
 
     @commands.command()
