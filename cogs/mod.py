@@ -137,14 +137,14 @@ class Mod:
         if quantity <= 15:
             total = quantity +1
             async for message in ctx.channel.history(limit=total):
-            if message.author == ctx.author:
-                await message.delete()
-                await asyncio.sleep(3.0)
+                if message.author == ctx.author:
+                    await message.delete()
+                    await asyncio.sleep(3.0)
         else:
             async for message in ctx.channel.history(limit=6):
-            if message.author == ctx.author:
-                await message.delete()
-                await asyncio.sleep(3.0)
+                if message.author == ctx.author:
+                    await message.delete()
+                    await asyncio.sleep(3.0)
 
     @commands.command()
     async def bans(self, ctx):
