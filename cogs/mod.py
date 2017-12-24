@@ -131,10 +131,17 @@ class Mod:
                     await message.delete()
 
     @commands.command()
-    async def clean(self, ctx, limit: int=15):
+    async def clean(self, ctx, quantity: int):
         ''' Clean a number of your own messages
         Usage: {prefix}clean 5 '''
-        async for message in ctx.channel.history(limit=limit+1):
+        if quantity <= 15:
+            total = quantity +1
+            async for message in ctx.channel.history(limit=total):
+            if message.author == ctx.author:
+                await message.delete()
+                await asyncio.sleep(3.0)
+        else:
+            async for message in ctx.channel.history(limit=6):
             if message.author == ctx.author:
                 await message.delete()
                 await asyncio.sleep(3.0)
