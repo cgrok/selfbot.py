@@ -475,11 +475,7 @@ class Misc:
                 em.color = await ctx.get_dominant_color(ctx.author.avatar_url)
                 await ctx.send(embed=em)
                 return
-        async with ctx.session.get(emo.url) as resp:
-            image = await resp.read()
-        with io.BytesIO(image) as file:
-            await ctx.message.delete()
-            await ctx.send(file=discord.File(file, 'emoji.png'))
+        await ctx.send(str(emo))
 
     @_emoji.command()
     @commands.has_permissions(manage_emojis=True)
