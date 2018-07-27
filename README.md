@@ -1,3 +1,13 @@
+# BEFORE YOU MOVE ON
+Selfbots are strictly against the Discord Terms of Service. Using this application is basically screaming: "BAN ME NOW, DISCORD!"    
+All of the core developers of this project has gotten their own personal discord account(s) suspended or even disabled already.
+
+This project is officially discontinued. The support server still stands, but all core developers have left, and it's not really active. 
+
+Do whatever at your own risk. Just saying once again that if anybody doesn't like you and they send an email to abuse@discordapp.com, say goodbye to your account
+
+# Original README
+
 <div align="center">
         <p> <img src="https://i.imgur.com/lBSqWgt.png"/> </p>
         <p><i><b>Moderation, fun, utility and much more! (Rewrite)</b></i></p>
@@ -13,7 +23,7 @@
 ## [Welcome](http://selfbot-py.tk) 
 This branch of the selfbot runs on discord.py rewrite, the next major version of the library. The selfbot has been completely rewritten with better code and structure. Head on to the website for documentation and easy to understand install guides: http://selfbot-py.tk
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/verixx/selfbot.py/tree/rewrite)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/cgrok/selfbot.py/tree/rewrite)
 
 ## Features
 
@@ -22,7 +32,7 @@ This branch of the selfbot runs on discord.py rewrite, the next major version of
 * Complex embed commands
 * Miscellaneous commands 
 * Easy to make your own commands
-* Community Cogs *(coming soon, join [our discord](https://discord.gg/pmQSbAd) for updates)*
+* Community Cogs *(coming soon, join [our discord](https://discord.gg/2B4UvKx) for updates)*
 
 If you want to request features, [create an issue](https://github.com/verixx/selfbot/issues) on this repo.
 
